@@ -1,7 +1,7 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, TFile, TAbstractFile } from 'obsidian';
 
 import { DownloadArticleComponent } from './commands/download-article';
-import { InlineTitleDecoratorComponent } from './inline-title-decorator';
+import { InlineTitleDecoratorComponent } from './ui/inline-title-decorator';
 
 import * as devUtils from './dev_utils';
 
