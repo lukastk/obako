@@ -1,0 +1,29 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+
+#inline-title-decorator {
+    color: #888;
+    font-weight: var(--inline-title-weight);
+    font-size: var(--inline-title-size);
+    line-height: var(--inline-title-line-height);
+    font-style: var(--inline-title-style);
+    font-variant: var(--inline-title-variant);
+    font-family: var(--inline-title-font);
+    margin-bottom: var(--inline-title-margin-bottom);
+    letter-spacing: -0.015em;
+    /* color: var(--inline-title-color); */
+    white-space: pre-wrap;
+}
+
+
+/* .inline-title::before {
+    content: "Prepended text: ";
+    color: red;
+    font-weight: bold; 
+  } */

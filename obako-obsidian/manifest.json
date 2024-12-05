@@ -1,0 +1,11 @@
+{
+	"id": "obako",
+	"name": "Ōbako",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Obsidian plugin for the Ōbako system.",
+	"author": "Lukas Kikuchi",
+	"authorUrl": "https://lukastk.dev",
+	"fundingUrl": "https://lukastk.dev/fundme",
+	"isDesktopOnly": false
+}
