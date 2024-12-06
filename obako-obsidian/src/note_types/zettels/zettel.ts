@@ -19,12 +19,13 @@ Todo:
 - Transform one zettel type into another
 */
 
-import { TFile } from 'obsidian';
+import { TFile, CachedMetadata } from 'obsidian';
+import ObakoNote from '../obako_note';
+import { getFile } from '../../utils';
 
-class Zettel {
-    private file: TFile;
+export default class Zettel extends ObakoNote {
 
-    constructor(file: TFile) {
-        this.file = typeof file === 'string' ? app.vault.getAbstractFileByPath(file) : file;
+    constructor(file: TFile | string) {
+        super(file);
     }
 }

@@ -3,20 +3,23 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginManifest, Plugi
 import { DownloadArticleComponent } from './commands/download-article';
 import { InlineTitleDecoratorComponent } from './ui/inline-title-decorator';
 import { TopPanelComponent } from './ui/top-panel';
-import * as devUtils from './dev_utils';
 
 export default class ObakoPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
+
+		global.app = this.app;
+
+		/**** Commands ****/
 		Object.assign(this, DownloadArticleComponent);
+		/**** UI ****/
 		Object.assign(this, InlineTitleDecoratorComponent);
 		Object.assign(this, TopPanelComponent);
 	}
 
 	async onload() {
-		/** Load components **/
 		/**** Commands ****/
 		this.load_DownloadArticleComponent();
 		/**** UI ****/
