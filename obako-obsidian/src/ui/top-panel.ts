@@ -36,7 +36,8 @@ export const TopPanelComponent = {
 };
 
 function updateTopPanel() {
-    const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
+
+    const leaf = global.app.workspace.getActiveViewOfType(MarkdownView);
     if (!leaf) return;
 
     // Remove existing banner if present
