@@ -27,3 +27,13 @@ If your plugin does not need CSS, delete this file.
     color: red;
     font-weight: bold; 
   } */
+
+/*** Top panel ***/
+
+.obako-note-top-panel {
+    background-color: var(--background-secondary);
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 10px;
+}
