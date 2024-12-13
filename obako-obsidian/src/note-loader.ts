@@ -3,21 +3,49 @@
  */
 
 import { TFile } from 'obsidian';
-import { getFrontmatter } from './utils';
+import { getFile, getFrontmatter } from './utils';
 
-import Zettel from './note_types/zettels/zettel';
-import Planner from './note_types/planner';
-import Note from './note_types/note';
+import Zettel from './notes/zettels/zettel';
+import Planner from './notes/planner';
+import Capture from './notes/zettels/capture';
+import Pad from './notes/zettels/pad';
+import BasicNote from './notes/basic-note';
+import Memo from './notes/zettels/memo';
+import Log from './notes/zettels/log';
+import WorkUnit from './notes/zettels/work-unit';
 
-export default function loadNote(file: TFile) {
+export const noteTypeToNoteClass: Record<string, typeof BasicNote> = {
+    memo: Memo, 
+    pad: Pad,
+    capture: Capture,
+    log: Log,
+    planner: Planner,
+    'work-unit': WorkUnit,
+};
+
+export function loadNote(file: TFile | string | null) {
+    file = getFile(file);
+    if (!file) return null;
+
     const frontmatter = getFrontmatter(file);
 
-    switch (frontmatter?.type) {
-        case "zettel":
-            return new Zettel(file);
-        case "planner":
-            return new Planner(file);
-        default:
-            return new Note(file);
+    const isInZettelFolder = file.path.startsWith(_obako_plugin.settings.zettelFolder);
+    const isInPlannerFolder = file.path.startsWith(_obako_plugin.settings.plannerFolder);
+
+    let noteType = frontmatter?.notetype;
+
+    if (!noteType) {
+        if (isInZettelFolder) {
+            noteType = "capture";
+        } else if (isInPlannerFolder) {
+            noteType = "planner";
+        }
     }
+
+    if (noteType && noteType in noteTypeToNoteClass) {
+        const NoteClass = noteTypeToNoteClass[noteType];
+        return new NoteClass(file);
+    }
+
+    return new BasicNote(file);
 }

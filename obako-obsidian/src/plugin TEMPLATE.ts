@@ -1,6 +1,6 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, TFile, TAbstractFile } from 'obsidian';
 
-import { DownloadArticleComponent } from './commands/download-article';
+import { DownloadArticleTSComp } from './plugin-components/commands/download-article';
 import { InlineTitleDecoratorComponent } from './ui/inline-title-decorator';
 
 import * as devUtils from './dev_utils';
@@ -19,7 +19,7 @@ export default class ObakoPlugin extends Plugin {
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
-		Object.assign(this, DownloadArticleComponent);
+		Object.assign(this, DownloadArticleTSComp);
 		Object.assign(this, InlineTitleDecoratorComponent);
 	}
 

@@ -1,53 +1,64 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, TFile, TAbstractFile, WorkspaceLeaf } from 'obsidian';
 
-import { DownloadArticleComponent } from './commands/download-article';
-import { InlineTitleDecoratorComponent } from './ui/inline-title-decorator';
-import { TopPanelComponent } from './ui/top-panel';
+import { ObakoSettings, ObakoSettingsTab, DEFAULT_SETTINGS } from './settings';
+import PluginComponent from './plugin-components/plugin-component';
 
-import { ExampleView, VIEW_TYPE_EXAMPLE } from "./views/example-view";
+import * as utils from './utils';
+
+/**** Commands ****/
+import { Command_DownloadArticle } from './plugin-components/commands/download-article';
+import { Command_MoveUnlinkedFiles } from './plugin-components/commands/move-unlinked-files';
+import { Command_GetDateString } from './plugin-components/commands/get-date-string';
+/**** UI ****/
+import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
+import { UI_TopPanel } from './plugin-components/ui/top-panel';
+/**** Views ****/
+import { View_Example } from "./plugin-components/views/example-view";
 
 export default class ObakoPlugin extends Plugin {
+	settings: ObakoSettings;
+	defaultSettings: ObakoSettings;
+	pluginComponents: PluginComponent[];
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		global.app = this.app;
-
-		/**** Commands ****/
-		Object.assign(this, DownloadArticleComponent);
-		/**** UI ****/
-		Object.assign(this, InlineTitleDecoratorComponent);
-		Object.assign(this, TopPanelComponent);
+		global._obako_plugin = this;
+		global.obako = {
+			utils: utils,
+		}
 	}
 
 	async onload() {
-		/**** Commands ****/
-		this.load_DownloadArticleComponent();
-		/**** UI ****/
-		//this.load_InlineTitleDecoratorComponent();
-		this.load_TopPanelComponent();
+		this.pluginComponents = [
+			new Command_DownloadArticle(this),
+			new Command_MoveUnlinkedFiles(this),
+			new Command_GetDateString(this),
+			new UI_InlineTitleDecorator(this),
+			new UI_TopPanel(this),
+			new View_Example(this),
+		];
 
-		this.registerView(VIEW_TYPE_EXAMPLE, (leaf) => new ExampleView(leaf));
+		this.defaultSettings = DEFAULT_SETTINGS;
+		for (const comp of this.pluginComponents)
+			this.defaultSettings.pluginComponentSettings[comp.constructor.name] = comp.constructor.getDefaultSettings();
 
-		this.addRibbonIcon("dice", "Activate Obako view", () => {
-			this.activateView();
-		});
+		await this.loadSettings();
+		this.addSettingTab(new ObakoSettingsTab(this.app, this));
+
+		for (const module of this.pluginComponents)
+			module.load();
 	}
 
 	onunload() {
-		this.unload_TopPanelComponent();
+		for (const module of this.pluginComponents)
+			module.unload();
 	}
 
-	async activateView() {
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_EXAMPLE);
-
-		await this.app.workspace.getRightLeaf(false).setViewState({
-			type: VIEW_TYPE_EXAMPLE,
-			active: true,
-		});
-
-		this.app.workspace.revealLeaf(
-			this.app.workspace.getLeavesOfType(VIEW_TYPE_EXAMPLE)[0],
-		);
+	async loadSettings() {
+		this.settings = Object.assign({}, this.defaultSettings, await this.loadData());
+	}
+	async saveSettings() {
+		await this.saveData(this.settings);
 	}
 }

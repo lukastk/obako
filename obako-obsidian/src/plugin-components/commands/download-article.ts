@@ -1,14 +1,18 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
+import PluginComponent from '../plugin-component';
 
 import Parser from '@postlight/parser';
 import clipboardy from 'clipboardy';
 import TurndownService from 'turndown';
 
-export const DownloadArticleComponent = {
-    load_DownloadArticleComponent: function () {
-        this.addCommand({
-            id: 'download-link',
-            name: 'Download article',
+export class Command_DownloadArticle extends PluginComponent {
+    commandId = 'download-article';
+    commandName = 'Download article';
+
+    load() {
+        this.plugin.addCommand({
+            id: this.commandId,
+            name: this.commandName,
             callback: async () => {
                 new ArticleDownloadModal(this.app, async (url) => {
                     try {
@@ -29,7 +33,9 @@ export const DownloadArticleComponent = {
             }
         });
     }
-};
+
+    unload() { }
+}
 
 class ArticleDownloadModal extends Modal {
     constructor(app: App, onSubmit: (result: string) => void) {
