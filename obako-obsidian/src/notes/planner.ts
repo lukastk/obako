@@ -41,8 +41,8 @@ export default class Planner extends ObakoNote {
     get active(): boolean {
         return this.frontmatter['planner-active'];
     }
-    set active(value: boolean) {
-        this.modifyFrontmatter('planner-active', value);
+    async setActive(value: boolean) {
+        await this.modifyFrontmatter('planner-active', value);
     }
 
     validate(): boolean {

@@ -2,6 +2,7 @@
 	import PlannerTimeline from "./PlannerTimeline.svelte";
 	import FrontmatterCheckbox from "../../../svelte/FrontmatterCheckbox.svelte";
 
+	import { registerOnModify } from "../../../internal-utils";
 	import { getNotes } from "../../../utils";
 	import Planner from "../../../notes/planner";
 
@@ -10,6 +11,15 @@
 	function plannerActiveCheckboxChanged(planner: Planner) {
 		planner.active = !planner.active;
 	}
+	
+	registerOnModify((file) => {
+		// Refresh the active planners list
+		setTimeout(() => {
+			const updatedPlanners = getNotes("planner") as Planner[];
+			planners.length = 0; 
+			planners.push(...updatedPlanners);
+		}, 10);
+	});
 </script>
 
 <PlannerTimeline />

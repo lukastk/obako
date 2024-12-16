@@ -1,4 +1,4 @@
-import { TFile } from 'obsidian';
+import { Notice, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import BasicNote from './notes/basic-note';
 import { loadNote } from './note-loader';
@@ -9,10 +9,10 @@ export function getFile(file: TFile | string | null) {
         if (file.includes('/') && !file.endsWith('.md')) {
             file = file + '.md';
         }
-        let _file = _obako_plugin.app.vault.getAbstractFileByPath(file);
+        let _file = app.vault.getAbstractFileByPath(file);
         if (!_file) {
             try {
-                _file = _obako_plugin.app.metadataCache.getFirstLinkpathDest(file);
+                _file = app.metadataCache.getFirstLinkpathDest(file);
             } catch (e) {
                 throw new Error(`File not found: ${file}`);
             }
@@ -24,12 +24,12 @@ export function getFile(file: TFile | string | null) {
 }
 
 export function getFrontmatter(file: TFile | string) {
-    const fileCache = _obako_plugin.app.metadataCache.getFileCache(getFile(file));
+    const fileCache = app.metadataCache.getFileCache(getFile(file));
     return fileCache?.frontmatter;
 }
 
 export function getMarkdownFiles(filter_func: (note: TFile) => boolean = () => true): TFile[] {
-    return _obako_plugin.app.vault.getMarkdownFiles().filter(filter_func);
+    return app.vault.getMarkdownFiles().filter(filter_func);
 }
 
 export function getNotes(noteType: string): BasicNote[] {
@@ -225,4 +225,13 @@ export function getWeekNumber(date: Date): number {
 
 export function generateRandomId(length: number = 8): string {
     return Math.random().toString(36).substr(2, length);
+}
+
+export function getTasks() {
+    if (!app.plugins.plugins['obsidian-tasks-plugin']) {
+        new Notice(`Obsidian Tasks plugin is not installed.`);
+        return [];
+    }
+    new Notice(`Getting tasks...`);
+    return app.plugins.plugins['obsidian-tasks-plugin'].getTasks();
 }

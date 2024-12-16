@@ -43,13 +43,13 @@ export default class BasicNote {
     }
 
     reloadFrontmatterAndFileCache() {
-        this.fileCache = _obako_plugin.app.metadataCache.getFileCache(this.file);
+        this.fileCache = app.metadataCache.getFileCache(this.file);
         this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.frontmatterSpec);
     }
     
     getOutgoingLinkedNotes(): BasicNote[] {
         const linkedNotes: BasicNote[] = [];
-        const linkedPaths = _obako_plugin.app.metadataCache.resolvedLinks[this.file.path];
+        const linkedPaths = app.metadataCache.resolvedLinks[this.file.path];
         if (linkedPaths) {
             for (const linkedPath in linkedPaths) {
                 if (linkedPath) linkedNotes.push(loadNote(linkedPath));
@@ -60,7 +60,7 @@ export default class BasicNote {
 
     getIncomingLinkedNotes(): BasicNote[] {
         const linkedNotes: BasicNote[] = [];
-        const backlinks = _obako_plugin.app.metadataCache.getBacklinksForFile(this.file)?.data;
+        const backlinks = app.metadataCache.getBacklinksForFile(this.file)?.data;
         for (const [filePath, _] of backlinks) {
             linkedNotes.push(loadNote(filePath));
         }
@@ -93,15 +93,14 @@ export default class BasicNote {
 
     /*** Actions ***/
     open(newTab: boolean = false) {
-        _obako_plugin.app.workspace.openLinkText(this.file.path, "", newTab);
+        app.workspace.openLinkText(this.file.path, "", newTab);
     }
 
-    modifyFrontmatter(key: string, value: any) {
-        _obako_plugin.app.fileManager.processFrontMatter(this.file, (frontmatter: any) => {
+    async modifyFrontmatter(key: string, value: any) {
+        await app.fileManager.processFrontMatter(this.file, (frontmatter: any) => {
             frontmatter[key] = value;
-        }).then(() => {
-            this.reloadFrontmatterAndFileCache(); // Not sure why this doesn't work.
-            this.frontmatter[key] = value;
         });
+        this.reloadFrontmatterAndFileCache(); // Not sure why this doesn't work.
+        this.frontmatter[key] = value;
     }
 }
