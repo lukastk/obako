@@ -12,7 +12,7 @@ import Pad from './notes/zettels/pad';
 import BasicNote from './notes/basic-note';
 import Memo from './notes/zettels/memo';
 import Log from './notes/zettels/log';
-import WorkUnit from './notes/zettels/work-unit';
+import Project from './notes/zettels/project';
 
 export const noteTypeToNoteClass: Record<string, typeof BasicNote> = {
     memo: Memo, 
@@ -20,7 +20,7 @@ export const noteTypeToNoteClass: Record<string, typeof BasicNote> = {
     capture: Capture,
     log: Log,
     planner: Planner,
-    'work-unit': WorkUnit,
+    project: Project,
 };
 
 export function loadNote(file: TFile | string | null) {

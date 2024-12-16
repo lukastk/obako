@@ -13,12 +13,19 @@ import { Command_GetDateString } from './plugin-components/commands/get-date-str
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
 /**** Views ****/
-import { View_Example } from "./plugin-components/views/example-view";
+import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboard/planner-dashboard-view";
 
 export default class ObakoPlugin extends Plugin {
-	settings: ObakoSettings;
-	defaultSettings: ObakoSettings;
-	pluginComponents: PluginComponent[];
+	settings!: ObakoSettings;
+	defaultSettings!: ObakoSettings;
+	pluginComponents!: PluginComponent[];
+
+	modifierKeyPressed = {
+		meta: false,
+		ctrl: false,
+		alt: false,
+		shift: false,
+	};
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
@@ -36,7 +43,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_GetDateString(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
-			new View_Example(this),
+			new View_PlannerDashboard(this),
 		];
 
 		this.defaultSettings = DEFAULT_SETTINGS;
@@ -48,6 +55,20 @@ export default class ObakoPlugin extends Plugin {
 
 		for (const module of this.pluginComponents)
 			module.load();
+
+		document.addEventListener('keydown', (event) => {
+			this.modifierKeyPressed.meta = event.metaKey;
+			this.modifierKeyPressed.ctrl = event.ctrlKey;
+			this.modifierKeyPressed.alt = event.altKey;
+			this.modifierKeyPressed.shift = event.shiftKey;
+		});
+
+		document.addEventListener('keyup', (event) => {
+			this.modifierKeyPressed.meta = event.metaKey;
+			this.modifierKeyPressed.ctrl = event.ctrlKey;
+			this.modifierKeyPressed.alt = event.altKey;
+			this.modifierKeyPressed.shift = event.shiftKey;
+		});
 	}
 
 	onunload() {

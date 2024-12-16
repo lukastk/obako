@@ -3,7 +3,7 @@ import PluginComponent from '../plugin-component';
 import type { ObakoSettingsTab } from 'src/settings';
 
 import clipboardy from 'clipboardy';
-import { getDateStringFromText } from 'src/utils';
+import { getDateStringFromNaturalLanguage } from 'src/utils';
 
 export class Command_GetDateString extends PluginComponent {
     commandId = 'get-date-string';
@@ -15,7 +15,7 @@ export class Command_GetDateString extends PluginComponent {
             name: this.commandName,
             callback: async () => {
                 new GetDateStringModal(this.app, (naturalLanguageDate) => {
-                    const dateString = getDateStringFromText(naturalLanguageDate);
+                    const dateString = getDateStringFromNaturalLanguage(naturalLanguageDate);
                     clipboardy.write(dateString).then(() => {
                         new Notice(`Copied '${dateString}' to clipboard.`);
                     });
