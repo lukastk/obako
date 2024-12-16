@@ -7,7 +7,7 @@ If your plugin does not need CSS, delete this file.
 
 */
 
-#obako-inline-title-decorator {
+#obako-inline-title-prefix-decorator {
     color: var(--text-muted);
     font-weight: var(--inline-title-weight);
     font-size: var(--inline-title-size);
@@ -18,6 +18,19 @@ If your plugin does not need CSS, delete this file.
     margin-bottom: var(--inline-title-margin-bottom);
     letter-spacing: -0.015em;
     /* color: var(--inline-title-color); */
+    white-space: pre-wrap;
+}
+
+#obako-inline-title-suffix-decorator {
+    color: var(--text-muted);
+    font-weight: var(--inline-title-weight);
+    font-size: var(--inline-title-size);
+    line-height: var(--inline-title-line-height);
+    font-style: var(--inline-title-style);
+    font-variant: var(--inline-title-variant);
+    font-family: var(--inline-title-font);
+    margin-bottom: var(--inline-title-margin-bottom);
+    letter-spacing: -0.015em;
     white-space: pre-wrap;
 }
 

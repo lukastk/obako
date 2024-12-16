@@ -9,6 +9,7 @@ import { loadNote } from '../note-loader';
 export default class BasicNote {
     static noteTypeStr = "basic-note";
     static titleDecoratorString = "";
+    static titleSuffixDecoratorString = "";
     
     file: TFile;
     fileCache: CachedMetadata;
@@ -21,17 +22,31 @@ export default class BasicNote {
 
     constructor(file: TFile | string) {
         this.file = getFile(file);
-        this.fileCache = _obako_plugin.app.metadataCache.getFileCache(this.file);
-        this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.frontmatterSpec);
+        this.reloadFrontmatterAndFileCache();
     }
 
+    get name(): string { return this.file.basename; }
+    get filepath(): string { return this.file.path; }
     get noteType(): string { return this.frontmatter.notetype; }
-    
+
+    /**
+     * Validate the note.
+     * @returns true if the note is valid, false otherwise
+     */
+    validate() {
+        return true;
+    }
+
     equals(other: BasicNote | null) {
         if (!other) return false;
         return this.file.path === other.file.path;
     }
 
+    reloadFrontmatterAndFileCache() {
+        this.fileCache = _obako_plugin.app.metadataCache.getFileCache(this.file);
+        this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.frontmatterSpec);
+    }
+    
     getOutgoingLinkedNotes(): BasicNote[] {
         const linkedNotes: BasicNote[] = [];
         const linkedPaths = _obako_plugin.app.metadataCache.resolvedLinks[this.file.path];
@@ -56,11 +71,37 @@ export default class BasicNote {
     setTopPanel(panel: HTMLElement) {
     }
 
-    getTitleDecoratorString(): string {
+    getTitlePrefixDecoratorString(): string {
         return this.constructor.titleDecoratorString;
     }
 
-    setTitleDecorator(titleDecoratorEl: HTMLElement) {
-        titleDecoratorEl.innerHTML = this.constructor.titleDecoratorString;
+    setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {
+        titleDecoratorEl.innerHTML = this.getTitlePrefixDecoratorString();
+
+        if (!this.validate()) {
+            titleDecoratorEl.style.color = 'var(--text-error)';
+        }
+    }
+
+    getTitleSuffixDecoratorString(): string {
+        return this.constructor.titleSuffixDecoratorString;
+    }
+
+    setTitleSuffixDecorator(titleSuffixDecoratorEl: HTMLElement) {
+        titleSuffixDecoratorEl.innerHTML = this.getTitleSuffixDecoratorString();
+    }
+
+    /*** Actions ***/
+    open(newTab: boolean = false) {
+        _obako_plugin.app.workspace.openLinkText(this.file.path, "", newTab);
+    }
+
+    modifyFrontmatter(key: string, value: any) {
+        _obako_plugin.app.fileManager.processFrontMatter(this.file, (frontmatter: any) => {
+            frontmatter[key] = value;
+        }).then(() => {
+            this.reloadFrontmatterAndFileCache(); // Not sure why this doesn't work.
+            this.frontmatter[key] = value;
+        });
     }
 }

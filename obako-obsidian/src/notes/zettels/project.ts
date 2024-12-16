@@ -6,13 +6,13 @@ import type { NoteHierarchy } from '../note-hierarchy';
 import CollapsibleNoteHierarchyDisplay from '../../svelte/CollapsibleNoteHierarchyDisplay.svelte';
 import CollapsibleNoteList from 'src/svelte/CollapsibleNoteList.svelte';
 
-export default abstract class WorkUnit extends ObakoNote {
-    static noteTypeStr = "work-unit";
+export default abstract class Project extends ObakoNote {
+    static noteTypeStr = "project";
     static titleDecoratorString = "●";
 
     static frontmatterSpec: FrontmatterSpec = {
         ...super.frontmatterSpec,
-        notetype: { default: WorkUnit.noteTypeStr, fixedValue: true },
+        notetype: { default: Project.noteTypeStr, fixedValue: true },
     };
 
     constructor(file: TFile | string) {
@@ -20,7 +20,7 @@ export default abstract class WorkUnit extends ObakoNote {
     }
 
     getDescendantWorkUnits(): NoteHierarchy {
-        return this.getDescendantNotes([WorkUnit]);
+        return this.getDescendantNotes([Project]);
     }
 
     setTopPanel(panel: HTMLElement) {
@@ -29,7 +29,7 @@ export default abstract class WorkUnit extends ObakoNote {
         new CollapsibleNoteHierarchyDisplay({
             target: panel,
             props: {
-                displayTitle: "Child work units",
+                displayTitle: "Child projects",
                 noteHierarchy: this.getDescendantWorkUnits(),
                 isCollapsed: false,
             }
@@ -55,8 +55,5 @@ export default abstract class WorkUnit extends ObakoNote {
                 groupByNoteType: true,
             }
         });
-
-        // const link = createInternalLinkElement("A link 2", "Autonomy Data Services");
-        // panel.appendChild(link);
     }
 }
