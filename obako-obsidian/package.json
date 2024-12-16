@@ -29,6 +29,8 @@
 		"@postlight/parser": "^2.2.3",
 		"chrono-node": "^2.7.7",
 		"clipboardy": "^4.0.0",
-		"turndown": "^7.2.0"
+		"turndown": "^7.2.0",
+		"vis-timeline": "^7.7.3",
+		"weeknumber": "^1.2.1"
 	}
 }

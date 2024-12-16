@@ -7,7 +7,8 @@ import { loadNote } from 'src/note-loader';
 import BasicNote from 'src/notes/basic-note';
 import PluginComponent from '../plugin-component';
 
-const DECORATOR_ID = "obako-inline-title-decorator";
+const PREFIX_DECORATOR_ID = "obako-inline-title-prefix-decorator";
+const SUFFIX_DECORATOR_ID = "obako-inline-title-suffix-decorator";
 const DECORATOR_CONTAINER_ID = "obako-inline-title-decorator-container";
 
 export class UI_InlineTitleDecorator extends PluginComponent {
@@ -65,17 +66,28 @@ export class UI_InlineTitleDecorator extends PluginComponent {
         }
     
         // Remove existing decorator if present
-        document.querySelectorAll(`#${DECORATOR_ID}`).forEach(el => el.remove());
-    
-        // Create the decorator element and prepend it to the inline title
-        const inlineTitleDecoratorEl = document.createElement('div');
-        inlineTitleDecoratorEl.id = `${DECORATOR_ID}`;
-        inlineTitleDecoratorEl.style.display = 'inline';
-        note.setTitleDecorator(inlineTitleDecoratorEl);
-        if (inlineTitleDecoratorEl.innerHTML.trim()) {
-            inlineTitleDecoratorEl.style.marginRight = '10px';
+        document.querySelectorAll(`#${PREFIX_DECORATOR_ID}`).forEach(el => el.remove());
+        document.querySelectorAll(`#${SUFFIX_DECORATOR_ID}`).forEach(el => el.remove());
+        
+        // Create the prefix decorator element and prepend it to the inline title
+        const inlineTitlePrefixDecoratorEl = document.createElement('div');
+        inlineTitlePrefixDecoratorEl.id = `${PREFIX_DECORATOR_ID}`;
+        inlineTitlePrefixDecoratorEl.style.display = 'inline';
+        note.setTitlePrefixDecorator(inlineTitlePrefixDecoratorEl);
+        if (inlineTitlePrefixDecoratorEl.innerHTML.trim()) {
+            inlineTitlePrefixDecoratorEl.style.marginRight = '10px';
         }
-        titleContainerEl.insertBefore(inlineTitleDecoratorEl, inlineTitleEl);
+        titleContainerEl.insertBefore(inlineTitlePrefixDecoratorEl, inlineTitleEl);
+
+        // Create the suffix decorator element and append it to the inline title
+        const inlineTitleSuffixDecoratorEl = document.createElement('div');
+        inlineTitleSuffixDecoratorEl.id = `${SUFFIX_DECORATOR_ID}`;
+        inlineTitleSuffixDecoratorEl.style.display = 'inline';
+        note.setTitleSuffixDecorator(inlineTitleSuffixDecoratorEl);
+        if (inlineTitleSuffixDecoratorEl.innerHTML.trim()) {
+            inlineTitleSuffixDecoratorEl.style.marginLeft = '10px';
+        }
+        titleContainerEl.appendChild(inlineTitleSuffixDecoratorEl);
     }
 };
 
