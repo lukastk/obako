@@ -4,6 +4,7 @@ import { ObakoSettings, ObakoSettingsTab, DEFAULT_SETTINGS } from './settings';
 import PluginComponent from './plugin-components/plugin-component';
 
 import * as utils from './utils';
+import * as tasks from './tasks';
 
 /**** Commands ****/
 import { Command_DownloadArticle } from './plugin-components/commands/download-article';
@@ -14,6 +15,9 @@ import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-dec
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
 /**** Views ****/
 import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboard/planner-dashboard-view";
+
+/**** Svelte Components ****/
+import TaskList from './svelte/TaskList.svelte';
 
 export default class ObakoPlugin extends Plugin {
 	settings!: ObakoSettings;
@@ -33,6 +37,10 @@ export default class ObakoPlugin extends Plugin {
 		global._obako_plugin = this;
 		global.obako = {
 			utils: utils,
+			tasks: tasks,
+			svelteComponents: {
+				TaskList: TaskList,
+			}
 		}
 	}
 
