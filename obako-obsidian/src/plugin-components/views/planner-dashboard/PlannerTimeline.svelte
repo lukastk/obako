@@ -3,9 +3,9 @@
 	import { Timeline, DataSet } from "vis-timeline/standalone";
 	import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 	import { getNotes } from "../../../utils";
-	import Planner from "../../../notes/planner";
+	import { Planner } from "../../../notes/planner";
 	import { getWeekNumber } from "../../../utils";
-	import { registerOnModify } from "../../../internal-utils";
+	import { registerVaultOn } from "../../../internal-utils";
 
 	const items = new DataSet();
 
@@ -209,7 +209,7 @@
 
 			let itemContent;
 			if (planner.plannerTitle) {
-				itemContent = `${itemContentPrefix} -- ${planner.plannerTitle?.trim()}`;
+				itemContent = `${itemContentPrefix} ${planner.plannerTitle?.trim()}`;
 			} else {
 				itemContent = itemContentPrefix;
 			}
@@ -246,7 +246,7 @@
 
 				timeline.on("click", onItemSelect);
 
-				registerOnModify((file) => {
+				registerVaultOn('all', (file) => {
 					setTimeout(() => { // This is a hack to make sure the items are refreshed after the file is modified.
 						refreshItems();
 						timeline.redraw();
@@ -277,10 +277,14 @@
 
 	:global(.vis-item) {
 		cursor: pointer;
+		white-space: unset !important;
 	}
 	:global(.vis-item:hover) {
 		/* opacity: 0.75;*/
 		border: 2px solid var(--interactive-hover);
+	}
+	:global(.vis-item-content) {
+		white-space: unset !important;
 	}
 
 	:global(.inactive-planner) {
