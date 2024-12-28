@@ -6,7 +6,7 @@ import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
 import { loadNote } from '../note-loader';
 
-export default class BasicNote {
+export class BasicNote {
     static noteTypeStr = "basic-note";
     static titleDecoratorString = "";
     static titleSuffixDecoratorString = "";

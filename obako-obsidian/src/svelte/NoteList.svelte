@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BasicNote from "../notes/basic-note";
+	import { BasicNote } from "../notes/basic-note";
 	import InternalLink from "./InternalLink.svelte";
 
 	import { noteTypeToNoteClass } from "../note-loader";
@@ -15,46 +15,41 @@
 	}
 </script>
 
-<div class="note-list-container">
-	{#if groupByNoteType}
-		{#each Object.entries(notesByType) as [noteType, noteTypeNotes]}
-			{#if includeNoteTypes.includes(noteType) || includeNoteTypes.length == 0}
-				<div>
-					<i>{noteType}s</i>
-					({noteTypeToNoteClass[noteType]?.titleDecoratorString ?? "???"})
-				</div>
-				<ul>
-					{#each noteTypeNotes as note}
-						<li>
-							<InternalLink
-								text={note.file.basename}
-								note={note.file.path}
-							/>
-						</li>
-					{/each}
-				</ul>
+{#if groupByNoteType}
+	{#each Object.entries(notesByType) as [noteType, noteTypeNotes]}
+		{#if includeNoteTypes.includes(noteType) || includeNoteTypes.length == 0}
+			<div>
+				<i>{noteType}s</i>
+				({noteTypeToNoteClass[noteType]?.titleDecoratorString ?? "???"})
+			</div>
+			<ul>
+				{#each noteTypeNotes as note}
+					<li>
+						<InternalLink
+							text={note.file.basename}
+							note={note.file.path}
+						/>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	{/each}
+{:else}
+	<ul>
+		{#each notes as note}
+			{#if includeNoteTypes.includes(note.noteType) || includeNoteTypes.length == 0}
+				<li>
+					<InternalLink
+						text={note.file.basename}
+						note={note.file.path}
+					/>
+				</li>
 			{/if}
 		{/each}
-	{:else}
-		<ul>
-			{#each notes as note}
-				{#if includeNoteTypes.includes(note.noteType) || includeNoteTypes.length == 0}
-					<li><InternalLink text={note.file.basename} note={note.file.path} /></li>
-				{/if}
-			{/each}
-		</ul>
-	{/if}
-</div>
+	</ul>
+{/if}
 
 <style>
-	.note-list-container {
-		margin-top: 5px;
-		padding: 10px;
-		padding-left: 20px;
-		background-color: var(--background-primary);
-		border-radius: 5px;
-	}
-
 	ul {
 		margin: 0;
 		padding-inline-start: 20px;

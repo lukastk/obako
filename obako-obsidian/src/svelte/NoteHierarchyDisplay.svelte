@@ -50,14 +50,6 @@
 </div>
 
 <style>
-	.top-level-note-list-container {
-		margin-top: 5px;
-		padding: 10px;
-		padding-left: 20px;
-		background-color: var(--background-primary);
-		border-radius: 5px;
-	}
-
 	ul {
 		margin: 0;
 		padding-inline-start: 20px;

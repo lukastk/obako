@@ -1,6 +1,7 @@
 import { TFile } from "obsidian";
+import { writable, type Writable } from "svelte/store";
 
-export function registerOn(events: string[]|string, callback: (...args: any[]) => void) {
+export function registerVaultOn(events: string[] | string, callback: (...args: any[]) => void) {
     if (events === 'all') {
         events = ['modify', 'create', 'delete', 'rename'];
     }
@@ -16,18 +17,41 @@ export function registerOn(events: string[]|string, callback: (...args: any[]) =
     });
 }
 
-export function registerOnModify(callback: (file: TFile) => void) {
-    registerOn('modify', callback);
+export function registerWorkspaceOn(events: string[] | string, callback: (...args: any[]) => void) {
+    if (typeof events === 'string') {
+        events = [events];
+    }
+
+    events.forEach(event => {
+        _obako_plugin.registerEvent(
+            app.workspace.on(event, callback),
+        );
+    });
 }
 
-export function registerOnCreate(callback: (file: TFile) => void) {
-    registerOn('create', callback);
-}
+export function getReloadKey(callback: (() => void) | null = null): Writable<number> {
+    const reloadKey = writable(0);
 
-export function registerOnDelete(callback: (file: TFile) => void) {
-    registerOn('delete', callback);
-}
+    function updateReloadKey() {
+        reloadKey.update((n) => n + 1);
+        if (callback) callback();
+    }
 
-export function registerOnRename(callback: (file: TFile) => void) {
-    registerOn('rename', callback);
+    registerVaultOn("all", (file) => {
+        setTimeout(() => {
+            updateReloadKey();
+        }, 10);
+    });
+
+    registerWorkspaceOn("editor-change", () => {
+        setTimeout(() => {
+            updateReloadKey();
+        }, 10);
+    });
+
+    reloadKey.reload = () => {
+        updateReloadKey();
+    };
+
+    return reloadKey;
 }

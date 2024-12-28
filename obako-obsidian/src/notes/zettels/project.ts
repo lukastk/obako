@@ -1,12 +1,11 @@
 import { TFile } from 'obsidian';
 import { ObakoNote } from '../obako-note';
 import type { FrontmatterSpec } from '../note-frontmatter';
-import type { NoteHierarchy } from '../note-hierarchy';
+import type { NoteHierarchy } from '../obako-note';
 
-import CollapsibleNoteHierarchyDisplay from '../../svelte/CollapsibleNoteHierarchyDisplay.svelte';
-import CollapsibleNoteList from 'src/svelte/CollapsibleNoteList.svelte';
+import ProjectTopPanel from 'src/top-panels/ProjectTopPanel.svelte';
 
-export default abstract class Project extends ObakoNote {
+export class Project extends ObakoNote {
     static noteTypeStr = "project";
     static titleDecoratorString = "●";
 
@@ -26,33 +25,10 @@ export default abstract class Project extends ObakoNote {
     setTopPanel(panel: HTMLElement) {
         super.setTopPanel(panel);
 
-        new CollapsibleNoteHierarchyDisplay({
+        new ProjectTopPanel({
             target: panel,
             props: {
-                displayTitle: "Child projects",
-                noteHierarchy: this.getDescendantWorkUnits(),
-                isCollapsed: false,
-            }
-        });
-
-        new CollapsibleNoteHierarchyDisplay({
-            target: panel,
-            props: {
-                displayTitle: "Note hierarchy",
-                noteHierarchy: this.getDescendantNotes(),
-                isCollapsed: true,
-                sortByNoteType: true,
-                displayTitleDecorator: true,
-            }
-        });
-
-        new CollapsibleNoteList({
-            target: panel,
-            props: {
-                title: "Linked",
-                notes: this.getIncomingLinkedNotes(),
-                isCollapsed: true,
-                groupByNoteType: true,
+                note: this,
             }
         });
     }

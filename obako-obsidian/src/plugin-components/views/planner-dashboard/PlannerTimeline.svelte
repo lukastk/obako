@@ -246,12 +246,12 @@
 
 				timeline.on("click", onItemSelect);
 
-				registerVaultOn('all', (file) => {
-					setTimeout(() => { // This is a hack to make sure the items are refreshed after the file is modified.
-						refreshItems();
-						timeline.redraw();
-					}, 10);
-				});
+				// registerVaultOn('all', (file) => {
+				// 	setTimeout(() => { // This is a hack to make sure the items are refreshed after the file is modified.
+				// 		refreshItems();
+				// 		timeline.redraw();
+				// 	}, 10);
+				// });
 			} else {
 				// Retry after a short delay if the container is not found
 				setTimeout(initializeTimeline, 10);

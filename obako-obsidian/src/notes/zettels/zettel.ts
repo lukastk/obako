@@ -22,12 +22,10 @@ Todo:
 import { TFile } from 'obsidian';
 import { ObakoNote } from '../obako-note';
 import type { FrontmatterSpec } from '../note-frontmatter';
-import CollapsibleNoteHierarchyDisplay from '../../svelte/CollapsibleNoteHierarchyDisplay.svelte';
 
-import LinkedNotesList from '../../svelte/LinkedNotesList.svelte';
-import CollapsibleNoteList from 'src/svelte/CollapsibleNoteList.svelte';
+import ZettelTopPanel from 'src/top-panels/ZettelTopPanel.svelte';
 
-export default abstract class Zettel extends ObakoNote {
+export class Zettel extends ObakoNote {
     static noteTypeStr = "zettel";
 
     static frontmatterSpec: FrontmatterSpec = {
@@ -42,24 +40,10 @@ export default abstract class Zettel extends ObakoNote {
     setTopPanel(panel: HTMLElement) {
         super.setTopPanel(panel);
 
-        new CollapsibleNoteHierarchyDisplay({
+        new ZettelTopPanel({
             target: panel,
             props: {
-                displayTitle: "Note hierarchy",
-                noteHierarchy: this.getDescendantNotes(),
-                isCollapsed: true,
-                displayTitleDecorator: true,
-                sortByNoteType: true,
-            }
-        });
-
-        new CollapsibleNoteList({
-            target: panel,
-            props: {
-                title: "Linked",
-                notes: this.getIncomingLinkedNotes(),
-                isCollapsed: true,
-                groupByNoteType: true,
+                note: this,
             }
         });
     }

@@ -1,7 +1,7 @@
-import Zettel from './zettel';
+import { Zettel } from './zettel';
 import type { FrontmatterSpec } from '../note-frontmatter';
 
-export default abstract class Transient extends Zettel {
+export abstract class Transient extends Zettel {
     static noteTypeStr = "transient";
 
     static frontmatterSpec: FrontmatterSpec = {

@@ -1,7 +1,7 @@
-import Transient from './transient';
+import { Transient } from './transient';
 import type { FrontmatterSpec } from '../note-frontmatter';
 
-export default class Pad extends Transient {
+export class Pad extends Transient {
     static noteTypeStr = "pad";
     static titleDecoratorString = "✎";
 

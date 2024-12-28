@@ -4,7 +4,8 @@ import { ObakoSettings, ObakoSettingsTab, DEFAULT_SETTINGS } from './settings';
 import PluginComponent from './plugin-components/plugin-component';
 
 import * as utils from './utils';
-import * as tasks from './tasks';
+import * as tasks from './task-utils';
+import * as noteLoader from './note-loader';
 
 /**** Commands ****/
 import { Command_DownloadArticle } from './plugin-components/commands/download-article';
@@ -38,6 +39,7 @@ export default class ObakoPlugin extends Plugin {
 		global.obako = {
 			utils: utils,
 			tasks: tasks,
+			noteLoader: noteLoader,
 			svelteComponents: {
 				TaskList: TaskList,
 			}
