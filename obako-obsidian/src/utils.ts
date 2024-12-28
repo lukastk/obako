@@ -1,18 +1,18 @@
-import { TFile } from 'obsidian';
+import { MarkdownPreviewView, Notice, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import BasicNote from './notes/basic-note';
 import { loadNote } from './note-loader';
 import * as weeknumber from 'weeknumber';
 
-export function getFile(file: TFile | string | null) {
+export function getFile(file: TFile | string | null): TFile | null {
     if (typeof file === 'string') {
         if (file.includes('/') && !file.endsWith('.md')) {
             file = file + '.md';
         }
-        let _file = _obako_plugin.app.vault.getAbstractFileByPath(file);
+        let _file = app.vault.getAbstractFileByPath(file);
         if (!_file) {
             try {
-                _file = _obako_plugin.app.metadataCache.getFirstLinkpathDest(file);
+                _file = app.metadataCache.getFirstLinkpathDest(file);
             } catch (e) {
                 throw new Error(`File not found: ${file}`);
             }
@@ -24,17 +24,20 @@ export function getFile(file: TFile | string | null) {
 }
 
 export function getFrontmatter(file: TFile | string) {
-    const fileCache = _obako_plugin.app.metadataCache.getFileCache(getFile(file));
+    const fileCache = app.metadataCache.getFileCache(getFile(file));
     return fileCache?.frontmatter;
 }
 
 export function getMarkdownFiles(filter_func: (note: TFile) => boolean = () => true): TFile[] {
-    return _obako_plugin.app.vault.getMarkdownFiles().filter(filter_func);
+    return app.vault.getMarkdownFiles().filter(filter_func);
 }
 
-export function getNotes(noteType: string): BasicNote[] {
-    const notes = getMarkdownFiles().map(file => loadNote(file));
-    return notes.filter(note => note?.noteType === noteType);
+export function getNotes(noteType: string, onlyValid: boolean = true): BasicNote[] {
+    let notes = getMarkdownFiles().map(file => loadNote(file));
+    notes = notes.filter(note => note?.noteType === noteType);
+    if (onlyValid)
+        notes = notes.filter(note => note?.validate());
+    return notes;
 }
 
 export function parseObsidianLink(link: string): string | null {
@@ -225,4 +228,38 @@ export function getWeekNumber(date: Date): number {
 
 export function generateRandomId(length: number = 8): string {
     return Math.random().toString(36).substr(2, length);
+}
+
+export function renderMarkdown(content: string, container: HTMLElement) {
+    MarkdownPreviewView.render(app, content, container, '', _obako_plugin);
+}
+
+
+export function parseDatesInDatedTitle(datedTitleStr: string) : {
+    plannerTitle: string,
+    date: Date | null,
+    endDate: Date | null,
+    rangeType: string
+} {
+    const plannerTitle = datedTitleStr.split('--')[1]?.trim() || '';
+    const [startDateStr, endDateStr] = datedTitleStr.split('--')[0].split('..');
+
+    const [startDate_start, startDate_end, startDate_rangeType] = parseDateRangeStr(startDateStr?.trim());
+    const [endDate_start, endDate_end, endDate_rangeType] = parseDateRangeStr(endDateStr?.trim(), startDate_start?.getFullYear());
+
+    if (endDateStr) {
+        return {
+            plannerTitle: plannerTitle,
+            date: startDate_start,
+            endDate: endDate_end || endDate_start,
+            rangeType: 'custom'
+        }
+    } else {
+        return {
+            plannerTitle: plannerTitle,
+            date: startDate_start,
+            endDate: startDate_end,
+            rangeType: startDate_rangeType
+        }
+    }
 }

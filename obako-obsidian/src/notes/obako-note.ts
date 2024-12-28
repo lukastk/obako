@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import BasicNote from './basic-note';
+import { BasicNote } from './basic-note';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { loadNote, noteTypeToNoteClass } from '../note-loader';
 import { parseObsidianLink } from '../utils';

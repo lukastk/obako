@@ -1,7 +1,3 @@
-/**
- * Modifies the inline title of a note to include a decorator, based on the type specified in the frontmatter.
- */
-
 import { MarkdownView } from 'obsidian';
 import { loadNote } from '../../note-loader';
 import PluginComponent from '../plugin-component';

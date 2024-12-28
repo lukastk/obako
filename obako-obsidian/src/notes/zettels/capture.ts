@@ -1,7 +1,7 @@
 import type { FrontmatterSpec } from '../note-frontmatter';
-import Zettel from './zettel';
+import { Zettel } from './zettel';
 
-export default class Capture extends Zettel {
+export class Capture extends Zettel {
     static noteTypeStr = "capture";
     static titleDecoratorString = "﹅";
 

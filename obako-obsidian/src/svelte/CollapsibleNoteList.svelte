@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Collapsible from "./Collapsible.svelte";
-	import BasicNote from "../notes/basic-note";
+	import { BasicNote } from "../notes/basic-note";
 	
 	import NoteList from "./NoteList.svelte";
 
