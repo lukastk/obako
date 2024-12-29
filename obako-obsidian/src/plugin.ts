@@ -18,7 +18,7 @@ import { UI_TopPanel } from './plugin-components/ui/top-panel';
 import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboard/planner-dashboard-view";
 
 /**** Svelte Components ****/
-import TaskList from './svelte/TaskList.svelte';
+import TaskList from './svelte-components/TaskList.svelte';
 
 export default class ObakoPlugin extends Plugin {
 	settings!: ObakoSettings;

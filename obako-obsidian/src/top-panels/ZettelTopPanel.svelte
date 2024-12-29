@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Zettel } from 'src/notes/zettels/zettel';
-    import CollapsibleNoteHierarchyDisplay from 'src/svelte/CollapsibleNoteHierarchyDisplay.svelte';
-    import CollapsibleNoteList from 'src/svelte/CollapsibleNoteList.svelte';
+    import CollapsibleNoteHierarchyDisplay from 'src/svelte-components/CollapsibleNoteHierarchyDisplay.svelte';
+    import CollapsibleNoteList from 'src/svelte-components/CollapsibleNoteList.svelte';
 
     export let note: Zettel;
 

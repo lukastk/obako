@@ -1,12 +1,12 @@
 <script lang="ts">
 	import PlannerTimeline from "./PlannerTimeline.svelte";
-	import FrontmatterCheckbox from "../../../svelte/FrontmatterCheckbox.svelte";
+	import FrontmatterCheckbox from "../../../svelte-components/FrontmatterCheckbox.svelte";
 	import { writable } from "svelte/store";
 
 	import { registerVaultOn, getReloadKey } from "../../../internal-utils";
 	import { getNotes } from "../../../utils";
 	import { Planner } from "../../../notes/planner";
-	import InternalLink from "src/svelte/InternalLink.svelte";
+	import InternalLink from "src/svelte-components/InternalLink.svelte";
 
 	const planners = getNotes("planner") as Planner[];
 	planners.sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0));

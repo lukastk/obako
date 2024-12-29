@@ -1,6 +1,6 @@
 <script lang="ts">
-    import CollapsibleNoteHierarchyDisplay from 'src/svelte/CollapsibleNoteHierarchyDisplay.svelte';
-    import CollapsibleNoteList from 'src/svelte/CollapsibleNoteList.svelte';
+    import CollapsibleNoteHierarchyDisplay from 'src/svelte-components/CollapsibleNoteHierarchyDisplay.svelte';
+    import CollapsibleNoteList from 'src/svelte-components/CollapsibleNoteList.svelte';
 
     import type { Project } from 'src/notes/zettels/project';
     export let note: Project;

@@ -3,8 +3,8 @@
 	import type { Planner } from "src/notes/planner";
 	import ZettelTopPanel from "src/top-panels/ZettelTopPanel.svelte";
 	import { getTasks } from "src/task-utils";
-	import Collapsible from "src/svelte/Collapsible.svelte";
-	import CollapsibleTaskList from "src/svelte/CollapsibleTaskList.svelte";
+	import Collapsible from "src/svelte-components/Collapsible.svelte";
+	import CollapsibleTaskList from "src/svelte-components/CollapsibleTaskList.svelte";
 
 	export let note: Planner;
 
@@ -25,8 +25,6 @@
     function formatTaskList(scheduledTasks: ObakoTask[], dueTasks: ObakoTask[], reminders: ObakoTask[], doneTasks: ObakoTask[]) {
         let markdown = "";
 
-
-        
         markdown += "**Scheduled**\n" ;
     }
 

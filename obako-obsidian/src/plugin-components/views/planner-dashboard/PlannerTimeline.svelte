@@ -107,7 +107,6 @@
 	};
 
 	function onItemSelect(properties: any) {
-		console.log(properties);
 		if (properties.item) {
 			const inNewPane =
 				properties.event.metaKey || properties.event.ctrlKey;

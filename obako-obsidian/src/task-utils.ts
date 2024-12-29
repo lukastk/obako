@@ -125,7 +125,7 @@ export class ObakoTask {
         if (!dueDate) {
             const precedingHeader = this.task.taskLocation._precedingHeader;
             if (precedingHeader && precedingHeader.includes('📅')) {
-                const dateStr = precedingHeader.split('📅')[1];
+                const dateStr = precedingHeader.split('📅')[1].trim();
                 dueDate = new Date(dateStr);
             }
         }
@@ -158,7 +158,7 @@ export class ObakoTask {
             }
 
             if (precedingHeader && precedingHeader.includes('⏳')) {
-                const dateStr = precedingHeader.split('⏳')[1];
+                const dateStr = precedingHeader.split('⏳')[1].trim();
                 scheduledDate = new Date(dateStr);
             }
         }

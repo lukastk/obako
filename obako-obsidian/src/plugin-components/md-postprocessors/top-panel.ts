@@ -41,7 +41,6 @@ export class UI_TopPanel extends PluginComponent {
     updateTopPanel() {
         const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!leaf) return;
-        console.log(document.querySelectorAll(`.${PANEL_CLASS}`))
         // Remove existing banner if present
         document.querySelectorAll(`.${PANEL_CLASS}`).forEach(el => el.remove());
 
