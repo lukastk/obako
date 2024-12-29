@@ -21,8 +21,8 @@ export interface Task {
     scheduledDate: Date | null;
     scheduledDateIsInferred: boolean;
     startDate: Date | null;
-    status: any; 
-    tags: any[]; 
+    status: any;
+    tags: any[];
     taskLocation: {
         _path: string;
         _lineNumber: number;
@@ -36,9 +36,11 @@ export interface Task {
 
 export class ObakoTask {
     private task: Task;
+    private _md: string; // Used for debugging in the developer console
 
     constructor(task: Task) {
         this.task = task;
+        this._md = task.originalMarkdown
     }
 
     getTaskDate(dateType: 'scheduled' | 'due' | 'done') {
@@ -50,8 +52,8 @@ export class ObakoTask {
                 throw new Error(`Invalid date type: ${dateType}`);
         }
     }
-    
-    isInDateRange(dateTypes: ('scheduled' | 'due' | 'done')[]|('scheduled' | 'due' | 'done'), startDate: Date, endDate: Date) {
+
+    isInDateRange(dateTypes: ('scheduled' | 'due' | 'done')[] | ('scheduled' | 'due' | 'done'), startDate: Date, endDate: Date) {
         if (typeof startDate === 'string') startDate = new Date(startDate);
         if (typeof endDate === 'string') endDate = new Date(endDate);
         if (!endDate) endDate = startDate;
@@ -70,7 +72,7 @@ export class ObakoTask {
         const toggledMarkdown = await toggleTaskStatus(this.task);
         this.task.originalMarkdown = toggledMarkdown;
     }
-    
+
     isScheduledInDateRange(startDate: Date, endDate: Date) {
         return this.isInDateRange('scheduled', startDate, endDate);
     }
@@ -120,14 +122,22 @@ export class ObakoTask {
         return this.task.doneDate?._d;
     }
     get dueDate() {
+        // Get due date from Task object
         let dueDate = this.task.dueDate?._d;
 
+        // Get due date from preceding header
         if (!dueDate) {
             const precedingHeader = this.task.taskLocation._precedingHeader;
             if (precedingHeader && precedingHeader.includes('📅')) {
                 const dateStr = precedingHeader.split('📅')[1].trim();
                 dueDate = new Date(dateStr);
             }
+        }
+
+
+        // Get due date from parent
+        if (!dueDate) {
+
         }
 
         return dueDate;
@@ -137,18 +147,24 @@ export class ObakoTask {
     get originalMarkdown() { return this.task.originalMarkdown; }
     get priority() { return this.task.priority; }
     get recurrence() { return this.task.recurrence; }
-    get scheduledDate() { 
+    get scheduledDate() {
+        // Get scheduled date from Task object
         let scheduledDate = this.task.scheduledDate?._d;
-        
-        if (!scheduledDate) {
-            const fpath = this.task.taskLocation._tasksFile._path;
-            const fname = path.basename(fpath, path.extname(fpath));
-            const precedingHeader = this.task.taskLocation._precedingHeader;
-            const noteType = getNoteType(fpath);
 
+        // Get scheduled date from parent
+        if (this.task.parent) {
+            
+        }
+
+        if (!scheduledDate) {
+            const fname = path.basename(this.filePath, path.extname(this.filePath));
+            const precedingHeader = this.task.taskLocation._precedingHeader;
+            const noteType = getNoteType(this.filePath);
+
+            // Get scheduled date from Planner note
             if (noteType === Planner) {
                 const { plannerTitle, date, endDate, rangeType } = parseDatesInDatedTitle(fname);
-    
+
                 scheduledDate = date;
 
                 if (precedingHeader) {
@@ -157,12 +173,17 @@ export class ObakoTask {
                 }
             }
 
+            // Get scheduled date from preceding header
             if (precedingHeader && precedingHeader.includes('⏳')) {
                 const dateStr = precedingHeader.split('⏳')[1].trim();
                 scheduledDate = new Date(dateStr);
             }
         }
-    
+
+
+
+
+
         return scheduledDate;
     }
     get scheduledDateIsInferred() { return this.task.scheduledDateIsInferred; }
@@ -174,8 +195,6 @@ export class ObakoTask {
     get taskLocation() { return this.task.taskLocation; }
     get _urgency() { return this.task._urgency; }
     get priorityNumber() { return this.task.priorityNumber; }
-
-
 }
 
 export function getTasks(includeNonTasks: boolean = false, includeCancelled: boolean = false): ObakoTask[] {
@@ -223,4 +242,50 @@ export async function toggleTaskStatus(task: Task) {
     }
 
     return toggledMarkdown;
+}
+
+export function getTaskHierarchy(tasks: ObakoTask[]) {
+    const _tasks = tasks.map(t => t.task);
+    const taskChildren: any = {};
+    const topTasks: ObakoTask[] = [];
+
+    tasks.forEach(otask => {
+        if (!taskChildren[otask.task])
+            taskChildren[otask.task] = [];
+        if (otask.task.parent && _tasks.includes(otask.task.parent)) {
+            if (!taskChildren[otask.task.parent])
+                taskChildren[otask.task.parent] = [];
+            taskChildren[otask.task.parent].push(otask);
+        } else {
+            topTasks.push(otask);
+        }
+    });
+
+    return {
+        taskChildren: taskChildren,
+        topTasks: topTasks
+    };
+}
+
+function __helper__getIndentedHierarchicalTaskList(indentedTaskList, taskChildren, topTask, indent) {
+    for (const otask of taskChildren[topTask.task]) {
+        indentedTaskList.push({
+            indents: indent,
+            task: otask
+        });
+        __helper__getIndentedHierarchicalTaskList(indentedTaskList, taskChildren, otask, indent + 1);
+    }
+}
+
+export function getIndentedHierarchicalTaskList(tasks: ObakoTask[]) {
+    const { taskChildren, topTasks } = getTaskHierarchy(tasks);
+    const indentedTaskList = [];
+    for (const otask of topTasks) {
+        indentedTaskList.push({
+            indents: 0,
+            task: otask
+        });
+        __helper__getIndentedHierarchicalTaskList(indentedTaskList, taskChildren, otask, 1);
+    }
+    return indentedTaskList;
 }

@@ -4,7 +4,7 @@
 	 */
 
 	import { renderMarkdown } from "src/utils";
-	import { getTasks } from "src/task-utils";
+	import { getTasks, getIndentedHierarchicalTaskList } from "src/task-utils";
 	import { onMount } from "svelte";
 
 	export let filter_func: (task: any) => boolean = () => true;
@@ -21,15 +21,20 @@
 	function updateTasks() {
 		tasks = getTasks().filter(filter_func);
 
-		tasks.forEach(async (task, index) => {
+		const indentedHierarchicalTaskList =
+			getIndentedHierarchicalTaskList(tasks);
+
+		indentedHierarchicalTaskList.forEach(({ indents, task }, index) => {
 			const container = taskContainers[index];
 			if (container) {
 				container.innerHTML = "";
+				console.log(indents);
 				const markdown = task.originalMarkdown.trim();
 				const _container = document.createElement("div");
 				renderMarkdown(markdown, _container);
 				const taskElem = _container.querySelector("li");
-				container.innerHTML = taskElem?.innerHTML;
+				container.innerHTML =
+					"&nbsp;".repeat(indents * 2) + taskElem?.innerHTML;
 				const checkboxInputElem = container.querySelector(
 					"input[type='checkbox']",
 				);
@@ -47,21 +52,23 @@
 	function openTask(task: any, event: any) {
 		const inNewPane = event.metaKey || event.ctrlKey;
 		task.note.open(inNewPane);
-}
+	}
 </script>
 
 <ul id="task-list">
 	{#each tasks as task, index}
 		<li class="task-list-item-container">
-			<button type="button" 
-				class="task-list-item" 
-				on:click={(event) => openTask(task, event)}>
+			<button
+				type="button"
+				class="task-list-item"
+				on:click={(event) => openTask(task, event)}
+			>
 				<span bind:this={taskContainers[index]}></span>
-			</button>
 
-			<span class="task-list-item-path">
-				{task.filePath}
-			</span>
+				<span class="task-list-item-path">
+					{task.filePath}
+				</span>
+			</button>
 		</li>
 	{/each}
 </ul>
