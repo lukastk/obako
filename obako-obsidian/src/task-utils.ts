@@ -6,6 +6,10 @@ import { getNoteType, loadNote } from './note-loader';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
 
+export const SCHEDULED_DATE_MARKER = '⏳';
+export const DUE_DATE_MARKER = '📅';
+
+
 export interface Task {
     blockLink: string;
     cancelledDate: Date | null;
@@ -133,12 +137,10 @@ export class ObakoTask {
         }
 
         // Get due date from preceding header
-        if (!dueDate) {
-            const precedingHeader = this.task.taskLocation._precedingHeader;
-            if (precedingHeader && precedingHeader.includes('📅')) {
-                const dateStr = precedingHeader.split('📅')[1].trim();
-                dueDate = new Date(dateStr);
-            }
+        const precedingHeader = this.task.taskLocation._precedingHeader;
+        if (!dueDate && precedingHeader) {
+            const res = parseDatedHeading(precedingHeader);
+            if (res && res.dateMarker === DUE_DATE_MARKER) dueDate = res.date;
         }
 
         return dueDate;
@@ -159,27 +161,30 @@ export class ObakoTask {
                 scheduledDate = parentTask.scheduledDate;
         }
 
+        // Get scheduled date from preceding header
+        const precedingHeader = this.task.taskLocation._precedingHeader;
+        if (!scheduledDate && precedingHeader) {
+            const res = parseDatedHeading(precedingHeader);
+            if (res && res.dateMarker === SCHEDULED_DATE_MARKER) scheduledDate = res.date;
+        }
+
         if (!scheduledDate) {
             const fname = path.basename(this.filePath, path.extname(this.filePath));
-            const precedingHeader = this.task.taskLocation._precedingHeader;
             const noteType = getNoteType(this.filePath);
 
             // Get scheduled date from Planner note
             if (noteType === Planner) {
                 const { plannerTitle, date, endDate, rangeType } = parseDatesInDatedTitle(fname);
-
                 scheduledDate = date;
-
+                // Get scheduled date from a preceding header in a Planner note
+                // Example:
+                // ### 2024-12-29 some heading title
                 if (precedingHeader) {
-                    const { plannerTitle, date, endDate, rangeType } = parseDatesInDatedTitle(precedingHeader);
-                    if (date) scheduledDate = date;
+                    const dateStr = precedingHeader.split(/\s+/)[0];
+                    const date = new Date(dateStr);
+                    if (date.isValid())
+                        scheduledDate = date;
                 }
-            }
-
-            // Get scheduled date from preceding header
-            if (precedingHeader && precedingHeader.includes('⏳')) {
-                const dateStr = precedingHeader.split('⏳')[1].trim();
-                scheduledDate = new Date(dateStr);
             }
         }
 
@@ -287,4 +292,22 @@ export function getIndentedHierarchicalTaskList(tasks: ObakoTask[]) {
         __helper__getIndentedHierarchicalTaskList(indentedTaskList, taskChildren, otask, 1);
     }
     return indentedTaskList;
+}
+
+export function parseDatedHeading(heading: string) {
+    /*
+    ### Heading title ⏳ 2024-12-29 Mon 
+    ### Heading title 📅 2024-12-29 Mon asdasd
+    ### Heading title ⏳ [[2024-12-29]] asdaasdasds
+    */
+
+    let dateMarker;
+    if (heading.includes(DUE_DATE_MARKER)) dateMarker = DUE_DATE_MARKER;
+    else if (heading.includes(SCHEDULED_DATE_MARKER)) dateMarker = SCHEDULED_DATE_MARKER;
+    else return null;
+
+    const dateStr = heading.split(dateMarker)[1].trim().split(/\s+/)[0]; // Get the first whitespace-separated string after the date marker
+    const date = new Date(dateStr);
+    if (!date.isValid()) return null;
+    return { dateMarker, date };
 }
