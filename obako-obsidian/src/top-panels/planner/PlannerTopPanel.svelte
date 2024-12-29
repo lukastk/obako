@@ -1,10 +1,12 @@
 <script lang="ts">
-    import clipboardy from 'clipboardy';
+	import clipboardy from "clipboardy";
 	import type { Planner } from "src/notes/planner";
 	import ZettelTopPanel from "src/top-panels/ZettelTopPanel.svelte";
 	import { getTasks } from "src/task-utils";
 	import Collapsible from "src/svelte-components/Collapsible.svelte";
 	import CollapsibleTaskList from "src/svelte-components/CollapsibleTaskList.svelte";
+	import PlannerHierarchy from "./PlannerHierarchy.svelte";
+	import PlannerTimeline from "src/plugin-components/views/planner-dashboard/PlannerTimeline.svelte";
 
 	export let note: Planner;
 
@@ -21,28 +23,35 @@
 	const doneTasksFilter = (task: ObakoTask) =>
 		task.isDoneInDateRange(note.date, note.endDate);
 
+	function formatTaskList(
+		scheduledTasks: ObakoTask[],
+		dueTasks: ObakoTask[],
+		reminders: ObakoTask[],
+		doneTasks: ObakoTask[],
+	) {
+		let markdown = "";
 
-    function formatTaskList(scheduledTasks: ObakoTask[], dueTasks: ObakoTask[], reminders: ObakoTask[], doneTasks: ObakoTask[]) {
-        let markdown = "";
+		markdown += "**Scheduled**\n";
+	}
 
-        markdown += "**Scheduled**\n" ;
-    }
+	async function copyTasksToClipboard() {
+		const scheduledTasks = tasks.filter(scheduledTasksFilter);
+		const dueTasks = tasks.filter(dueTasksFilter);
+		const reminders = tasks.filter(remindersFilter);
+		const doneTasks = tasks.filter(doneTasksFilter);
 
-    async function copyTasksToClipboard() {
-        const scheduledTasks = tasks.filter(scheduledTasksFilter);
-        const dueTasks = tasks.filter(dueTasksFilter);
-        const reminders = tasks.filter(remindersFilter);
-        const doneTasks = tasks.filter(doneTasksFilter);
-
-        const markdown = scheduledTasks.map(task => task.originalMarkdown).join('\n');
-
-
-
-        await clipboardy.write(markdown);
-    }
+		const markdown = scheduledTasks
+			.map((task) => task.originalMarkdown)
+			.join("\n");
+		await clipboardy.write(markdown);
+	}
 </script>
 
-<Collapsible title="Tasks" isCollapsed={false}>
+<Collapsible title="Overlapping Planners" isCollapsed={false}>
+	<PlannerHierarchy {note} />
+</Collapsible>
+
+<Collapsible title="Tasks" isCollapsed={true}>
 	<CollapsibleTaskList
 		title="Scheduled"
 		secondLevel={true}
@@ -63,6 +72,14 @@
 		secondLevel={true}
 		filter_func={doneTasksFilter}
 		isCollapsed={true}
+	/>
+</Collapsible>
+
+<Collapsible title="Planner timeline" isCollapsed={true}>
+	<PlannerTimeline 
+		initialStart={note.date.addDays(-3)}
+		initialEnd={note.endDate.addDays(4)}
+		highlightPlanners={[note]}
 	/>
 </Collapsible>
 

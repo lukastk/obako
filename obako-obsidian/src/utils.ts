@@ -258,7 +258,7 @@ export function parseDatesInDatedTitle(datedTitleStr: string) : {
         return {
             plannerTitle: plannerTitle,
             date: startDate_start,
-            endDate: startDate_end,
+            endDate: startDate_end || startDate_start,
             rangeType: startDate_rangeType
         }
     }

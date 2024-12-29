@@ -7,9 +7,10 @@
 	import { getWeekNumber } from "../../../utils";
 	import { registerVaultOn } from "../../../internal-utils";
 
-
-	export let initialStart: Date|null = null;
-	export let initialEnd: Date|null = null;
+	export let initialStart: Date | null = null;
+	export let initialEnd: Date | null = null;
+	export let highlightPlanners: Planner[] = [];
+	const highlightPlannersFilePaths = highlightPlanners.map((planner) => planner.filepath);
 
 	if (!initialStart) {
 		initialStart = new Date();
@@ -69,8 +70,8 @@
 	let isWeekView = true;
 
 	const options = {
-		start: initialStart.toISOString().split('T')[0],
-		end: initialEnd.toISOString().split('T')[0],
+		start: initialStart.toISOString().split("T")[0],
+		end: initialEnd.toISOString().split("T")[0],
 		width: "100%",
 		//height: "600px",
 		selectable: false,
@@ -111,16 +112,6 @@
 				year: "",
 			},
 		},
-
-		// format: {
-		// 	minorLabels: function (date: Date, scale: Number, step: Number) {
-		// 		console.log(date, scale, step);
-		// 		return "www";
-		// 	},
-		// 	majorLabels: function (date: Date, scale: Number, step: Number) {
-		// 		return "www";
-		// 	},
-		// },
 	};
 
 	function onItemSelect(properties: any) {
@@ -198,7 +189,7 @@
 				end: endDate.toISOString(),
 				group:
 					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
-				className: `planner-${planner.rangeType} ${planner.frontmatter["planner-active"] ? "active-planner" : "inactive-planner"}`,
+				className: `planner-${planner.rangeType} ${planner.frontmatter["planner-active"] ? "active-planner" : "inactive-planner"} ${highlightPlannersFilePaths.includes(planner.filepath) ? "highlighted-item" : ""}`,
 				note: planner,
 			};
 
@@ -206,14 +197,13 @@
 		});
 	}
 
+	let timelineContainer: HTMLElement | null = null;
+
 	onMount(() => {
 		const initializeTimeline = () => {
-			const timelineContainer = document.querySelector(
-				".timeline-container",
-			);
-
 			if (timelineContainer) {
 				refreshItems();
+
 				timeline = new Timeline(
 					timelineContainer as HTMLElement,
 					items,
@@ -239,7 +229,7 @@
 	});
 </script>
 
-<div class="timeline-container"></div>
+<div bind:this={timelineContainer}></div>
 
 <button on:click={centerOnToday}>Center on Today</button>
 
@@ -262,6 +252,10 @@
 	}
 	:global(.vis-item-content) {
 		white-space: unset !important;
+	}
+
+	:global(.highlighted-item) {
+		border: 3px solid var(--color-red);
 	}
 
 	:global(.inactive-planner) {

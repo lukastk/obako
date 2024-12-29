@@ -56,9 +56,8 @@ export function loadNote(file: TFile | string | null, frontmatter: Record<string
     return new NoteClass(file);
 }
 
-export function getAllNotes(filter_func: (note: BasicNote) => boolean = () => true): BasicNote[] {
-    const notes = getMarkdownFiles().map(file => loadNote(file)) as BasicNote[];
-    return notes.filter(filter_func);
+export function getAllNotes(): BasicNote[] {
+    return getMarkdownFiles().map(file => loadNote(file)) as BasicNote[];
 }
 
 export function searchNotes(query: string, noteType: string|null = null): BasicNote[] {

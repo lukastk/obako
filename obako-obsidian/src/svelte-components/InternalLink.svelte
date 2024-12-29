@@ -27,13 +27,14 @@
 		note.open(inNewPane);
 	}
 
+	let prefixDecorator: HTMLElement | null = null;
+	let suffixDecorator: HTMLElement | null = null;
+
 	onMount(() => {
 		if (displayTitleDecorator) {
-			const prefixDecorator = document.querySelector(`#inline-title-prefix-decorator-${linkId}`);
 			if (prefixDecorator) {
 				note.setTitlePrefixDecorator(prefixDecorator);
 			}
-			const suffixDecorator = document.querySelector(`#inline-title-suffix-decorator-${linkId}`);
 			if (suffixDecorator) {
 				note.setTitleSuffixDecorator(suffixDecorator);
 			}
@@ -42,15 +43,19 @@
 </script>
 
 <a class="internal-link" href={filePath} on:click={handleClick}>
-	<div class="inline-title-prefix-decorator" id={`inline-title-prefix-decorator-${linkId}`}></div>
+	<div class="inline-title-prefix-decorator" bind:this={prefixDecorator}></div>
 	
 	{text}
 
-	<div class="inline-title-suffix-decorator" id={`inline-title-suffix-decorator-${linkId}`}></div>
+	<div class="inline-title-suffix-decorator" bind:this={suffixDecorator}></div>
 </a>
 
 <style>
 	.inline-title-prefix-decorator, .inline-title-suffix-decorator {
 		display: inline;
+	}
+
+	.internal-link:hover {
+		cursor: pointer;
 	}
 </style>
