@@ -125,6 +125,13 @@ export class ObakoTask {
         // Get due date from Task object
         let dueDate = this.task.dueDate?._d;
 
+        // Get due date from parent
+        if (!dueDate && this.task.parent?.dueDate) {
+            const parentTask = new ObakoTask(this.task.parent);
+            if (parentTask.dueDate)
+                dueDate = parentTask.dueDate;
+        }
+
         // Get due date from preceding header
         if (!dueDate) {
             const precedingHeader = this.task.taskLocation._precedingHeader;
@@ -132,12 +139,6 @@ export class ObakoTask {
                 const dateStr = precedingHeader.split('📅')[1].trim();
                 dueDate = new Date(dateStr);
             }
-        }
-
-
-        // Get due date from parent
-        if (!dueDate) {
-
         }
 
         return dueDate;
@@ -152,8 +153,10 @@ export class ObakoTask {
         let scheduledDate = this.task.scheduledDate?._d;
 
         // Get scheduled date from parent
-        if (this.task.parent) {
-            
+        if (!scheduledDate && this.task.parent?.scheduledDate) {
+            const parentTask = new ObakoTask(this.task.parent);
+            if (parentTask.scheduledDate)
+                scheduledDate = parentTask.scheduledDate;
         }
 
         if (!scheduledDate) {
@@ -179,10 +182,6 @@ export class ObakoTask {
                 scheduledDate = new Date(dateStr);
             }
         }
-
-
-
-
 
         return scheduledDate;
     }

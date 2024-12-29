@@ -28,7 +28,6 @@
 			const container = taskContainers[index];
 			if (container) {
 				container.innerHTML = "";
-				console.log(indents);
 				const markdown = task.originalMarkdown.trim();
 				const _container = document.createElement("div");
 				renderMarkdown(markdown, _container);
