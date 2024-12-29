@@ -7,6 +7,21 @@
 	import { getWeekNumber } from "../../../utils";
 	import { registerVaultOn } from "../../../internal-utils";
 
+
+	export let initialStart: Date|null = null;
+	export let initialEnd: Date|null = null;
+
+	if (!initialStart) {
+		initialStart = new Date();
+		const dayNumber = (initialStart.getDay() + 6) % 7;
+		initialStart.setDate(initialStart.getDate() - dayNumber);
+	}
+	if (!initialEnd) {
+		initialEnd = new Date();
+		const dayNumber = (initialEnd.getDay() + 6) % 7;
+		initialEnd.setDate(initialEnd.getDate() + (6 - dayNumber) + 1);
+	}
+
 	const items = new DataSet();
 
 	const PLANNER_GROUP_ID = 1;
@@ -54,12 +69,14 @@
 	let isWeekView = true;
 
 	const options = {
+		start: initialStart.toISOString().split('T')[0],
+		end: initialEnd.toISOString().split('T')[0],
 		width: "100%",
 		//height: "600px",
 		selectable: false,
 		editable: false,
 		zoomKey: "metaKey",
-		zoomMin: 1000 * 60 * 60 * 24 * 10,
+		zoomMin: 1000 * 60 * 60 * 24 * 3,
 		zoomMax: 1000 * 60 * 60 * 24 * 365 * 14,
 		horizontalScroll: true, // Enable horizontal scrolling
 		showWeekScale: true,
@@ -120,45 +137,6 @@
 	function centerOnToday() {
 		if (timeline) {
 			timeline.moveTo(new Date());
-		}
-	}
-
-	function updateVisibleItems() {
-		if (timeline) {
-			const visibleRange = timeline.getWindow();
-			const visibleItems = items.get({
-				filter: (item) => {
-					const itemStart = new Date(item.start).getTime();
-					const itemEnd = item.end
-						? new Date(item.end).getTime()
-						: itemStart;
-					return (
-						itemEnd >= visibleRange.start.getTime() &&
-						itemStart <= visibleRange.end.getTime()
-					);
-				},
-			});
-
-			// Determine which groups have visible items
-			const visibleGroupIds = new Set();
-			visibleItems.forEach((item) => {
-				visibleGroupIds.add(item.group);
-			});
-
-			// Hide all groups first
-			groups.forEach((group) => {
-				group.visible = false;
-			});
-
-			// Show only groups with visible items
-			visibleGroupIds.forEach((groupId) => {
-				const group = groups.get(groupId);
-				if (group) group.visible = true;
-			});
-
-			// Refresh the timeline to apply visibility changes
-			timeline.setGroups(groups);
-			timeline.redraw();
 		}
 	}
 
@@ -233,9 +211,9 @@
 			const timelineContainer = document.querySelector(
 				".timeline-container",
 			);
+
 			if (timelineContainer) {
 				refreshItems();
-
 				timeline = new Timeline(
 					timelineContainer as HTMLElement,
 					items,
