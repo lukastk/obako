@@ -182,7 +182,7 @@ export class ObakoTask {
                 if (precedingHeader) {
                     const dateStr = precedingHeader.split(/\s+/)[0];
                     const date = new Date(dateStr);
-                    if (date.isValid())
+                    if (date.getTime())
                         scheduledDate = date;
                 }
             }
@@ -308,6 +308,6 @@ export function parseDatedHeading(heading: string) {
 
     const dateStr = heading.split(dateMarker)[1].trim().split(/\s+/)[0]; // Get the first whitespace-separated string after the date marker
     const date = new Date(dateStr);
-    if (!date.isValid()) return null;
+    if (date && !date.getTime()) return null;
     return { dateMarker, date };
 }

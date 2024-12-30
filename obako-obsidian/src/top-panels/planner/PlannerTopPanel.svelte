@@ -7,7 +7,8 @@
 	import CollapsibleTaskList from "src/svelte-components/CollapsibleTaskList.svelte";
 	import PlannerHierarchy from "./PlannerHierarchy.svelte";
 	import PlannerTimeline from "src/plugin-components/views/planner-dashboard/PlannerTimeline.svelte";
-
+	import { addDays } from "src/utils";
+	
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -77,8 +78,8 @@
 
 <Collapsible title="Planner timeline" isCollapsed={true}>
 	<PlannerTimeline 
-		initialStart={note.date.addDays(-3)}
-		initialEnd={note.endDate.addDays(4)}
+		initialStart={addDays(note.date, -3)}
+		initialEnd={addDays(note.endDate, 4)}
 		highlightPlanners={[note]}
 	/>
 </Collapsible>
