@@ -1,4 +1,4 @@
-import { MarkdownPreviewView, Notice, TFile } from 'obsidian';
+import { MarkdownPreviewView, MarkdownView, Notice, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import BasicNote from './notes/basic-note';
 import { loadNote } from './note-loader';
@@ -261,5 +261,19 @@ export function parseDatesInDatedTitle(datedTitleStr: string) : {
             endDate: startDate_end || startDate_start,
             rangeType: startDate_rangeType
         }
+    }
+}
+
+export function getMarkdownViewMode(leaf: MarkdownView) {
+    const state = leaf.getState();
+
+    if (state.mode === 'preview') {
+        return 'reader';
+    } else if (state.mode === 'source' && state.source) {
+        return 'source';
+    } else if (state.mode === 'source' && !state.source) {
+        return 'preview';
+    } else {
+        throw new Error('Unknown MarkdownView mode');
     }
 }
