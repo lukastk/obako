@@ -16,14 +16,6 @@ export class UI_TopPanel extends PluginComponent {
             this.createTopPanel();
         });
 
-
-        // Moving between source and preview
-        this.plugin.registerEvent(
-            this.app.workspace.on("layout-change", () => {
-                this.createTopPanel();
-            })
-        );
-
         // If the frontmatter changes
         this.plugin.registerEvent(
             this.app.metadataCache.on("changed", () => {
@@ -38,6 +30,8 @@ export class UI_TopPanel extends PluginComponent {
             around(MarkdownView.prototype, {
                 onLoadFile(next) {
                     return function (...args) {
+                        // Register observer to detect mode switch, upon which the panel will be updated
+                        self.registerModeSwitchObserver(this.leaf.view);
                         self.createTopPanel(this.leaf.view);
                         return next.call(this, ...args)
                     }
@@ -52,7 +46,7 @@ export class UI_TopPanel extends PluginComponent {
             .forEach((el) => el.parentElement?.removeChild(el));
     }
 
-    createTopPanel(leaf: MarkdownView|null = null) {
+    createTopPanel(leaf: MarkdownView | null = null) {
         if (!leaf) leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
         const containerEl = leaf?.containerEl;
         if (!leaf || !containerEl) return;
@@ -68,21 +62,42 @@ export class UI_TopPanel extends PluginComponent {
 
         const viewState = leaf.getState();
 
-        switch (getMarkdownViewMode(leaf)) {
-            case 'preview':
-                const sourceView = leaf.containerEl.querySelector(".markdown-source-view");
-                const previewFrontmatter = sourceView.querySelector(".metadata-container");
-                if (previewFrontmatter) {
-                    previewFrontmatter.insertAdjacentElement("afterend", panel);
-                }
-                break;
-            case 'reader':
-                const readerView = leaf.containerEl.querySelector(".markdown-reading-view");
-                const readerFrontmatter = readerView.querySelector(".metadata-container")
-                if (readerFrontmatter) {
-                    readerFrontmatter.insertAdjacentElement("afterend", panel);
-                }
-                break;
+        const mode = getMarkdownViewMode(leaf);
+        console.log(mode);
+        if (mode === 'preview' || mode === 'source') {
+            const sourceView = leaf.containerEl.querySelector(".markdown-source-view");
+            const previewFrontmatter = sourceView.querySelector(".metadata-container");
+            if (previewFrontmatter) {
+                previewFrontmatter.insertAdjacentElement("afterend", panel);
+            }
+        } else if (mode === 'reader') {
+            const readerView = leaf.containerEl.querySelector(".markdown-reading-view");
+            const readerFrontmatter = readerView.querySelector(".metadata-container")
+            if (readerFrontmatter) {
+                readerFrontmatter.insertAdjacentElement("afterend", panel);
+            }
         }
+    }
+
+    private registerModeSwitchObserver(leaf: MarkdownView) {
+        const containerEl = leaf.containerEl;
+
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-mode') {
+                    setTimeout(() => {
+                        this.createTopPanel(leaf);
+                    }, 10);
+                }
+            }
+        });
+        // Configure the observer to watch for attribute changes
+        const config = {
+            attributes: true,        // Observe attributes
+            attributeFilter: ['data-mode'], // Only observe the 'data-mode' attribute
+        };
+
+        // Start observing the target element
+        observer.observe(containerEl, config);
     }
 };
