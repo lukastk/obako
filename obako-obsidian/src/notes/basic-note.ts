@@ -16,7 +16,7 @@ export class BasicNote {
     frontmatter: any;
 
     static frontmatterSpec: FrontmatterSpec = {
-        type: { default: BasicNote.noteTypeStr, fixedValue: true },
+        notetype: { default: BasicNote.noteTypeStr, fixedValue: true },
     };
 
 
