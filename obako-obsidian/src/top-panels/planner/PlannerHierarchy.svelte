@@ -18,9 +18,6 @@
 		if (planner.equals(note)) continue;
 
 		if (planner.date <= note.date && planner.endDate >= note.endDate) {
-			console.log(planner.name);
-			console.log(planner.date, note.date);
-			console.log(planner.endDate, note.endDate);
 			supersetPlanners.push(planner);
 		} else if (
 			planner.date >= note.date &&
