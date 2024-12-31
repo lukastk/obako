@@ -1,14 +1,18 @@
 <script lang="ts">
 	import clipboardy from "clipboardy";
+	import { ObakoNote } from "src/notes/obako-note";
 	import type { Planner } from "src/notes/planner";
-	import ZettelTopPanel from "src/top-panels/ZettelTopPanel.svelte";
+	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
 	import { getTasks } from "src/task-utils";
 	import Collapsible from "src/svelte-components/Collapsible.svelte";
 	import CollapsibleTaskList from "src/svelte-components/CollapsibleTaskList.svelte";
 	import PlannerHierarchy from "./PlannerHierarchy.svelte";
 	import PlannerTimeline from "src/plugin-components/views/planner-dashboard/PlannerTimeline.svelte";
 	import { addDays } from "src/utils";
-	
+	import { getAllNotes } from "src/note-loader";
+	import type { ObakoTask } from "src/task-utils";
+	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
+
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -46,13 +50,40 @@
 			.join("\n");
 		await clipboardy.write(markdown);
 	}
+
+	const incomingLinkedLogs = note
+		.getIncomingLinkedNotes()
+		.filter((note) => note.noteType === "log");
+
+	let numScheduledTodos: number = tasks
+		.filter(scheduledTasksFilter)
+		.filter((task) => task.isTodo()).length;
+	let numDueTodos: number = tasks
+		.filter(dueTasksFilter)
+		.filter((task) => task.isTodo()).length;
+	let numReminders: number = tasks
+		.filter(remindersFilter)
+		.filter((task) => task.isTodo()).length;
+
+	let notesCreatedDuringPlannerPeriod = getAllNotes().filter(
+		(_note) =>
+			!(_note.equals(note)) &&
+			_note instanceof ObakoNote &&
+			//!(["planner", "log"].includes(_note.noteType)) &&
+			_note.createdAt &&
+			_note.createdAt >= note.date &&
+			_note.createdAt <= note.endDate,
+	);
 </script>
 
 <Collapsible title="Overlapping Planners" isCollapsed={false}>
 	<PlannerHierarchy {note} />
 </Collapsible>
 
-<Collapsible title="Tasks" isCollapsed={true}>
+<Collapsible
+	title={`Tasks (s${numScheduledTodos} d${numDueTodos} r${numReminders})`}
+	isCollapsed={true}
+>
 	<CollapsibleTaskList
 		title="Scheduled"
 		secondLevel={true}
@@ -77,15 +108,46 @@
 </Collapsible>
 
 <Collapsible title="Planner timeline" isCollapsed={true}>
-	<PlannerTimeline 
+	<PlannerTimeline
 		initialStart={addDays(note.date, -3)}
 		initialEnd={addDays(note.endDate, 4)}
 		highlightPlanners={[note]}
 	/>
 </Collapsible>
 
-<ZettelTopPanel
-	{note}
-	collapsibleNoteHierarchyDisplay={true}
-	collapsibleNoteList={true}
+<Collapsible title="Logs" isCollapsed={true}>
+	<LogDashboard
+		initialLogGroupCollapse={false}
+		initialLogCollapse={true}
+		disableKeyboardNavigation={true}
+		fullWidth={true}
+		logFilter={(log) => log.date >= note.date && log.date <= note.endDate}
+	/>
+</Collapsible>
+
+<CollapsibleNoteList
+	title="Created notes"
+	notes={notesCreatedDuringPlannerPeriod}
+	isCollapsed={true}
 />
+
+<CollapsibleNoteList
+	title="Linked"
+	notes={note.getIncomingLinkedNotes()}
+	isCollapsed={true}
+	groupByNoteType={true}
+/>
+
+<Collapsible
+	title={`Linked logs (${incomingLinkedLogs.length})`}
+	isCollapsed={true}
+	disabled={incomingLinkedLogs.length === 0}
+>
+	<LogDashboard
+		initialLogGroupCollapse={false}
+		initialLogCollapse={true}
+		disableKeyboardNavigation={true}
+		fullWidth={true}
+		logFilter={(log) => note.linkedBy(log)}
+	/>
+</Collapsible>

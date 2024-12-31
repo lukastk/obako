@@ -11,6 +11,7 @@ export abstract class ObakoNote extends BasicNote {
     static frontmatterSpec: FrontmatterSpec = {
         ...super.frontmatterSpec,
         notetype: { default: ObakoNote.noteTypeStr, fixedValue: true },
+        pin: { default: [] }
     };
 
     constructor(file: TFile | string) {

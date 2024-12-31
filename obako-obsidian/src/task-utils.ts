@@ -1,6 +1,6 @@
 import { Notice } from 'obsidian';
 import path from 'path';
-import { getFile, parseDatesInDatedTitle } from 'src/utils';
+import { getFile, parseDatesInDateRangeTitle, isDateValid } from 'src/utils';
 import { Planner } from './notes/planner';
 import { getNoteType, loadNote } from './note-loader';
 
@@ -139,7 +139,7 @@ export class ObakoTask {
         // Get due date from preceding header
         const precedingHeader = this.task.taskLocation._precedingHeader;
         if (!dueDate && precedingHeader) {
-            const res = parseDatedHeading(precedingHeader);
+            const res = parseDatedTaskHeading(precedingHeader);
             if (res && res.dateMarker === DUE_DATE_MARKER) dueDate = res.date;
         }
 
@@ -164,7 +164,7 @@ export class ObakoTask {
         // Get scheduled date from preceding header
         const precedingHeader = this.task.taskLocation._precedingHeader;
         if (!scheduledDate && precedingHeader) {
-            const res = parseDatedHeading(precedingHeader);
+            const res = parseDatedTaskHeading(precedingHeader);
             if (res && res.dateMarker === SCHEDULED_DATE_MARKER) scheduledDate = res.date;
         }
 
@@ -174,7 +174,7 @@ export class ObakoTask {
 
             // Get scheduled date from Planner note
             if (noteType === Planner) {
-                const { plannerTitle, date, endDate, rangeType } = parseDatesInDatedTitle(fname);
+                const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(fname);
                 scheduledDate = date;
                 // Get scheduled date from a preceding header in a Planner note
                 // Example:
@@ -182,7 +182,7 @@ export class ObakoTask {
                 if (precedingHeader) {
                     const dateStr = precedingHeader.split(/\s+/)[0];
                     const date = new Date(dateStr);
-                    if (date.getTime())
+                    if (isDateValid(date))
                         scheduledDate = date;
                 }
             }
@@ -294,7 +294,7 @@ export function getIndentedHierarchicalTaskList(tasks: ObakoTask[]) {
     return indentedTaskList;
 }
 
-export function parseDatedHeading(heading: string) {
+export function parseDatedTaskHeading(heading: string) {
     /*
     ### Heading title ⏳ 2024-12-29 Mon 
     ### Heading title 📅 2024-12-29 Mon asdasd
@@ -308,6 +308,6 @@ export function parseDatedHeading(heading: string) {
 
     const dateStr = heading.split(dateMarker)[1].trim().split(/\s+/)[0]; // Get the first whitespace-separated string after the date marker
     const date = new Date(dateStr);
-    if (date && !date.getTime()) return null;
+    if (date && !isDateValid(date)) return null;
     return { dateMarker, date };
 }

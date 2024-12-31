@@ -16,6 +16,7 @@ import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-dec
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
 /**** Views ****/
 import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboard/planner-dashboard-view";
+import { View_LogDashboard } from "./plugin-components/views/log-dashboard/log-dashboard-view";
 
 /**** Svelte Components ****/
 import TaskList from './svelte-components/TaskList.svelte';
@@ -54,6 +55,7 @@ export default class ObakoPlugin extends Plugin {
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
+			new View_LogDashboard(this),
 		];
 
 		this.defaultSettings = DEFAULT_SETTINGS;

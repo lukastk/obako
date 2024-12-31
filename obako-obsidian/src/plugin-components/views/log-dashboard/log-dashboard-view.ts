@@ -1,38 +1,39 @@
 import { WorkspaceLeaf } from "obsidian";
 import { SvelteView, SvelteViewPluginComponent, type SvelteViewPluginComponentSettings, type SvelteViewSettings } from "../svelte-view";
 
-import PlannerDashboard from "./PlannerDashboard.svelte";
+import LogDashboard from "./LogDashboard.svelte";
 import PluginComponent from "../../plugin-component";
 import type ObakoPlugin from "src/plugin";
 
 const viewSettings: SvelteViewSettings = {
-    viewType: "planner-dashboard",
-    displayName: "Planner Dashboard",
-    viewCompClass: PlannerDashboard,
+    viewType: "log-dashboard",
+    displayName: "Log Dashboard",
+    viewCompClass: LogDashboard,
 }
 
-class PlannerDashboardView extends SvelteView {
+class LogDashboardView extends SvelteView {
 	static viewSettings = viewSettings;
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
+        console.log(this)
 	}
 }
 
 const viewPluginSettings: SvelteViewPluginComponentSettings = {
     viewType: viewSettings.viewType,
-    svelteViewClass: PlannerDashboardView,
+    svelteViewClass: LogDashboardView,
 
     addCommand: true,
-    commandId: 'open-planner-dashboard',
-    commandName: 'Open Planner Dashboard',
+    commandId: 'open-log-dashboard',
+    commandName: 'Open Log Dashboard',
 
     addRibbonIcon: true,
-    ribbonIcon: "chart-gantt",
-    ribbonIconTooltip: "Activate Planner Dashboard",
+    ribbonIcon: "logs",
+    ribbonIconTooltip: "Activate Log Dashboard",
 }
 
-export class View_PlannerDashboard extends SvelteViewPluginComponent {
+export class View_LogDashboard extends SvelteViewPluginComponent {
 	static viewPluginSettings = viewPluginSettings;
 
 	constructor(plugin: ObakoPlugin) {

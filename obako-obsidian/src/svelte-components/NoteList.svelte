@@ -19,8 +19,8 @@
 	{#each Object.entries(notesByType) as [noteType, noteTypeNotes]}
 		{#if includeNoteTypes.includes(noteType) || includeNoteTypes.length == 0}
 			<div>
+				{noteTypeToNoteClass[noteType]?.titleDecoratorString ?? "???"}
 				<i>{noteType}s</i>
-				({noteTypeToNoteClass[noteType]?.titleDecoratorString ?? "???"})
 			</div>
 			<ul>
 				{#each noteTypeNotes as note}

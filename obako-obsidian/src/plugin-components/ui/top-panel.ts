@@ -63,7 +63,6 @@ export class UI_TopPanel extends PluginComponent {
         const viewState = leaf.getState();
 
         const mode = getMarkdownViewMode(leaf);
-        console.log(mode);
         if (mode === 'preview' || mode === 'source') {
             const sourceView = leaf.containerEl.querySelector(".markdown-source-view");
             const previewFrontmatter = sourceView.querySelector(".metadata-container");

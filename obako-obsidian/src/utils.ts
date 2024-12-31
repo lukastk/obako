@@ -234,8 +234,7 @@ export function renderMarkdown(content: string, container: HTMLElement) {
     MarkdownPreviewView.render(app, content, container, '', _obako_plugin);
 }
 
-
-export function parseDatesInDatedTitle(datedTitleStr: string) : {
+export function parseDatesInDateRangeTitle(datedTitleStr: string) : {
     plannerTitle: string,
     date: Date | null,
     endDate: Date | null,
@@ -282,4 +281,8 @@ export function addDays(date: Date, days: number) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + days);
     return newDate;
+}
+
+export function isDateValid(date: Date) {
+    return !isNaN(date.getTime());
 }

@@ -2,7 +2,7 @@ import type { TFile } from 'obsidian';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { ObakoNote } from './obako-note';
 
-import { getWeekNumber, parseDatesInDatedTitle } from 'src/utils';
+import { getWeekNumber, parseDatesInDateRangeTitle } from 'src/utils';
 import { getTasks } from 'src/task-utils';
 import type { Task } from 'src/task-utils';
 
@@ -26,7 +26,7 @@ export class Planner extends ObakoNote {
     constructor(file: TFile | string) {
         super(file);
 
-        const { plannerTitle, date, endDate, rangeType } = parseDatesInDatedTitle(file.basename);
+        const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(this.file.basename);
         this.plannerTitle = plannerTitle;
         this.date = date;
         this.endDate = endDate;

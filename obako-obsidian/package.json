@@ -30,6 +30,7 @@
 		"chrono-node": "^2.7.7",
 		"clipboardy": "^4.0.0",
 		"data-model": "^0.0.2",
+		"date-fns": "^4.1.0",
 		"monkey-around": "^3.0.0",
 		"path": "^0.12.7",
 		"turndown": "^7.2.0",

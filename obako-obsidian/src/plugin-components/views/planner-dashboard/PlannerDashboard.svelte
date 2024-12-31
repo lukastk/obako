@@ -27,8 +27,6 @@
 			planners.push(...updatedPlanners);
 		}, 10);
 	});
-
-	
 </script>
 
 {#key $reloadKey}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let title: string;
+	export let title: string | null = null;
 	export let disabled = false;
 	export let isCollapsed = true;
 	export let reloadButton = false;
@@ -24,7 +24,9 @@
 			? 'var(--text-muted)'
 			: 'inherit'}"
 	>
-		<b>{title}</b>&nbsp;{isCollapsed ? "▼" : "▲"}
+		{#if title}
+			<b>{title}</b>&nbsp;{isCollapsed ? "▼" : "▲"}
+		{/if}
 	</button>
 
 	{#if reloadButton}

@@ -1,19 +1,25 @@
 import { ObakoNote } from './obako-note';
 import { TFile, CachedMetadata } from 'obsidian';
-import { getFile, parseObsidianLink } from '../utils';
+import { getFile, isDateValid, parseObsidianLink } from '../utils';
 
 import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
 import { loadNote } from '../note-loader';
 
 export class BasicNote {
+    private _name: string; // For debugging in the DevTools console.
+     
     static noteTypeStr = "basic-note";
     static titleDecoratorString = "";
     static titleSuffixDecoratorString = "";
     
     file: TFile;
-    fileCache: CachedMetadata;
+    fileCache!: CachedMetadata;
     frontmatter: any;
+    createdAt: Date | null = null;
+
+    private incomingLinkedNotes: BasicNote[] | null = null;
+    private outgoingLinkedNotes: BasicNote[] | null = null;
 
     static frontmatterSpec: FrontmatterSpec = {
         notetype: { default: BasicNote.noteTypeStr, fixedValue: true },
@@ -22,7 +28,11 @@ export class BasicNote {
 
     constructor(file: TFile | string) {
         this.file = getFile(file);
+        this._name = this.file.basename;
         this.reloadFrontmatterAndFileCache();
+
+        this.createdAt = new Date(this.frontmatter?.createdat);
+        this.createdAt = isDateValid(this.createdAt) ? this.createdAt : null;
     }
 
     get name(): string { return this.file.basename; }
@@ -37,9 +47,23 @@ export class BasicNote {
         return true;
     }
 
-    equals(other: BasicNote | null) {
+    equals(other: BasicNote | null): boolean {
         if (!other) return false;
         return this.file.path === other.file.path;
+    }
+
+    linkedBy(other: BasicNote | null): boolean {
+        if (!other) return false;
+        if (!this.incomingLinkedNotes) this.getIncomingLinkedNotes();
+        console.log(123, this.incomingLinkedNotes);
+        console.log(this.incomingLinkedNotes.map(note => note.equals(other)));
+        return this.incomingLinkedNotes.map(note => note.equals(other)).includes(true);
+    }
+
+    linksTo(other: BasicNote | null): boolean {
+        if (!other) return false;
+        if (!this.outgoingLinkedNotes) this.getOutgoingLinkedNotes();
+        return this.outgoingLinkedNotes.map(note => note.equals(other)).includes(true);
     }
 
     reloadFrontmatterAndFileCache() {
@@ -48,6 +72,7 @@ export class BasicNote {
     }
     
     getOutgoingLinkedNotes(): BasicNote[] {
+        if (this.outgoingLinkedNotes != null) return this.outgoingLinkedNotes;
         const linkedNotes: BasicNote[] = [];
         const linkedPaths = app.metadataCache.resolvedLinks[this.file.path];
         if (linkedPaths) {
@@ -55,15 +80,18 @@ export class BasicNote {
                 if (linkedPath) linkedNotes.push(loadNote(linkedPath));
             }
         }
+        this.outgoingLinkedNotes = linkedNotes;
         return linkedNotes;
     }
 
     getIncomingLinkedNotes(): BasicNote[] {
+        if (this.incomingLinkedNotes != null) return this.incomingLinkedNotes;
         const linkedNotes: BasicNote[] = [];
         const backlinks = app.metadataCache.getBacklinksForFile(this.file)?.data;
         for (const [filePath, _] of backlinks) {
             linkedNotes.push(loadNote(filePath));
         }
+        this.incomingLinkedNotes = linkedNotes;
         return linkedNotes;
     }
 
@@ -89,6 +117,18 @@ export class BasicNote {
 
     setTitleSuffixDecorator(titleSuffixDecoratorEl: HTMLElement) {
         titleSuffixDecoratorEl.innerHTML = this.getTitleSuffixDecoratorString();
+    }
+
+    async getContent(): Promise<string> {
+        const noteContentWithFrontmatter = (await app.vault.cachedRead(this.file)).split("\n");
+
+        if (this.fileCache.frontmatterPosition) {
+            const fmStart = this.fileCache.frontmatterPosition.start.line;
+            const fmEnd = this.fileCache.frontmatterPosition.end.line;
+            noteContentWithFrontmatter.splice(fmStart, fmEnd - fmStart + 1);
+        }
+
+        return noteContentWithFrontmatter.join("\n");
     }
 
     /*** Actions ***/
