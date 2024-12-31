@@ -134,6 +134,9 @@ export class BasicNote {
         return noteContentWithFrontmatter.join("\n");
     }
 
+    static setNoteCreationModalSettings(containerEl: HTMLElement) {
+    }
+
     /*** Actions ***/
     open(newTab: boolean = false) {
         app.workspace.openLinkText(this.file.path, "", newTab);

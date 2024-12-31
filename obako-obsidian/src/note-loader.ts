@@ -24,6 +24,11 @@ export const noteTypeToNoteClass: Record<string, any> = {
     log: Log,
     planner: Planner,
     project: Project,
+
+    obakoNote: ObakoNote,
+    transient: Transient,
+    basicNote: BasicNote,
+    zettel: Zettel,
 };
 
 export function getNoteType(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {

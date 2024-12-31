@@ -29,6 +29,7 @@ export class Command_CreateObakoNote extends PluginComponent {
 export interface CreateObakoNoteModalOptions {
     hideTitle?: boolean;
     hideNoteType?: boolean;
+    hideNoteSpecificSettings?: boolean;
     hideFrontmatter?: boolean;
     hideNoteContent?: boolean;
     noteData?: NoteCreationData;
@@ -39,7 +40,14 @@ class CreateObakoNoteModal extends Modal {
         super(app);
         this.setTitle('Create Obako note');
 
-        const noteTypes = Object.keys(noteTypeToNoteClass);
+        const noteTypes = [
+            'memo',
+            'pad',
+            'capture',
+            'log',
+            'planner',
+            'project',
+        ];
 
         const noteData: NoteCreationData = options.noteData || {};
         if (!('title' in noteData)) noteData.title = '';
@@ -75,11 +83,33 @@ class CreateObakoNoteModal extends Modal {
                         .onChange(async (value) => {
                             noteData.noteType = value;
                             noteData.frontmatterData = {};
+                            if (!options.hideNoteSpecificSettings) {
+                                noteSpecificSettingsContainer.empty();
+                                const noteClass = noteTypeToNoteClass[noteData.noteType];
+                                noteClass.setNoteCreationModalSettings(noteSpecificSettingsContainer);
+                            }
                             if (!options.hideFrontmatter) {
                                 setNoteFrontmatterSettings(noteFrontmatterSettingsContainer, noteData.noteType, noteData.frontmatterData);
                             }
                         });
                 });
+        }
+
+        /* note-specific settings */
+        let noteSpecificSettingsContainer: HTMLElement;
+        if (!options.hideNoteSpecificSettings) {
+            noteSpecificSettingsContainer = document.createElement('div');
+            this.contentEl.appendChild(noteSpecificSettingsContainer);
+            const noteClass = noteTypeToNoteClass[noteData.noteType];
+            noteClass.setNoteCreationModalSettings(noteSpecificSettingsContainer);
+        }
+
+        /* note frontmatter data */
+        let noteFrontmatterSettingsContainer: HTMLElement;
+        if (!options.hideFrontmatter) {
+            noteFrontmatterSettingsContainer = document.createElement('div');
+            this.contentEl.appendChild(noteFrontmatterSettingsContainer);
+            setNoteFrontmatterSettings(noteFrontmatterSettingsContainer, noteData.noteType, noteData.frontmatterData);
         }
 
         /* note content */
@@ -92,14 +122,6 @@ class CreateObakoNoteModal extends Modal {
                         .setValue(noteData.content);
                     textArea.inputEl.style.width = '100%';
                 });
-        }
-
-        /* note frontmatter data */
-        let noteFrontmatterSettingsContainer: HTMLElement;
-        if (!options.hideFrontmatter) {
-            noteFrontmatterSettingsContainer = document.createElement('div');
-            this.contentEl.appendChild(noteFrontmatterSettingsContainer);
-            setNoteFrontmatterSettings(noteFrontmatterSettingsContainer, noteData.noteType, noteData.frontmatterData);
         }
 
         new Setting(this.contentEl)
@@ -120,12 +142,12 @@ function setNoteFrontmatterSettings(containerEl: HTMLElement, noteType: string, 
     const noteClass = noteTypeToNoteClass[noteType];
     const frontmatterSpec = noteClass.getFrontmatterSpec();
 
-    const numSettings = Object.entries(frontmatterSpec).filter(([key, spec]) => !spec.fixedValue && !spec.hideInCreationModal).length;
-    if (numSettings > 0) {
-        new Setting(containerEl)
-            .setName('Frontmatter')
-            .setHeading();
-    }
+    // const numSettings = Object.entries(frontmatterSpec).filter(([key, spec]) => !spec.fixedValue && !spec.hideInCreationModal).length;
+    // if (numSettings > 0) {
+    //     new Setting(containerEl)
+    //         .setName('Frontmatter')
+    //         .setHeading();
+    // }
 
     for (const [key, spec] of Object.entries(frontmatterSpec)) {
         if (spec.fixedValue || spec.hideInCreationModal) continue;
