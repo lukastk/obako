@@ -28,11 +28,16 @@ export class UI_TopPanel extends PluginComponent {
         // Whenever a new note is loaded
         this.plugin.register(
             around(MarkdownView.prototype, {
-                onLoadFile(next) {
+                onload(next) {
                     return function (...args) {
-                        // Register observer to detect mode switch, upon which the panel will be updated
-                        self.registerModeSwitchObserver(this.leaf.view);
-                        self.createTopPanel(this.leaf.view);
+                        const intervalId = setInterval(() => {
+                            if (this.leaf.view?.file) {
+                                clearInterval(intervalId);
+                                // Register observer to detect mode switch, upon which the panel will be updated
+                                self.registerModeSwitchObserver(this.leaf.view);
+                                self.createTopPanel(this.leaf.view);
+                            }
+                        }, 10);
                         return next.call(this, ...args)
                     }
                 }
