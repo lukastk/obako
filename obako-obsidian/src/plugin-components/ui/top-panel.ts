@@ -2,13 +2,13 @@
  * Modifies the inline title of a note to include a decorator, based on the type specified in the frontmatter.
  */
 
-import { MarkdownView } from 'obsidian';
+import { MarkdownView, TFile } from 'obsidian';
 import { loadNote } from '../../note-loader';
 import PluginComponent from '../plugin-component';
 import { around } from 'monkey-around';
 import { getMarkdownViewMode } from 'src/utils';
 
-const PANEL_CLASS = "obako-panel";
+const PANEL_CLASS = "obako-note-top-panel";
 
 export class UI_TopPanel extends PluginComponent {
     load() {
@@ -25,7 +25,7 @@ export class UI_TopPanel extends PluginComponent {
 
         const self = this;
 
-        // Whenever a new note is loaded
+        // Whenever a markdown view is loaded
         this.plugin.register(
             around(MarkdownView.prototype, {
                 onload(next) {
@@ -41,6 +41,24 @@ export class UI_TopPanel extends PluginComponent {
                         return next.call(this, ...args)
                     }
                 }
+            })
+        )
+
+        // this.plugin.registerEvent(
+        //     this.app.workspace.on('file-open', (file: TFile | null) => {
+        //         if (file) {
+        //             console.log(`The note has changed to: ${file.path}`);
+        //             console.log(this.app.workspace.getActiveViewOfType(MarkdownView))
+        //         } else {
+        //             console.log('No file is currently open.');
+        //         }
+        //     })
+        // )
+
+        // Whenever the note is changed (will also trigger when moving between source and preview, potentially doubling up with `registerModeSwitchObserver`)
+        this.plugin.registerEvent(
+            this.app.workspace.on('layout-change', () => {
+                self.createTopPanel();
             })
         )
     }
