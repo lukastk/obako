@@ -1,10 +1,10 @@
 <script lang="ts">
-	import CollapsibleNoteHierarchyDisplay from "src/svelte-components/CollapsibleNoteHierarchyDisplay.svelte";
+	import CollapsibleZettelHierarchyDisplay from "src/svelte-components/CollapsibleZettelHierarchyDisplay.svelte";
 	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
 	import Collapsible from "src/svelte-components/Collapsible.svelte";
 	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
 
-    import type { Project } from 'src/notes/zettels/project';
+    import type { Project } from 'src/notes/zettel-types/project';
     export let note: Project;
 
 	const incomingLinkedLogs = note
@@ -12,14 +12,14 @@
 		.filter((note) => note.noteType === "log");
 </script>
     
-<CollapsibleNoteHierarchyDisplay
+<CollapsibleZettelHierarchyDisplay
     displayTitle="Child projects"
     noteHierarchy={note.getDescendantWorkUnits()}
     isCollapsed={false}
 />
-<CollapsibleNoteHierarchyDisplay
-    displayTitle="Note hierarchy"
-    noteHierarchy={note.getDescendantNotes()}
+<CollapsibleZettelHierarchyDisplay
+    displayTitle="Zettel hierarchy"
+    noteHierarchy={note.getDescendantZettels()}
     isCollapsed={true}
     sortByNoteType={true}
     displayTitleDecorator={true}

@@ -1,6 +1,6 @@
-import { ObakoNote } from './obako-note';
-import { TFile, CachedMetadata } from 'obsidian';
-import { getFile, isDateValid, parseObsidianLink } from '../utils';
+import { TFile } from 'obsidian';
+import type { CachedMetadata } from 'obsidian';
+import { getFile, isDateValid } from '../utils';
 
 import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
@@ -8,8 +8,9 @@ import { loadNote } from '../note-loader';
 
 export class BasicNote {
     private _name: string; // For debugging in the DevTools console.
-     
+
     static noteTypeStr = "basic-note";
+    static noteTypeDisplayName = "Basic Note";
     static titleDecoratorString = "";
     static titleSuffixDecoratorString = "";
     
@@ -21,10 +22,12 @@ export class BasicNote {
     private incomingLinkedNotes: BasicNote[] | null = null;
     private outgoingLinkedNotes: BasicNote[] | null = null;
 
-    static frontmatterSpec: FrontmatterSpec = {
-        notetype: { default: BasicNote.noteTypeStr, fixedValue: true },
-    };
-
+    static getFrontmatterSpec(): FrontmatterSpec {
+        return {
+            createdat: { default: null, type: "string", hideInCreationModal: true, description: "The date and time the note was created." },
+            notetype: { default: BasicNote.noteTypeStr, type: "string", fixedValue: true },
+        }
+    }
 
     constructor(file: TFile | string) {
         this.file = getFile(file);
@@ -68,7 +71,7 @@ export class BasicNote {
 
     reloadFrontmatterAndFileCache() {
         this.fileCache = app.metadataCache.getFileCache(this.file);
-        this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.frontmatterSpec);
+        this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.getFrontmatterSpec());
     }
     
     getOutgoingLinkedNotes(): BasicNote[] {

@@ -1,9 +1,9 @@
-import { TFile, CachedMetadata } from 'obsidian';
-import { getFile } from '../utils';
-
 export interface FrontmatterFieldSpec {
     default?: any;
-    fixedValue?: boolean;
+    type: string;
+    fixedValue?: boolean; // If true, the field is not editable.
+    description?: string;
+    hideInCreationModal?: boolean;
 }
 
 export interface FrontmatterSpec {

@@ -1,19 +1,14 @@
 import { Transient } from './transient';
-import type { FrontmatterSpec } from '../note-frontmatter';
 import type { TFile } from 'obsidian';
 import { getWeekNumber, isDateValid } from 'src/utils';
 
 export class Log extends Transient {
     static noteTypeStr = "log";
+    static noteTypeDisplayName = "Log";
     static titleDecoratorString = "⁍";
 
     date: Date | null = null;
     logTitle: string = "";
-
-    static frontmatterSpec: FrontmatterSpec = {
-        ...super.frontmatterSpec,
-        notetype: { default: Log.noteTypeStr, fixedValue: true },
-    };
 
     constructor(file: TFile | string) {
         super(file);

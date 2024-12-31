@@ -1,7 +1,6 @@
 import { Notice } from 'obsidian';
 import path from 'path';
 import { getFile, parseDatesInDateRangeTitle, isDateValid } from 'src/utils';
-import { Planner } from './notes/planner';
 import { getNoteType, loadNote } from './note-loader';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
@@ -173,7 +172,7 @@ export class ObakoTask {
             const noteType = getNoteType(this.filePath);
 
             // Get scheduled date from Planner note
-            if (noteType === Planner) {
+            if (noteType.noteTypeStr === 'planner') {
                 const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(fname);
                 scheduledDate = date;
                 // Get scheduled date from a preceding header in a Planner note

@@ -1,29 +1,24 @@
 import { TFile } from 'obsidian';
-import { ObakoNote } from '../obako-note';
-import type { FrontmatterSpec } from '../note-frontmatter';
-import type { NoteHierarchy } from '../obako-note';
+import { Zettel } from '../zettel';
+import type { NoteHierarchy } from '../zettel';
 
 import ProjectTopPanel from 'src/top-panels/ProjectTopPanel.svelte';
 
-export class Project extends ObakoNote {
+export class Project extends Zettel {
     static noteTypeStr = "project";
+    static noteTypeDisplayName = "Project";
     static titleDecoratorString = "●";
-
-    static frontmatterSpec: FrontmatterSpec = {
-        ...super.frontmatterSpec,
-        notetype: { default: Project.noteTypeStr, fixedValue: true },
-    };
 
     constructor(file: TFile | string) {
         super(file);
     }
 
     getDescendantWorkUnits(): NoteHierarchy {
-        return this.getDescendantNotes([Project]);
+        return this.getDescendantZettels([Project]);
     }
 
     setTopPanel(panel: HTMLElement) {
-        super.setTopPanel(panel);
+        //super.setTopPanel(panel);
 
         new ProjectTopPanel({
             target: panel,

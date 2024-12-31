@@ -10,6 +10,7 @@ import PlannerTopPanel from 'src/top-panels/planner/PlannerTopPanel.svelte';
 
 export class Planner extends ObakoNote {
     static noteTypeStr = "planner";
+    static noteTypeDisplayName = "Planner";
     static titleDecoratorString = "𝝣";
 
     public date: Date | null;
@@ -17,11 +18,14 @@ export class Planner extends ObakoNote {
     public plannerTitle: string;
     public rangeType: string; /* 'custom', 'day', 'week', 'month', 'quarter', 'year' */
 
-    static frontmatterSpec: FrontmatterSpec = {
-        ...super.frontmatterSpec,
-        notetype: { default: Planner.noteTypeStr, fixedValue: true },
-        "planner-active": { default: true },
-    };
+    static getFrontmatterSpec(): FrontmatterSpec {
+        const spec: FrontmatterSpec = {
+            ...super.getFrontmatterSpec(),
+            "planner-active": { default: true, type: "boolean", description: "Whether the planner is active." },
+        };
+        spec.notetype.default = this.noteTypeStr;
+        return spec;
+    }
 
     constructor(file: TFile | string) {
         super(file);
@@ -81,7 +85,7 @@ export class Planner extends ObakoNote {
         }
 
         res.due = res.due.filter(task => !task.tags.includes('reminder')); // remove reminders from due
-        
+
         return res;
     }
 

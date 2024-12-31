@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import { onMount } from "svelte";
-	import { Log } from "src/notes/zettels/log";
+	import { Log } from "src/notes/zettel-types/log";
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
 	import MarkdownElement from "src/svelte-components/MarkdownElement.svelte";
 	import { format } from "date-fns";

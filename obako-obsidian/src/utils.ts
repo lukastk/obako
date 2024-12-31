@@ -1,7 +1,6 @@
 import { MarkdownPreviewView, MarkdownView, Notice, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import BasicNote from './notes/basic-note';
-import { loadNote } from './note-loader';
 import * as weeknumber from 'weeknumber';
 
 export function getFile(file: TFile | string | null): TFile | null {
@@ -33,7 +32,7 @@ export function getMarkdownFiles(filter_func: (note: TFile) => boolean = () => t
 }
 
 export function getNotes(noteType: string, onlyValid: boolean = true): BasicNote[] {
-    let notes = getMarkdownFiles().map(file => loadNote(file));
+    let notes = getMarkdownFiles().map(file => obako.noteLoader.loadNote(file));
     notes = notes.filter(note => note?.noteType === noteType);
     if (onlyValid)
         notes = notes.filter(note => note?.validate());

@@ -2,19 +2,22 @@
  * Loads a given note and categorises based on its frontmatter.
  */
 
-import { TFile } from 'obsidian';
+import { stringifyYaml, TFile } from 'obsidian';
 import { getFile, getFrontmatter, getMarkdownFiles } from './utils';
 
-import { Zettel } from './notes/zettels/zettel';
 import { Planner } from './notes/planner';
-import { Capture } from './notes/zettels/capture';
-import { Pad } from './notes/zettels/pad';
+import { Capture } from './notes/zettel-types/capture';
+import { Pad } from './notes/zettel-types/pad';
 import { BasicNote } from './notes/basic-note';
-import { Memo } from './notes/zettels/memo';
-import { Log } from './notes/zettels/log';
-import { Project } from './notes/zettels/project';
+import { Memo } from './notes/zettel-types/memo';
+import { Log } from './notes/zettel-types/log';
+import { Project } from './notes/zettel-types/project';
+import { processFrontmatter } from './notes/note-frontmatter';
+import { Zettel } from './notes/zettel';
+import { ObakoNote } from './notes/obako-note';
+import { Transient } from './notes/zettel-types/transient';
 
-export const noteTypeToNoteClass: Record<string, typeof BasicNote> = {
+export const noteTypeToNoteClass: Record<string, any> = {
     memo: Memo, 
     pad: Pad,
     capture: Capture,
@@ -66,4 +69,39 @@ export function searchNotes(query: string, noteType: string|null = null): BasicN
         if (noteType && note.noteType !== noteType) return false;
         return note.name.includes(query)
     });
+}
+
+export interface NoteCreationData {
+    title?: string;
+    noteType?: string;
+    frontmatterData?: any;
+    content?: string;
+}
+
+export async function createNote(noteData: NoteCreationData): Promise<TFile> {
+    if (!noteData.noteType) throw new Error('Note type is required');
+    if (!noteData.title) throw new Error('Note title is required');
+    if (!noteData.content) noteData.content = '';
+    if (!noteData.frontmatterData) noteData.frontmatterData = {};
+
+    const noteClass = noteTypeToNoteClass[noteData.noteType];
+    const frontmatter = processFrontmatter(noteData.frontmatterData, noteClass.getFrontmatterSpec());
+    frontmatter.createdat = new Date();
+
+    const yaml = stringifyYaml(frontmatter);
+    const noteFullContent = "---\n" + yaml + "\n---\n\n" + noteData.content;
+
+    let noteFolder: string;
+    if (noteClass.prototype instanceof Zettel) { 
+        noteFolder = _obako_plugin.settings.zettelFolder;
+    } else if (noteClass == Planner || noteClass.prototype instanceof Planner) {
+        noteFolder = _obako_plugin.settings.plannerFolder;
+    } else {
+        throw new Error(`Note type ${noteData.noteType} not supported`);
+    }
+
+    const noteFilepath = noteFolder + "/" + noteData.title + ".md";
+
+    const file = await app.vault.create(noteFilepath, noteFullContent);
+    return file;
 }

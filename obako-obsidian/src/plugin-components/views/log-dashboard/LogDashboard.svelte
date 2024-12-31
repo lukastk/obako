@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getAllNotes } from "src/note-loader";
-	import { Log } from "src/notes/zettels/log";
+	import { Log } from "src/notes/zettel-types/log";
 	import { onMount } from "svelte";
 	import { renderMarkdown } from "src/utils";
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
