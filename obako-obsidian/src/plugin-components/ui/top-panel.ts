@@ -44,17 +44,6 @@ export class UI_TopPanel extends PluginComponent {
             })
         )
 
-        // this.plugin.registerEvent(
-        //     this.app.workspace.on('file-open', (file: TFile | null) => {
-        //         if (file) {
-        //             console.log(`The note has changed to: ${file.path}`);
-        //             console.log(this.app.workspace.getActiveViewOfType(MarkdownView))
-        //         } else {
-        //             console.log('No file is currently open.');
-        //         }
-        //     })
-        // )
-
         // Whenever the note is changed (will also trigger when moving between source and preview, potentially doubling up with `registerModeSwitchObserver`)
         this.plugin.registerEvent(
             this.app.workspace.on('layout-change', () => {
