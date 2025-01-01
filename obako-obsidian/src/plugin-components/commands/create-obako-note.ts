@@ -53,6 +53,12 @@ export class CreateObakoNoteModal extends Modal {
     constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {
         super(app);
 
+        const explanationEl = document.createElement('p');
+        explanationEl.textContent = 'Press Cmd+Enter to submit';
+        explanationEl.style.fontSize = 'var(--font-small)';
+        explanationEl.style.color = 'var(--text-muted)';
+        this.contentEl.appendChild(explanationEl);
+
         this.setTitle(options.modalTitle || 'Create Obako note');
 
         this.noteData = options.noteData || {};
@@ -108,7 +114,6 @@ export class CreateObakoNoteModal extends Modal {
                 this.contentEl
             );
         }
-
         /* submit button */
         new Setting(this.contentEl)
             .addButton((btn) =>
@@ -119,6 +124,15 @@ export class CreateObakoNoteModal extends Modal {
                         this.close();
                         onSubmit(this.noteData);
                     }));
+
+        // Add event listener for Cmd+Enter key
+        this.contentEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                event.preventDefault();
+                this.close();
+                onSubmit(this.noteData);
+            }
+        });
     }
 
     private refreshNoteSpecificSettings() {
