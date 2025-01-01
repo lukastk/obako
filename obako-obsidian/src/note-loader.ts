@@ -92,7 +92,7 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
     const noteClass = noteTypeToNoteClass[noteData.noteType];
     const isValid = noteClass.processNoteData(noteData);
     if (!isValid) {
-        new Notice(`Note data isinvalid for note type ${noteData.noteType}`);
+        new Notice(`Note data is invalid for note type ${noteData.noteType}`);
         return null;
     }
 

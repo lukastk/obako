@@ -77,7 +77,7 @@ export function parseObsidianLink(link: string): string | null {
  * const formattedDate = formatDate(parsedDate.toISOString());
  * console.log(formattedDate);
  */
-export function formatDate(dateString: string) {
+export function formatDateWithWeekNumber(dateString: string) {
     const date = new Date(dateString);
 
     // Extract components
@@ -106,9 +106,12 @@ export function formatDate(dateString: string) {
  * @returns {string} - A formatted date string in the format "YYYY-MM-DD w{Week Number} ddd".
  *                     Example: "2024-12-16 w51 Mon"
  */
-export function getDateStringFromNaturalLanguage(text: string) {
+export function getDateStringFromNaturalLanguage(text: string, includeWeekNumber: boolean = false) {
     const parsedDate = chrono.parseDate(text);
-    return formatDate(parsedDate.toISOString());
+    if (includeWeekNumber)
+        return formatDateWithWeekNumber(parsedDate.toISOString());
+    else
+        return getDateStringFromDate(parsedDate);
 }
 
 export function getDateFromWeekNumber(year: number, week: number): [Date, Date] {
