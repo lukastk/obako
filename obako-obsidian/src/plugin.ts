@@ -11,7 +11,9 @@ import * as noteLoader from './note-loader';
 import { Command_DownloadArticle } from './plugin-components/commands/download-article';
 import { Command_MoveUnlinkedFiles } from './plugin-components/commands/move-unlinked-files';
 import { Command_GetDateString } from './plugin-components/commands/get-date-string';
+import { Command_FindNote } from './plugin-components/commands/find-note';
 import { Command_CreateObakoNote } from './plugin-components/commands/create-obako-note';
+import { Command_CreateLog } from './plugin-components/commands/create-log';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -54,7 +56,9 @@ export default class ObakoPlugin extends Plugin {
 			new Command_DownloadArticle(this),
 			new Command_MoveUnlinkedFiles(this),
 			new Command_GetDateString(this),
+			new Command_FindNote(this),
 			new Command_CreateObakoNote(this),
+			new Command_CreateLog(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
