@@ -108,10 +108,21 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
 
     if (!noteData.title) throw new Error('Note title is required');
 
-    const frontmatter = processFrontmatter(noteData.frontmatterData, noteClass.getFrontmatterSpec());
+    const frontmatterSpec = noteClass.getFrontmatterSpec();
+    const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec)};
     frontmatter.createdat = new Date();
 
-    const yaml = stringifyYaml(frontmatter);
+    let yamlEntries: string[] = [];
+    for (const key in frontmatterSpec) {
+        if (key in frontmatter) {
+            yamlEntries.push(stringifyYaml({[key]: frontmatter[key]}).trim());
+            delete frontmatter[key];
+        }
+    }
+    for (const key in frontmatter) {
+        yamlEntries.push(stringifyYaml({[key]: frontmatter[key]}).trim());
+    }
+    const yaml = yamlEntries.join("\n");
     const noteFullContent = "---\n" + yaml + "\n---\n\n" + noteData.content;
 
     let noteFolder: string;
