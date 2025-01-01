@@ -40,3 +40,8 @@ If your plugin does not need CSS, delete this file.
     margin-bottom: 10px;
     border-radius: 10px;
 }
+
+/* Display cancelled tasks as muted */
+div[data-task="-"] {
+    color: var(--text-muted);
+}
