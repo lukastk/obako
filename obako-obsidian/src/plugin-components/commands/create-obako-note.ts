@@ -53,6 +53,9 @@ export class CreateObakoNoteModal extends Modal {
     constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {
         super(app);
 
+        if (!('disableNoteContentSetting' in options))
+            options.disableNoteContentSetting = true;
+
         const explanationEl = document.createElement('p');
         explanationEl.textContent = 'Press Cmd+Enter to submit';
         explanationEl.style.fontSize = 'var(--font-small)';
