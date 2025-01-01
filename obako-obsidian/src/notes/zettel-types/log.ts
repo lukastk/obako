@@ -1,6 +1,9 @@
 import { Transient } from './transient';
 import type { TFile } from 'obsidian';
-import { getWeekNumber, isDateValid } from 'src/utils';
+import { getDateStringFromDate, getWeekNumber, isDateValid } from 'src/utils';
+import { Setting } from 'obsidian';
+import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
+import type { NoteCreationData } from 'src/note-loader';
 
 export class Log extends Transient {
     static noteTypeStr = "log";
@@ -33,5 +36,24 @@ export class Log extends Transient {
             dateDecorator = `w${weekNumber} ${day}`;
         }
         return `${super.getTitlePrefixDecoratorString()} ${dateDecorator}`;
+    }
+
+    static setNoteCreationModalSettings(containerEl: HTMLElement, modal: CreateObakoNoteModal, noteData: NoteCreationData) {
+        super.setNoteCreationModalSettings(containerEl, modal, noteData);
+
+        noteData.extraData.logDate = getDateStringFromDate(new Date());
+        modal.addTextSetting(
+            'Log date',
+            'The date of the log.',
+            (value) => noteData.extraData.logDate = value,
+            noteData.extraData.logDate,
+        );
+    }
+
+    static processNoteData(noteData: NoteCreationData): boolean {
+        if (!('logDate' in noteData.extraData)) return false;
+        if (!isDateValid(new Date(noteData.extraData.logDate))) return false;
+        noteData.title = `${noteData.extraData.logDate} ${noteData.title}`;
+        return true;
     }
 }

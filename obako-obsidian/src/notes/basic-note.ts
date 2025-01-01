@@ -4,7 +4,8 @@ import { getFile, isDateValid } from '../utils';
 
 import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
-import { loadNote } from '../note-loader';
+import { loadNote, type NoteCreationData } from '../note-loader';
+import type { CreateObakoNoteModal } from '../plugin-components/commands/create-obako-note';
 
 export class BasicNote {
     private _name: string; // For debugging in the DevTools console.
@@ -58,8 +59,6 @@ export class BasicNote {
     linkedBy(other: BasicNote | null): boolean {
         if (!other) return false;
         if (!this.incomingLinkedNotes) this.getIncomingLinkedNotes();
-        console.log(123, this.incomingLinkedNotes);
-        console.log(this.incomingLinkedNotes.map(note => note.equals(other)));
         return this.incomingLinkedNotes.map(note => note.equals(other)).includes(true);
     }
 
@@ -134,7 +133,16 @@ export class BasicNote {
         return noteContentWithFrontmatter.join("\n");
     }
 
-    static setNoteCreationModalSettings(containerEl: HTMLElement) {
+    static setNoteCreationModalSettings(containerEl: HTMLElement, modal: CreateObakoNoteModal, noteData: NoteCreationData) {
+    }
+
+    /**
+     * Called before a note is created by noteLoader.createNote(),
+     * to allow for note-class-specific processing of the note data.
+     * 
+     * Returns true if the note data is valid, false otherwise.
+     */
+    static processNoteData(noteData: NoteCreationData): boolean {
     }
 
     /*** Actions ***/

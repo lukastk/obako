@@ -2,6 +2,7 @@ import { Modal, App, requestUrl, Setting } from 'obsidian';
 import PluginComponent from '../plugin-component';
 import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
+import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 
 export class Command_CreateObakoNote extends PluginComponent {
     commandId = 'create-obako-note';
@@ -13,9 +14,10 @@ export class Command_CreateObakoNote extends PluginComponent {
             name: this.commandName,
             callback: async () => {
                 new CreateObakoNoteModal(this.app, async (noteData) => {
-                    createNote(noteData).then(file => {
+                    createNote(noteData).then((file) => {
                         setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
-                            app.workspace.openLinkText(file.path, "", true);
+                            if (file)
+                                app.workspace.openLinkText(file.path, "", true);
                         }, 10);
                     });
                 }).open();
@@ -27,103 +29,87 @@ export class Command_CreateObakoNote extends PluginComponent {
 }
 
 export interface CreateObakoNoteModalOptions {
-    hideTitle?: boolean;
-    hideNoteType?: boolean;
-    hideNoteSpecificSettings?: boolean;
-    hideFrontmatter?: boolean;
-    hideNoteContent?: boolean;
+    modalTitle?: string;
+    disableTitleSetting?: boolean;
+    disableNoteTypeSelection?: boolean;
+    disableNoteSpecificSettings?: boolean;
+    disableNoteContentSetting?: boolean;
     noteData?: NoteCreationData;
 }
 
-class CreateObakoNoteModal extends Modal {
-    constructor(app: App, onSubmit: (result: string) => void, options: CreateObakoNoteModalOptions = {}) {
+export class CreateObakoNoteModal extends Modal {
+    noteSettingsContainerEl: HTMLElement;
+
+    noteData: NoteCreationData;
+    noteTypes: string[] = [
+        'memo',
+        'pad',
+        'capture',
+        'log',
+        'planner',
+        'project',
+    ];
+
+    constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {
         super(app);
-        this.setTitle('Create Obako note');
 
-        const noteTypes = [
-            'memo',
-            'pad',
-            'capture',
-            'log',
-            'planner',
-            'project',
-        ];
+        this.setTitle(options.modalTitle || 'Create Obako note');
 
-        const noteData: NoteCreationData = options.noteData || {};
-        if (!('title' in noteData)) noteData.title = '';
-        if (!('noteType' in noteData)) noteData.noteType = noteTypes[0];
-        if (!('frontmatterData' in noteData)) noteData.frontmatterData = {};
-        if (!('content' in noteData)) noteData.content = '';
-
-        /* title */
-        if (!options.hideTitle) {
-            new Setting(this.contentEl)
-                .setName('Title')
-                .addText((text) => {
-                    text
-                        .onChange((value) => {
-                            noteData.title = value;
-                        })
-                        .setValue(noteData.title);
-                });
-        }
+        this.noteData = options.noteData || {};
+        if (!('title' in this.noteData)) this.noteData.title = '';
+        if (!('noteType' in this.noteData)) this.noteData.noteType = this.noteTypes[0];
+        if (!('frontmatterData' in this.noteData)) this.noteData.frontmatterData = {};
+        if (!('content' in this.noteData)) this.noteData.content = '';
+        if (!('extraData' in this.noteData)) this.noteData.extraData = {};
 
         /* note type */
-        if (!options.hideNoteType) {
-            let selectedNoteType = noteTypes[0];
-            new Setting(this.contentEl)
-                .setName('Note type')
-                .setDesc('Select the Obako note type.')
-                .addDropdown(dropdown => {
-                    noteTypes.forEach(type => {
-                        dropdown.addOption(type, noteTypeToNoteClass[type].noteTypeDisplayName);
-                    });
-                    dropdown
-                        .setValue(selectedNoteType)
-                        .onChange(async (value) => {
-                            noteData.noteType = value;
-                            noteData.frontmatterData = {};
-                            if (!options.hideNoteSpecificSettings) {
-                                noteSpecificSettingsContainer.empty();
-                                const noteClass = noteTypeToNoteClass[noteData.noteType];
-                                noteClass.setNoteCreationModalSettings(noteSpecificSettingsContainer);
-                            }
-                            if (!options.hideFrontmatter) {
-                                setNoteFrontmatterSettings(noteFrontmatterSettingsContainer, noteData.noteType, noteData.frontmatterData);
-                            }
-                        });
-                });
+        if (!options.disableNoteTypeSelection) {
+            let selectedNoteType = this.noteTypes[0];
+            this.addDropdownSetting(
+                'Note type',
+                'Select the Obako note type.',
+                this.noteTypes,
+                (value) => {
+                    this.noteData.noteType = value;
+                    this.noteData.frontmatterData = {};
+                    if (!options.disableNoteSpecificSettings)
+                        this.refreshNoteSpecificSettings();
+                },
+                0,
+                this.contentEl
+            );
         }
+
+        /* title */
+        if (!options.disableTitleSetting) {
+            this.addTextSetting(
+                'Title',
+                'The title of the note.',
+                (value) => this.noteData.title = value,
+                this.noteData.title,
+                this.contentEl,
+            );
+        }
+
+        this.noteSettingsContainerEl = document.createElement('div');
+        this.contentEl.appendChild(this.noteSettingsContainerEl);
 
         /* note-specific settings */
-        let noteSpecificSettingsContainer: HTMLElement;
-        if (!options.hideNoteSpecificSettings) {
-            noteSpecificSettingsContainer = document.createElement('div');
-            this.contentEl.appendChild(noteSpecificSettingsContainer);
-            const noteClass = noteTypeToNoteClass[noteData.noteType];
-            noteClass.setNoteCreationModalSettings(noteSpecificSettingsContainer);
-        }
-
-        /* note frontmatter data */
-        let noteFrontmatterSettingsContainer: HTMLElement;
-        if (!options.hideFrontmatter) {
-            noteFrontmatterSettingsContainer = document.createElement('div');
-            this.contentEl.appendChild(noteFrontmatterSettingsContainer);
-            setNoteFrontmatterSettings(noteFrontmatterSettingsContainer, noteData.noteType, noteData.frontmatterData);
-        }
+        if (!options.disableNoteSpecificSettings)
+            this.refreshNoteSpecificSettings();
 
         /* note content */
-        if (!options.hideNoteContent) {
-            new Setting(this.contentEl)
-                .setName('Note content')
-                .addTextArea((textArea) => {
-                    textArea
-                        .onChange((value) => noteData.content = value)
-                        .setValue(noteData.content);
-                    textArea.inputEl.style.width = '100%';
-                });
+        if (!options.disableNoteContentSetting) {
+            this.addTextAreaSetting(
+                'Note content',
+                'The content of the note.',
+                (value) => this.noteData.content = value,
+                this.noteData.content,
+                this.contentEl
+            );
         }
 
+        /* submit button */
         new Setting(this.contentEl)
             .addButton((btn) =>
                 btn
@@ -131,46 +117,86 @@ class CreateObakoNoteModal extends Modal {
                     .setCta()
                     .onClick(() => {
                         this.close();
-                        onSubmit(noteData);
+                        onSubmit(this.noteData);
                     }));
     }
-}
 
-function setNoteFrontmatterSettings(containerEl: HTMLElement, noteType: string, frontmatterData: any) {
-    containerEl.empty();
+    private refreshNoteSpecificSettings() {
+        this.noteSettingsContainerEl.empty();
+        const noteClass = noteTypeToNoteClass[this.noteData.noteType];
+        noteClass.setNoteCreationModalSettings(this.noteSettingsContainerEl, this, this.noteData);
+    }
 
-    const noteClass = noteTypeToNoteClass[noteType];
-    const frontmatterSpec = noteClass.getFrontmatterSpec();
+    addBooleanSetting(name: string, description: string, initialValue: boolean, onChange: (value: boolean) => void) {
+        const setting = new Setting(this.noteSettingsContainerEl)
+            .setName(name)
+            .setDesc(description)
+            .addToggle((toggle) => {
+                toggle
+                    .onChange((value) => onChange(value))
+                    .setValue(initialValue);
+            });
+    }
 
-    // const numSettings = Object.entries(frontmatterSpec).filter(([key, spec]) => !spec.fixedValue && !spec.hideInCreationModal).length;
-    // if (numSettings > 0) {
-    //     new Setting(containerEl)
-    //         .setName('Frontmatter')
-    //         .setHeading();
-    // }
+    addTextSetting(name: string, description: string, onChange: (value: string) => void, initialValue?: string, containerEl?: HTMLElement) {
+        const setting = new Setting(containerEl || this.noteSettingsContainerEl)
+            .setName(name)
+            .setDesc(description)
+            .addText((text) => {
+                text
+                    .onChange((value) => onChange(value))
+                    .setValue(initialValue);
+            });
+    }
 
-    for (const [key, spec] of Object.entries(frontmatterSpec)) {
-        if (spec.fixedValue || spec.hideInCreationModal) continue;
+    addTextAreaSetting(name: string, description: string, onChange: (value: string) => void, initialValue?: string, containerEl?: HTMLElement) {
+        const setting = new Setting(containerEl || this.noteSettingsContainerEl)
+            .setName(name)
+            .setDesc(description)
+            .addTextArea((textArea) => {
+                textArea
+                    .onChange((value) => onChange(value))
+                    .setValue(initialValue);
+            });
+    }
 
-        const setting = new Setting(containerEl)
-            .setName(key)
-            .setDesc(spec.description || '')
+    addDropdownSetting(name: string, description: string, options: string[], onChange: (value: string) => void, initialValueIndex?: number, containerEl?: HTMLElement) {
+        initialValueIndex = initialValueIndex || 0;
+        const setting = new Setting(containerEl || this.noteSettingsContainerEl)
+            .setName(name)
+            .setDesc(description)
+            .addDropdown((dropdown) => {
+                options.forEach(option => {
+                    dropdown.addOption(option, option);
+                });
+                dropdown
+                    .setValue(options[initialValueIndex])
+                    .onChange((value) => onChange(value));
+            });
+    }
+
+    addFrontmatterSpecSetting(key: string, spec: FrontmatterFieldSpec, initialValue?: any, containerEl?: HTMLElement) {
+        const description = spec.description || '';
+        initialValue = initialValue === undefined ? spec.default : initialValue;
 
         switch (spec.type) {
             case 'boolean':
-                setting.addToggle((toggle) => {
-                    toggle
-                        .onChange((value) => frontmatterData[key] = value)
-                        .setValue(key in frontmatterData ? frontmatterData[key] : spec.default);
-                });
+                this.addBooleanSetting(key, description, initialValue, (value) => this.noteData.frontmatterData[key] = value);
                 break;
             case 'text':
-                setting.addText((text) => {
-                    text
-                        .onChange((value) => frontmatterData[key] = value)
-                        .setValue(key in frontmatterData ? frontmatterData[key] : spec.default);
-                });
+                this.addTextSetting(key, description, initialValue, (value) => this.noteData.frontmatterData[key] = value, containerEl);
                 break;
+        }
+    }
+
+    addFrontmatterSettings(noteType: string, frontmatterData?: any, containerEl?: HTMLElement) {
+        const noteClass = noteTypeToNoteClass[noteType];
+        const frontmatterSpec = noteClass.getFrontmatterSpec();
+        frontmatterData = frontmatterData || {};
+        for (const [key, spec] of Object.entries(frontmatterSpec)) {
+            if (spec.fixedValue || spec.hideInCreationModal) continue;
+            const initialValue = key in frontmatterData ? frontmatterData[key] : undefined;
+            this.addFrontmatterSpecSetting(key, spec, initialValue, containerEl);
         }
     }
 }

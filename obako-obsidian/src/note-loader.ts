@@ -2,7 +2,7 @@
  * Loads a given note and categorises based on its frontmatter.
  */
 
-import { stringifyYaml, TFile } from 'obsidian';
+import { Notice, stringifyYaml, TFile } from 'obsidian';
 import { getFile, getFrontmatter, getMarkdownFiles } from './utils';
 
 import { Planner } from './notes/planner';
@@ -81,15 +81,23 @@ export interface NoteCreationData {
     noteType?: string;
     frontmatterData?: any;
     content?: string;
+    extraData?: any;
 }
 
-export async function createNote(noteData: NoteCreationData): Promise<TFile> {
+export async function createNote(noteData: NoteCreationData): Promise<TFile|null> {
     if (!noteData.noteType) throw new Error('Note type is required');
-    if (!noteData.title) throw new Error('Note title is required');
     if (!noteData.content) noteData.content = '';
     if (!noteData.frontmatterData) noteData.frontmatterData = {};
 
     const noteClass = noteTypeToNoteClass[noteData.noteType];
+    const isValid = noteClass.processNoteData(noteData);
+    if (!isValid) {
+        new Notice(`Note data isinvalid for note type ${noteData.noteType}`);
+        return null;
+    }
+
+    if (!noteData.title) throw new Error('Note title is required');
+
     const frontmatter = processFrontmatter(noteData.frontmatterData, noteClass.getFrontmatterSpec());
     frontmatter.createdat = new Date();
 

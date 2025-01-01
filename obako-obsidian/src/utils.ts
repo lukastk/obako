@@ -285,3 +285,7 @@ export function addDays(date: Date, days: number) {
 export function isDateValid(date: Date) {
     return !isNaN(date.getTime());
 }
+
+export function getDateStringFromDate(date: Date) {
+    return date.toISOString().slice(0, 10);
+}
