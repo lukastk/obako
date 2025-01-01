@@ -85,9 +85,19 @@ export interface NoteCreationData {
 }
 
 export async function createNote(noteData: NoteCreationData): Promise<TFile|null> {
+    // Make a deep copy of the noteData object
+    noteData = {...noteData}
+    noteData.frontmatterData = noteData.frontmatterData ? {...noteData.frontmatterData} : {};
+    noteData.extraData = noteData.extraData ? {...noteData.extraData} : {};
+
     if (!noteData.noteType) throw new Error('Note type is required');
     if (!noteData.content) noteData.content = '';
     if (!noteData.frontmatterData) noteData.frontmatterData = {};
+    if (!noteData.frontmatterData.links) noteData.frontmatterData.links = [];
+
+    noteData.frontmatterData.links = noteData.frontmatterData.links.map((filepath: string) => {
+        return `[[${app.metadataCache.fileToLinktext(getFile(filepath), filepath)}]]`;
+    });
 
     const noteClass = noteTypeToNoteClass[noteData.noteType];
     const isValid = noteClass.processNoteData(noteData);

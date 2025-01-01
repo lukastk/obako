@@ -143,6 +143,7 @@ export class BasicNote {
      * Returns true if the note data is valid, false otherwise.
      */
     static processNoteData(noteData: NoteCreationData): boolean {
+        return true;
     }
 
     /*** Actions ***/
