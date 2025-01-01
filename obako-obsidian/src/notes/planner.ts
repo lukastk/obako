@@ -1,11 +1,11 @@
 import type { TFile } from 'obsidian';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { ObakoNote } from './obako-note';
-
-import { getWeekNumber, parseDatesInDateRangeTitle } from 'src/utils';
+import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, parseDateRangeStr } from 'src/utils';
 import { getTasks } from 'src/task-utils';
 import type { Task } from 'src/task-utils';
-
+import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
+import type { NoteCreationData } from 'src/note-loader';
 import PlannerTopPanel from 'src/top-panels/planner/PlannerTopPanel.svelte';
 
 export class Planner extends ObakoNote {
@@ -99,5 +99,48 @@ export class Planner extends ObakoNote {
             }
         });
     }
-}
 
+    static setNoteCreationModalSettings(containerEl: HTMLElement, modal: CreateObakoNoteModal, noteData: NoteCreationData) {
+        super.setNoteCreationModalSettings(containerEl, modal, noteData);
+
+        noteData.extraData.dateStr = 'today'
+        modal.addTextSetting(
+            'Date range',
+            'The date range of the planner.',
+            (value) => noteData.extraData.dateRangeStr = value,
+            noteData.extraData.dateRangeStr,
+        );
+    }
+
+    static processNoteData(noteData: NoteCreationData): boolean {
+        if (!('dateRangeStr' in noteData.extraData)) return false;
+
+        // Check if the date range is a valid planner date range
+        let { date, endDate, rangeType } = parseDatesInDateRangeTitle(noteData.extraData.dateRangeStr);
+        if (!isDateValid(date)) {
+            // Try again, but with the current year
+            const currentYear = new Date().getFullYear();
+            let { date, endDate, rangeType } = parseDatesInDateRangeTitle(noteData.extraData.dateRangeStr, currentYear);
+            // If still not valid, try to parse it as natural language
+            if (!isDateValid(date)) {
+                noteData.extraData.dateRangeStr = getDateStringFromNaturalLanguage(noteData.extraData.dateRangeStr);
+                if (!noteData.extraData.dateRangeStr) return false;
+            } else {
+                // If valid, then we know the date string is missing a year, so we add it
+                noteData.extraData.dateRangeStr = `${currentYear} ${noteData.extraData.dateRangeStr}`;
+            }
+        }
+
+        // Normalise the string
+        noteData.extraData.dateRangeStr = noteData.extraData.dateRangeStr.trim();
+        if (noteData.extraData.dateRangeStr.includes('..'))
+            noteData.extraData.dateRangeStr = noteData.extraData.dateRangeStr.split('..').map(s => s.trim()).join('..');
+
+        if (noteData.title)
+            noteData.title = `${noteData.extraData.dateRangeStr} -- ${noteData.title}`;
+        else
+            noteData.title = noteData.extraData.dateRangeStr;
+
+        return true;
+    }
+}

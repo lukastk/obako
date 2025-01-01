@@ -52,7 +52,7 @@ export class Log extends Transient {
 
     static processNoteData(noteData: NoteCreationData): boolean {
         if (!('logDate' in noteData.extraData)) return false;
-        noteData.extraData.logDate = getDateStringFromNaturalLanguage(noteData.extraData.logDate);
+        noteData.extraData.logDate = getDateStringFromNaturalLanguage(noteData.extraData.logDate.trim());
         if (!isDateValid(new Date(noteData.extraData.logDate))) return false;
         noteData.title = `${noteData.extraData.logDate} ${noteData.title}`;
         return true;

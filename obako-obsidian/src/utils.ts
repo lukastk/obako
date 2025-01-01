@@ -108,6 +108,7 @@ export function formatDateWithWeekNumber(dateString: string) {
  */
 export function getDateStringFromNaturalLanguage(text: string, includeWeekNumber: boolean = false) {
     const parsedDate = chrono.parseDate(text);
+    if (!parsedDate) return null;
     if (includeWeekNumber)
         return formatDateWithWeekNumber(parsedDate.toISOString());
     else
@@ -236,7 +237,7 @@ export function renderMarkdown(content: string, container: HTMLElement) {
     MarkdownPreviewView.render(app, content, container, '', _obako_plugin);
 }
 
-export function parseDatesInDateRangeTitle(datedTitleStr: string) : {
+export function parseDatesInDateRangeTitle(datedTitleStr: string, defaultYear?: string) : {
     plannerTitle: string,
     date: Date | null,
     endDate: Date | null,
@@ -245,8 +246,8 @@ export function parseDatesInDateRangeTitle(datedTitleStr: string) : {
     const plannerTitle = datedTitleStr.split('--')[1]?.trim() || '';
     const [startDateStr, endDateStr] = datedTitleStr.split('--')[0].split('..');
 
-    const [startDate_start, startDate_end, startDate_rangeType] = parseDateRangeStr(startDateStr?.trim());
-    const [endDate_start, endDate_end, endDate_rangeType] = parseDateRangeStr(endDateStr?.trim(), startDate_start?.getFullYear());
+    const [startDate_start, startDate_end, startDate_rangeType] = parseDateRangeStr(startDateStr?.trim(), defaultYear);
+    const [endDate_start, endDate_end, endDate_rangeType] = parseDateRangeStr(endDateStr?.trim(), defaultYear || startDate_start?.getFullYear());
 
     if (endDateStr) {
         return {
@@ -286,6 +287,7 @@ export function addDays(date: Date, days: number) {
 }
 
 export function isDateValid(date: Date) {
+    if (!date) return false;
     return !isNaN(date.getTime());
 }
 

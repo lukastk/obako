@@ -6,9 +6,9 @@ import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 
-export class Command_CreateLog extends PluginComponent {
-    commandId = 'create-log';
-    commandName = 'Create log';
+export class Command_CreatePlanner extends PluginComponent {
+    commandId = 'create-planner';
+    commandName = 'Create planner';
 
     load() {
         this.plugin.addCommand({
@@ -16,25 +16,20 @@ export class Command_CreateLog extends PluginComponent {
             name: this.commandName,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
-                    new SetDateModal(this.app, async (dateStr) => {
-                        new PickLogLink(this.app, async (logLinkNote, event) => {
-                            const noteData: NoteCreationData = {
-                                title: title,
-                                noteType: 'log',
-                                frontmatterData: {
-                                    links: [logLinkNote.filepath],
-                                },
-                                extraData: {
-                                    logDate: dateStr,
-                                },
-                            };
-                            createNote(noteData).then((file) => {
-                                setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
-                                    if (file)
-                                        app.workspace.openLinkText(file.path, "", true);
-                                }, 10);
-                            });
-                        }).open();
+                    new SetDateRangeModal(this.app, async (dateRangeStr) => {
+                        const noteData: NoteCreationData = {
+                            title: title,
+                            noteType: 'planner',
+                            extraData: {
+                                dateRangeStr: dateRangeStr,
+                            },
+                        };
+                        createNote(noteData).then((file) => {
+                            setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
+                                if (file)
+                                    app.workspace.openLinkText(file.path, "", true);
+                            }, 10);
+                        });
                     }).open();
                 }).open();
             }
@@ -68,19 +63,20 @@ class PickLogLink extends FuzzySuggestModal<BasicNote> {
     }
 }
 
-class SetDateModal extends Modal {
-    constructor(app: App, onSubmit: (dateStr: string) => void) {
+class SetDateRangeModal extends Modal {
+    constructor(app: App, onSubmit: (dateRangeStr: string) => void) {
         super(app);
-        this.setTitle('Set log date');
+        this.setTitle('Set planner date range');
 
-        let dateStr = 'today';
+        let dateRangeStr = 'today';
         new Setting(this.contentEl)
-            .setName('Date')
+            .setName('Date range')
+            .setDesc('The date range of the planner.')
             .addText((text) =>
                 text
-                    .setValue(dateStr)
+                    .setValue(dateRangeStr)
                     .onChange((value) => {
-                        dateStr = value;
+                        dateRangeStr = value;
                     }));
 
         // Add event listener for ENTER key
@@ -88,7 +84,7 @@ class SetDateModal extends Modal {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 this.close();
-                onSubmit(dateStr);
+                onSubmit(dateRangeStr);
             }
         });
     }
