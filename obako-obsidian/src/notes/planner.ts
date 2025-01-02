@@ -140,6 +140,13 @@ export class Planner extends ObakoNote {
             noteData.title = `${noteData.extraData.dateRangeStr} -- ${noteData.title}`;
         else
             noteData.title = noteData.extraData.dateRangeStr;
+        
+        rangeType = parseDatesInDateRangeTitle(noteData.extraData.dateRangeStr).rangeType;
+        const isDayPlanner = rangeType === 'day';
+        if (isDayPlanner) {
+            noteData.frontmatterData.cons = false;
+            noteData.frontmatterData['cons-hp'] = true;
+        }
 
         return true;
     }
