@@ -6,6 +6,7 @@ import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 import { Log } from 'src/notes/zettel-types/log';
+import { getDateStringFromDate } from 'src/utils';
 
 export class Command_CreateLog extends PluginComponent {
     commandId = 'create-log';
@@ -17,8 +18,9 @@ export class Command_CreateLog extends PluginComponent {
             name: this.commandName,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
-                    new SetDateModal(this.app, async (dateStr) => {
+                    //new SetDateModal(this.app, async (dateStr) => {
                         new PickLogLink(this.app, async (logLinkNote, event) => {
+                            const dateStr = getDateStringFromDate(new Date());
                             const noteData: NoteCreationData = {
                                 title: title,
                                 noteType: Log.noteTypeStr,
@@ -36,7 +38,7 @@ export class Command_CreateLog extends PluginComponent {
                                 }, 10);
                             });
                         }).open();
-                    }).open();
+                    //}).open();
                 }).open();
             }
         });
