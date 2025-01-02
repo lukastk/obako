@@ -9,6 +9,7 @@ import { Log } from 'src/notes/zettel-types/log';
 import { getDateStringFromDate } from 'src/utils';
 
 export class Command_CreateLog extends PluginComponent {
+    componentName = 'Cmd: Create log';
     commandId = 'create-log';
     commandName = 'Create log';
 

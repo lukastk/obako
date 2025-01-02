@@ -12,6 +12,8 @@ import { BasicNote } from 'src/notes/basic-note';
 const PANEL_CLASS = "obako-note-top-panel";
 
 export class UI_TopPanel extends PluginComponent {
+    componentName = 'UI: Top panel';
+    
     load() {
         this.app.workspace.onLayoutReady(() => {
             this.createTopPanel();

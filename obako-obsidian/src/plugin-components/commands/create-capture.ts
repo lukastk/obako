@@ -5,6 +5,7 @@ import { Capture } from 'src/notes/zettel-types/capture';
 import PluginComponent from '../plugin-component';
 
 export class Command_CreateCapture extends PluginComponent {
+    componentName = 'Cmd: Create capture';
     commandId = 'create-capture';
     commandName = 'Create capture';
     

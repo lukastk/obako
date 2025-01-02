@@ -6,6 +6,7 @@ import clipboardy from 'clipboardy';
 import { getDateStringFromNaturalLanguage } from 'src/utils';
 
 export class Command_GetDateString extends PluginComponent {
+    componentName = 'Cmd: Get date string from natural language';
     commandId = 'get-date-string';
     commandName = 'Get date string from natural language';
 

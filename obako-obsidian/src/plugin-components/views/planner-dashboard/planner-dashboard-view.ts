@@ -33,6 +33,7 @@ const viewPluginSettings: SvelteViewPluginComponentSettings = {
 }
 
 export class View_PlannerDashboard extends SvelteViewPluginComponent {
+    componentName = 'View: Planner Dashboard';
 	static viewPluginSettings = viewPluginSettings;
 
 	constructor(plugin: ObakoPlugin) {

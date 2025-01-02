@@ -7,6 +7,7 @@ import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 
 export class Command_FindNote extends PluginComponent {
+    componentName = 'Cmd: Find note';
     commandId = 'find-note';
     commandName = 'Find note';
 

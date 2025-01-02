@@ -7,6 +7,7 @@ import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 
 export class Command_CreatePlanner extends PluginComponent {
+    componentName = 'Cmd: Create planner';
     commandId = 'create-planner';
     commandName = 'Create planner';
 

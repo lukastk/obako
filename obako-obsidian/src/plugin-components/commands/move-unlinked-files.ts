@@ -3,6 +3,7 @@ import PluginComponent from '../plugin-component';
 import type { ObakoSettingsTab } from 'src/settings';
 
 export class Command_MoveUnlinkedFiles extends PluginComponent {
+    componentName = 'Cmd: Move unlinked files to the non-sync folder';
     commandId = 'move-unlinked-files';
     commandName = 'Move unlinked files to the non-sync folder';
 
@@ -41,6 +42,8 @@ export class Command_MoveUnlinkedFiles extends PluginComponent {
     }
 
     displaySettings(settingTab: ObakoSettingsTab, containerEl: HTMLElement): void {
+        settingTab.addHeading(this.componentName);
+
         settingTab.addTextSetting(
             'Unlinked file types to move',
             'Unlinked file types to move when running the command `' + this.commandName + '`.',

@@ -14,6 +14,8 @@ const SUFFIX_DECORATOR_ID = "obako-inline-title-suffix-decorator";
 const DECORATOR_CONTAINER_ID = "obako-inline-title-decorator-container";
 
 export class UI_InlineTitleDecorator extends PluginComponent {
+    componentName = 'UI: Inline title decorator';
+    
     load() {
         const self = this;
 

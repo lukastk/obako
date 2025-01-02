@@ -45,3 +45,10 @@ If your plugin does not need CSS, delete this file.
 div[data-task="-"] {
     color: var(--text-muted);
 }
+
+/* Headings in settings. Added using ObakoSettingsTab.addHeading(level=NUMBER) in settings.ts */
+.obako-settings-heading {
+    text-decoration: underline;
+    margin-top: 30px;
+    margin-bottom: 5px;
+}

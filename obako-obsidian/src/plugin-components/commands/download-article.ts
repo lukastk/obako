@@ -6,6 +6,7 @@ import clipboardy from 'clipboardy';
 import TurndownService from 'turndown';
 
 export class Command_DownloadArticle extends PluginComponent {
+    componentName = 'Cmd: Download article';
     commandId = 'download-article';
     commandName = 'Download article';
 

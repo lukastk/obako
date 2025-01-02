@@ -11,6 +11,7 @@ import { Planner } from 'src/notes/planner';
 import { Project } from 'src/notes/zettel-types/project';
 
 export class Command_CreateObakoNote extends PluginComponent {
+    componentName = 'Cmd: Create Obako note';
     commandId = 'create-obako-note';
     commandName = 'Create Obako note';
 

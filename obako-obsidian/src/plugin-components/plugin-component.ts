@@ -3,6 +3,8 @@ import type ObakoPlugin from "../plugin";
 import type { ObakoSettingsTab } from "../settings";
 
 export default abstract class PluginComponent {
+    componentName!: string;
+
     plugin: ObakoPlugin;
     app: App;
 

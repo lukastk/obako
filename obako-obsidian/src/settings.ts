@@ -44,8 +44,24 @@ export class ObakoSettingsTab extends PluginSettingTab {
 			'Set the prefix',
 			'commandPrefix');
 
+		
+		this.addHeading('Commands, views, and UI components', 3);
+
 		for (const comp of this.plugin.pluginComponents) {
 			comp.displaySettings(this, containerEl);
+		}
+	}
+
+	addHeading(heading: string, level: number|null = null) {
+		if (level !== null) {
+			const headingEl = document.createElement(`h${level}`);
+			headingEl.textContent = heading;
+			headingEl.classList.add('obako-settings-heading');
+			this.containerEl.appendChild(headingEl);
+		} else {
+			new Setting(this.containerEl)
+				.setName(heading)
+				.setHeading();
 		}
 	}
 

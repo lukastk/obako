@@ -33,6 +33,7 @@ const viewPluginSettings: SvelteViewPluginComponentSettings = {
 }
 
 export class View_LogDashboard extends SvelteViewPluginComponent {
+    componentName = 'View: Log Dashboard';
 	static viewPluginSettings = viewPluginSettings;
 
 	constructor(plugin: ObakoPlugin) {
