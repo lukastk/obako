@@ -5,6 +5,7 @@ import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
+import { Log } from 'src/notes/zettel-types/log';
 
 export class Command_CreateLog extends PluginComponent {
     commandId = 'create-log';
@@ -20,7 +21,7 @@ export class Command_CreateLog extends PluginComponent {
                         new PickLogLink(this.app, async (logLinkNote, event) => {
                             const noteData: NoteCreationData = {
                                 title: title,
-                                noteType: 'log',
+                                noteType: Log.noteTypeStr,
                                 frontmatterData: {
                                     links: [logLinkNote.filepath],
                                 },
