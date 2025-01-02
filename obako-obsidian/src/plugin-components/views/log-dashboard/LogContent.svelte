@@ -21,8 +21,8 @@
 		dispatch("clicked", isCollapsed);
 		isCollapsed = !isCollapsed;
 		if (
-			((event.metaKey || event.ctrlKey) && !fromInternalLink) // Open note if clicked on the main log content with meta or ctrl key pressed down
-			|| ( !(event.metaKey || event.ctrlKey) && fromInternalLink) // Open note if clicked on the internal link
+			((event.metaKey || event.ctrlKey) && !fromInternalLink) || // Open note if clicked on the main log content with meta or ctrl key pressed down
+			(!(event.metaKey || event.ctrlKey) && fromInternalLink) // Open note if clicked on the internal link
 		) {
 			log.open();
 		}
@@ -46,12 +46,17 @@
 				<div
 					class="content-collapser-vertical-line {selected
 						? 'selected-collapser-col'
+						: ''} {isCollapsed
+						? 'content-collapser-col-collapsed'
 						: ''}"
 				></div>
 			</td>
 
 			<td>
 				<h5 class="log-title">
+					<span class="note-decorator"
+						>{log.getTitlePrefixDecoratorString()}</span
+					>
 					<span class="log-date">{dateStr}</span>
 					<span class={selected ? "selected-log-title" : ""}>
 						<InternalLink
@@ -97,14 +102,21 @@
 		font-size: var(--font-small);
 		color: var(--text-muted);
 	}
+	.note-decorator {
+		font-size: var(--font-small);
+		color: var(--text-muted);
+	}
 
 	.content-collapser-col {
 		cursor: pointer;
 		padding-left: 20px;
 		padding-right: 20px;
-		width: 5px;
+		width: 4px;
 		text-align: center;
 		opacity: 0.6;
+	}
+	.content-collapser-col-collapsed {
+		width: 6px !important;
 	}
 
 	.content-collapser-vertical-line {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getAllNotes } from "src/note-loader";
 	import { Log } from "src/notes/zettel-types/log";
+	import { Planner } from "src/notes/planner";
 	import { onMount } from "svelte";
 	import { renderMarkdown } from "src/utils";
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
@@ -10,24 +11,35 @@
 	import { format } from "date-fns";
 	import type { StringDecoder } from "string_decoder";
 
-	export let logFilter: (log: Log) => boolean = () => true;
+	export let noteFilter: (note: Log | Planner) => boolean = (note) => {
+		if (note.noteType === Planner.noteTypeStr)
+			return note.rangeType === "day" || note.rangeType === "week";
+		return true;
+	};
 	export let initialLogGroupCollapse: boolean = false;
 	export let initialLogCollapse: boolean = false;
 	export let disableKeyboardNavigation: boolean = false;
 	export let fullWidth: boolean = false;
+	export let includeFutureDates: boolean = false;
 
 	export let isInFocus: () => boolean = () => true;
 
-	let logNotes: Log[] = getAllNotes()
-		.filter((note) => note.noteType === "log")
-		.filter(logFilter);
+	let notes: (Log | Planner)[] = getAllNotes()
+		.filter((note) => note.date)
+		.filter(
+			(note) =>
+				note.noteType === Log.noteTypeStr ||
+				note.noteType === Planner.noteTypeStr,
+		)
+		.filter((note) => includeFutureDates || note.date <= new Date())
+		.filter(noteFilter);
 
-	logNotes.sort((a, b) => b.date.getTime() - a.date.getTime());
+	notes.sort((a, b) => b.date.getTime() - a.date.getTime());
 	const logKeyToNote: Record<string, Log> = Object.fromEntries(
-		logNotes.map((log) => [`log-${log.filepath}`, log]),
+		notes.map((log) => [`log-${log.filepath}`, log]),
 	);
 
-	const logsByDate: Record<string, Log[]> = logNotes.reduce((acc, log) => {
+	const logsByDate: Record<string, Log[]> = notes.reduce((acc, log) => {
 		const dateStr = format(log.date, "yyyy-MM-dd 'w'II EEE");
 		acc[dateStr] = acc[dateStr] || [];
 		acc[dateStr].push(log);
@@ -41,7 +53,7 @@
 
 	for (const dateStr of logGroupDates)
 		collapseStatus[`date-${dateStr}`] = initialLogGroupCollapse;
-	for (const log of logNotes)
+	for (const log of notes)
 		collapseStatus[`log-${log.filepath}`] = initialLogCollapse;
 
 	let selectedLogGroupIndex = -1;
@@ -57,7 +69,7 @@
 
 	function getSelectedItem() {
 		if (selectedLogIndex != -1) {
-			return `log-${logNotes[selectedLogIndex].filepath}`;
+			return `log-${notes[selectedLogIndex].filepath}`;
 		} else {
 			return `date-${logGroupDates[selectedLogGroupIndex]}`;
 		}
@@ -73,7 +85,7 @@
 				item.substring("date-".length),
 			);
 		} else {
-			selectedLogIndex = logNotes.indexOf(logKeyToNote[item]);
+			selectedLogIndex = notes.indexOf(logKeyToNote[item]);
 		}
 	}
 
@@ -93,15 +105,18 @@
 	}
 
 	function moveItem(direction: number) {
-		if (selectedLogIndex != -1) {
-			selectedLogIndex =
-				(logNotes.length + selectedLogIndex + direction) %
-				logNotes.length;
-		} else {
-			selectedLogGroupIndex =
-				(logGroupDates.length + selectedLogGroupIndex + direction) %
-				logGroupDates.length;
-		}
+		// if (selectedLogIndex != -1) {
+		// 	selectedLogIndex =
+		// 		(notes.length + selectedLogIndex + direction) %
+		// 		notes.length;
+		// } else {
+		// 	selectedLogGroupIndex =
+		// 		(logGroupDates.length + selectedLogGroupIndex + direction) %
+		// 		logGroupDates.length;
+		// }
+		selectedLogIndex += direction;
+		selectedLogIndex = Math.min(notes.length - 1, selectedLogIndex);
+		selectedLogIndex = Math.max(0, selectedLogIndex);
 		updateSelectStatuses();
 	}
 
@@ -121,7 +136,7 @@
 			) {
 				event.preventDefault();
 				if (selectedLogIndex != -1) {
-					const selectedLog = logNotes[selectedLogIndex];
+					const selectedLog = notes[selectedLogIndex];
 					for (const dateStr of Object.keys(logsByDate)) {
 						if (logsByDate[dateStr].includes(selectedLog)) {
 							selectedLogGroupIndex =
@@ -131,7 +146,7 @@
 					}
 					selectedLogIndex = -1;
 				} else {
-					selectedLogIndex = logNotes.indexOf(
+					selectedLogIndex = notes.indexOf(
 						logsByDate[logGroupDates[selectedLogGroupIndex]][0],
 					);
 					selectedLogGroupIndex = -1;
@@ -144,7 +159,7 @@
 			} else if (event.key === "s") {
 				event.preventDefault();
 				collapseStatus[getSelectedItem()] = true;
-				if (selectedLogIndex != -1) logNotes[selectedLogIndex].open();
+				if (selectedLogIndex != -1) notes[selectedLogIndex].open();
 				moveItem(1);
 			} else if (event.key === " ") {
 				event.preventDefault();
