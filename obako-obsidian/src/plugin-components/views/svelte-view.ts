@@ -29,11 +29,18 @@ export class SvelteView extends ItemView {
         return this.viewSettings.displayName;
     }
 
+    isInFocus() {
+        return this.app.workspace.getActiveViewOfType(this.constructor) === this;
+    }
+
     async onOpen() {
         const container = this.containerEl.children[1];
         container.empty();
         this.viewComp = new this.viewSettings.viewCompClass({
             target: container,
+            props: {
+                isInFocus: () => this.isInFocus(),
+            },
         });
     }
 

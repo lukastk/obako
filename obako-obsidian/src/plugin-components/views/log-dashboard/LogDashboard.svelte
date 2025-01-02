@@ -16,6 +16,8 @@
 	export let disableKeyboardNavigation: boolean = false;
 	export let fullWidth: boolean = false;
 
+	export let isInFocus: () => boolean = () => true;
+
 	let logNotes: Log[] = getAllNotes()
 		.filter((note) => note.noteType === "log")
 		.filter(logFilter);
@@ -105,6 +107,10 @@
 
 	onMount(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if (!isInFocus()) {
+				return;
+			}
+
 			if (event.key === "ArrowDown" || event.key === "ArrowUp") {
 				event.preventDefault();
 				const direction = event.key === "ArrowDown" ? 1 : -1;

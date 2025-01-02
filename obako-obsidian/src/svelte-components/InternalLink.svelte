@@ -9,6 +9,7 @@
 	export let note: string | TFile | BasicNote;
 	export let displayTitleDecorator = false;
 
+	export let disableOpenOnClick = false;
 	export let onClick: (event: MouseEvent) => void = () => {};
 
 	const linkId = generateRandomId();
@@ -24,10 +25,11 @@
 	const filePath = note.file.path;
 
 	function handleClick(event: MouseEvent) {
-		event.preventDefault(); // Prevent the default browser action
-		const inNewPane = event.metaKey || event.ctrlKey;
-		note.open(inNewPane);
-
+		if (!disableOpenOnClick) {
+			event.preventDefault(); // Prevent the default browser action
+			const inNewPane = event.metaKey || event.ctrlKey;
+			note.open(inNewPane);
+		}
 		onClick(event);
 	}
 
@@ -47,15 +49,22 @@
 </script>
 
 <a class="internal-link" href={filePath} on:click={handleClick}>
-	<div class="inline-title-prefix-decorator" bind:this={prefixDecorator}></div>
-	
+	<div
+		class="inline-title-prefix-decorator"
+		bind:this={prefixDecorator}
+	></div>
+
 	{text}
 
-	<div class="inline-title-suffix-decorator" bind:this={suffixDecorator}></div>
+	<div
+		class="inline-title-suffix-decorator"
+		bind:this={suffixDecorator}
+	></div>
 </a>
 
 <style>
-	.inline-title-prefix-decorator, .inline-title-suffix-decorator {
+	.inline-title-prefix-decorator,
+	.inline-title-suffix-decorator {
 		display: inline;
 	}
 

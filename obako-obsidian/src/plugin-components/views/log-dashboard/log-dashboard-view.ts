@@ -16,7 +16,6 @@ class LogDashboardView extends SvelteView {
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
-        console.log(this)
 	}
 }
 

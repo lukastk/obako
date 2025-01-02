@@ -8,6 +8,8 @@
 	import { Planner } from "../../../notes/planner";
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
 
+	export let isInFocus: () => boolean = () => true;
+
 	const planners = getNotes("planner") as Planner[];
 	planners.sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0));
 	const invalidPlanners = getNotes("planner", false).filter(
