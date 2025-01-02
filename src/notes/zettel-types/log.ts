@@ -30,7 +30,7 @@ export class Log extends Zettel {
         spec.notetype.default = this.noteTypeStr;
         spec.cons.default = false;
         spec.cons.skipCreationIfAbsent = false;
-        spec['cons-hp'].default = false;
+        spec['cons-hp'].default = true;
         spec['cons-hp'].skipCreationIfAbsent = false;
         return spec;
     }
