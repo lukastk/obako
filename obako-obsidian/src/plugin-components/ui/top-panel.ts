@@ -7,6 +7,7 @@ import { loadNote } from '../../note-loader';
 import PluginComponent from '../plugin-component';
 import { around } from 'monkey-around';
 import { getMarkdownViewMode } from 'src/utils';
+import { BasicNote } from 'src/notes/basic-note';
 
 const PANEL_CLASS = "obako-note-top-panel";
 
@@ -68,6 +69,8 @@ export class UI_TopPanel extends PluginComponent {
 
         // Add a new banner
         const note = loadNote(leaf.file);
+        if (note instanceof BasicNote) return;
+
         const panel = document.createElement("div");
         panel.className = PANEL_CLASS;
         note.setTopPanel(panel);
