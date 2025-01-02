@@ -121,7 +121,7 @@
 		initialLogCollapse={true}
 		disableKeyboardNavigation={true}
 		fullWidth={true}
-		logFilter={(log) => log.date >= note.date && log.date <= note.endDate}
+		noteFilter={(log) => log.date >= note.date && log.date <= note.endDate}
 	/>
 </Collapsible>
 
@@ -148,6 +148,6 @@
 		initialLogCollapse={true}
 		disableKeyboardNavigation={true}
 		fullWidth={true}
-		logFilter={(log) => note.linkedBy(log)}
+		noteFilter={(log) => note.linkedBy(log)}
 	/>
 </Collapsible>
