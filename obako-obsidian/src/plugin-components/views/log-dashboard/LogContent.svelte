@@ -17,11 +17,14 @@
 
 	const dispatch = createEventDispatcher();
 
-	function handleClick(event: MouseEvent) {
+	function handleClick(event: MouseEvent, fromInternalLink: boolean = false) {
 		dispatch("clicked", isCollapsed);
 		isCollapsed = !isCollapsed;
-		if (event.metaKey || event.ctrlKey) {
-			log.open(event.shiftKey);
+		if (
+			((event.metaKey || event.ctrlKey) && !fromInternalLink) // Open note if clicked on the main log content with meta or ctrl key pressed down
+			|| ( !(event.metaKey || event.ctrlKey) && fromInternalLink) // Open note if clicked on the internal link
+		) {
+			log.open();
 		}
 	}
 
@@ -54,7 +57,8 @@
 						<InternalLink
 							note={log}
 							text={log.logTitle}
-							onClick={handleClick}
+							onClick={(event) => handleClick(event, true)}
+							disableOpenOnClick={true}
 						/>
 					</span>
 				</h5>
