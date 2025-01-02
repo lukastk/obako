@@ -12,7 +12,7 @@
 	import { getAllNotes } from "src/note-loader";
 	import type { ObakoTask } from "src/task-utils";
 	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
-
+	import { Log } from "src/notes/log";
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -53,7 +53,7 @@
 
 	const incomingLinkedLogs = note
 		.getIncomingLinkedNotes()
-		.filter((note) => note.noteType === "log");
+		.filter((note) => note.noteType === Log.noteTypeStr);
 
 	let numScheduledTodos: number = tasks
 		.filter(scheduledTasksFilter)
@@ -69,7 +69,6 @@
 		(_note) =>
 			!(_note.equals(note)) &&
 			_note instanceof ObakoNote &&
-			//!(["planner", "log"].includes(_note.noteType)) &&
 			_note.createdAt &&
 			_note.createdAt >= note.date &&
 			_note.createdAt <= note.endDate,

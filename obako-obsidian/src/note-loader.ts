@@ -44,9 +44,9 @@ export function getNoteType(file: TFile | string | null, frontmatter: Record<str
 
     if (!noteType) {
         if (isInZettelFolder) {
-            noteType = "capture";
+            noteType = Capture.noteTypeStr;
         } else if (isInPlannerFolder) {
-            noteType = "planner";
+            noteType = Planner.noteTypeStr;
         }
     }
 

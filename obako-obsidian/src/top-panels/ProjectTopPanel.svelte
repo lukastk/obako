@@ -9,7 +9,7 @@
 
 	const incomingLinkedLogs = note
 		.getIncomingLinkedNotes()
-		.filter((note) => note.noteType === "log");
+		.filter((note) => note.noteType === Log.noteTypeStr);
 </script>
     
 <CollapsibleZettelHierarchyDisplay

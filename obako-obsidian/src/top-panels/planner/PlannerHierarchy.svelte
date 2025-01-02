@@ -5,7 +5,7 @@
 	export let note: Planner;
 
 	const allPlannerNotes: Planner[] = getAllNotes().filter(
-		(note) => (note.noteType === "planner") && note.validate(),
+		(note) => (note.noteType === Planner.noteTypeStr) && note.validate(),
 	) as Planner[];
 
 	const supersetPlanners: Planner[] = [];

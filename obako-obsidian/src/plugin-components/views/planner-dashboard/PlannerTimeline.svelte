@@ -134,7 +134,7 @@
 	function refreshItems() {
 		items.clear();
 
-		const planners = getNotes("planner").filter((note) =>
+		const planners = getNotes(Planner.noteTypeStr).filter((note) =>
 			note.validate(),
 		) as Planner[];
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import PlannerTimeline from "./PlannerTimeline.svelte";
-	import FrontmatterCheckbox from "../../../svelte-components/FrontmatterCheckbox.svelte";
 	import { writable } from "svelte/store";
 
 	import { registerVaultOn, getReloadKey } from "../../../internal-utils";
@@ -10,9 +9,9 @@
 
 	//export let isInFocus: () => boolean = () => true;
 
-	const planners = getNotes("planner") as Planner[];
+	const planners = getNotes(Planner.noteTypeStr) as Planner[];
 	planners.sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0));
-	const invalidPlanners = getNotes("planner", false).filter(
+	const invalidPlanners = getNotes(Planner.noteTypeStr, false).filter(
 		(note) => !note?.validate(),
 	) as Planner[];
 	const reloadKey = writable(0);
@@ -24,7 +23,7 @@
 	registerVaultOn("all", (file) => {
 		// Refresh the active planners list
 		setTimeout(() => {
-			const updatedPlanners = getNotes("planner") as Planner[];
+			const updatedPlanners = getNotes(Planner.noteTypeStr) as Planner[];
 			planners.length = 0;
 			planners.push(...updatedPlanners);
 		}, 10);
