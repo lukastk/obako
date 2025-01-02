@@ -70,7 +70,7 @@ export class BasicNote {
 
     reloadFrontmatterAndFileCache() {
         this.fileCache = app.metadataCache.getFileCache(this.file);
-        this.frontmatter = processFrontmatter(this.fileCache.frontmatter, this.constructor.getFrontmatterSpec());
+        this.frontmatter = processFrontmatter(this?.fileCache?.frontmatter, this.constructor.getFrontmatterSpec());
     }
     
     getOutgoingLinkedNotes(): BasicNote[] {
