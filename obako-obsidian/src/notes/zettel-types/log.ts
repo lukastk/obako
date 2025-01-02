@@ -1,11 +1,12 @@
-import { Transient } from './transient';
 import type { TFile } from 'obsidian';
 import { getDateStringFromDate, getDateStringFromNaturalLanguage, getWeekNumber, isDateValid } from 'src/utils';
 import { Setting } from 'obsidian';
 import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
 import type { NoteCreationData } from 'src/note-loader';
+import { Zettel } from '../zettel';
+import type { FrontmatterSpec } from '../note-frontmatter';
 
-export class Log extends Transient {
+export class Log extends Zettel {
     static noteTypeStr = "log";
     static noteTypeDisplayName = "Log";
     static titleDecoratorString = "⁍";
@@ -20,6 +21,18 @@ export class Log extends Transient {
         const date = new Date(this.file.basename.split(/\s+/)[0]);
         this.date = isDateValid(date) ? date : null;
         this.logTitle = this.file.basename.slice(dateStr.length + 1) || "";
+    }
+
+    static getFrontmatterSpec(): FrontmatterSpec {
+        const spec: FrontmatterSpec = {
+            ...super.getFrontmatterSpec(),
+        };
+        spec.notetype.default = this.noteTypeStr;
+        spec.cons.default = false;
+        spec.cons.skipCreationIfAbsent = false;
+        spec['cons-hp'].default = false;
+        spec['cons-hp'].skipCreationIfAbsent = false;
+        return spec;
     }
 
     validate(): boolean {

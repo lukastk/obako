@@ -18,17 +18,17 @@ import { ObakoNote } from './notes/obako-note';
 import { Transient } from './notes/zettel-types/transient';
 
 export const noteTypeToNoteClass: Record<string, any> = {
-    memo: Memo, 
-    pad: Pad,
-    capture: Capture,
-    log: Log,
-    planner: Planner,
-    project: Project,
+    [Memo.noteTypeStr]: Memo, 
+    [Pad.noteTypeStr]: Pad,
+    [Capture.noteTypeStr]: Capture,
+    [Log.noteTypeStr]: Log,
+    [Planner.noteTypeStr]: Planner,
+    [Project.noteTypeStr]: Project,
 
-    obakoNote: ObakoNote,
-    transient: Transient,
-    basicNote: BasicNote,
-    zettel: Zettel,
+    [ObakoNote.noteTypeStr]: ObakoNote,
+    [Transient.noteTypeStr]: Transient,
+    [BasicNote.noteTypeStr]: BasicNote,
+    [Zettel.noteTypeStr]: Zettel,
 };
 
 export function getNoteType(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
@@ -109,7 +109,7 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
     if (!noteData.title) throw new Error('Note title is required');
 
     const frontmatterSpec = noteClass.getFrontmatterSpec();
-    const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec)};
+    const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec, true)};
     frontmatter.createdat = new Date();
 
     let yamlEntries: string[] = [];

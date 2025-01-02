@@ -5,7 +5,7 @@ import type { NoteHierarchy } from '../zettel';
 import ProjectTopPanel from 'src/top-panels/ProjectTopPanel.svelte';
 
 export class Project extends Zettel {
-    static noteTypeStr = "project";
+    static noteTypeStr = "proj";
     static noteTypeDisplayName = "Project";
     static titleDecoratorString = "●";
 
