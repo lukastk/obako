@@ -120,7 +120,7 @@
 		initialLogCollapse={true}
 		disableKeyboardNavigation={true}
 		fullWidth={true}
-		noteFilter={(log) => log.date >= note.date && log.date <= note.endDate}
+		noteFilter={(_note) => (_note.date >= note.date && _note.date <= note.endDate) && !note.equals(_note)}
 	/>
 </Collapsible>
 

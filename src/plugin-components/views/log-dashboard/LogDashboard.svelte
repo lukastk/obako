@@ -11,21 +11,23 @@
 	import { format } from "date-fns";
 	import type { StringDecoder } from "string_decoder";
 
-	export let noteFilter: (note: Log | Planner) => boolean = (note) => {
-		if (note.noteType === Planner.noteTypeStr)
-			return note.rangeType === "day" || note.rangeType === "week";
-		return true;
-	};
+	export let noteFilter: (note: Log | Planner) => boolean = () => true;
 	export let initialLogGroupCollapse: boolean = false;
 	export let initialLogCollapse: boolean = false;
 	export let disableKeyboardNavigation: boolean = false;
 	export let fullWidth: boolean = false;
 	export let includeFutureDates: boolean = false;
+	export let onlyDailyAndWeeklyPlanners: boolean = true;
 
 	export let isInFocus: () => boolean = () => true;
 
 	let notes: (Log | Planner)[] = getAllNotes()
 		.filter((note) => note.date)
+		.filter((note) => {
+			if (onlyDailyAndWeeklyPlanners && note instanceof Planner)
+				return note.rangeType === "day" || note.rangeType === "week";
+			return true;
+		})
 		.filter(
 			(note) =>
 				note.noteType === Log.noteTypeStr ||
