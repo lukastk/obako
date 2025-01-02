@@ -25,7 +25,7 @@ export class Command_CreateLog extends PluginComponent {
                                 title: title,
                                 noteType: Log.noteTypeStr,
                                 frontmatterData: {
-                                    links: [logLinkNote.filepath],
+                                    links: logLinkNote ? [logLinkNote.filepath] : [],
                                 },
                                 extraData: {
                                     logDate: dateStr,
@@ -56,13 +56,16 @@ class PickLogLink extends FuzzySuggestModal<BasicNote> {
         this.allNotes = getAllNotes().filter(note => note instanceof ObakoNote);
         this.allNotes.sort((a, b) => `${a.noteType}: ${a.name}`.localeCompare(`${b.noteType}: ${b.name}`));
         this.onSubmit = onSubmit;
+
+        this.allNotes.unshift(null);
     }
 
     getItems(): BasicNote[] {
         return this.allNotes;
     }
 
-    getItemText(note: BasicNote): string {
+    getItemText(note: BasicNote|null): string {
+        if (!note) return 'No link';
         return `${note.noteType}: ${note.name}`;
     }
 
