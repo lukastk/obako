@@ -15,6 +15,7 @@ import { Command_FindNote } from './plugin-components/commands/find-note';
 import { Command_CreateObakoNote } from './plugin-components/commands/create-obako-note';
 import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
+import { Command_CreateHighPriorityCapture } from './plugin-components/commands/create-high-priority-capture';
 import { Command_CreatePlanner } from './plugin-components/commands/create-planner';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
@@ -61,8 +62,9 @@ export default class ObakoPlugin extends Plugin {
 			new Command_FindNote(this),
 			new Command_CreateObakoNote(this),
 			new Command_CreateLog(this),
-			new Command_CreatePlanner(this),
 			new Command_CreateCapture(this),
+			new Command_CreateHighPriorityCapture(this),
+			new Command_CreatePlanner(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),

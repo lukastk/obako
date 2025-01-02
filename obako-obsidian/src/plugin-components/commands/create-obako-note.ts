@@ -3,6 +3,12 @@ import PluginComponent from '../plugin-component';
 import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
+import { Memo } from 'src/notes/zettel-types/memo';
+import { Pad } from 'src/notes/zettel-types/pad';
+import { Capture } from 'src/notes/zettel-types/capture';
+import { Log } from 'src/notes/zettel-types/log';
+import { Planner } from 'src/notes/planner';
+import { Project } from 'src/notes/zettel-types/project';
 
 export class Command_CreateObakoNote extends PluginComponent {
     commandId = 'create-obako-note';
@@ -42,12 +48,12 @@ export class CreateObakoNoteModal extends Modal {
 
     noteData: NoteCreationData;
     noteTypes: string[] = [
-        'memo',
-        'pad',
-        'capture',
-        'log',
-        'planner',
-        'project',
+        Memo.noteTypeStr,
+        Pad.noteTypeStr,
+        Capture.noteTypeStr,
+        Log.noteTypeStr,
+        Planner.noteTypeStr,
+        Project.noteTypeStr,
     ];
 
     constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {

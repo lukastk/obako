@@ -9,25 +9,27 @@ export class Command_CreateCapture extends PluginComponent {
     commandName = 'Create capture';
 
     load() {
+        this.addCommand(false);
+    }
+
+    addCommand(highPriorityCapture: boolean = false) {
         this.plugin.addCommand({
             id: this.commandId,
             name: this.commandName,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     new SetContentModal(this.app, async (content) => {
-                        const dateTimeStr = (new Date()).toISOString().split('.')[0].replace('T', '_').replaceAll(':','');
-                        title = `${dateTimeStr} ${title}`;
-
                         const noteData: NoteCreationData = {
                             title: title,
                             content: content,
                             noteType: Capture.noteTypeStr,
                             frontmatterData: {
+                                "cons": false,
+                                "cons-hp": highPriorityCapture,
                             },
                             extraData: {
                             },
                         };
-                        console.log(noteData);
                         createNote(noteData).then((file) => {
                             setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
                                 if (file)

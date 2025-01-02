@@ -12,7 +12,7 @@
 	import { getAllNotes } from "src/note-loader";
 	import type { ObakoTask } from "src/task-utils";
 	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
-	import { Log } from "src/notes/log";
+	import { Log } from "src/notes/zettel-types/log";
 	export let note: Planner;
 
 	const tasks = getTasks();
