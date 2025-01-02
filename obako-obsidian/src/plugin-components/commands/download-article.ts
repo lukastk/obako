@@ -1,11 +1,10 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
-import PluginComponent from '../plugin-component';
-
+import { CommandPluginComponent } from '../command-plugin-component';
 import Parser from '@postlight/parser';
 import clipboardy from 'clipboardy';
 import TurndownService from 'turndown';
 
-export class Command_DownloadArticle extends PluginComponent {
+export class Command_DownloadArticle extends CommandPluginComponent {
     componentName = 'Cmd: Download article';
     commandId = 'download-article';
     commandName = 'Download article';
@@ -13,7 +12,7 @@ export class Command_DownloadArticle extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
+            name: this.getCommandName(),
             callback: async () => {
                 new ArticleDownloadModal(this.app, async (url) => {
                     try {

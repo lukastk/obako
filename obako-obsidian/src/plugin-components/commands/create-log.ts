@@ -1,5 +1,4 @@
 import { Modal, App, requestUrl, Setting, FuzzySuggestModal, Notice } from 'obsidian';
-import PluginComponent from '../plugin-component';
 import { createNote, getAllNotes, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
@@ -7,8 +6,9 @@ import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 import { Log } from 'src/notes/zettel-types/log';
 import { getDateStringFromDate } from 'src/utils';
+import { CommandPluginComponent } from '../command-plugin-component';
 
-export class Command_CreateLog extends PluginComponent {
+export class Command_CreateLog extends CommandPluginComponent {
     componentName = 'Cmd: Create log';
     commandId = 'create-log';
     commandName = 'Create log';
@@ -16,7 +16,7 @@ export class Command_CreateLog extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
+            name: this.getCommandName(),
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     //new SetDateModal(this.app, async (dateStr) => {

@@ -1,5 +1,4 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
-import PluginComponent from '../plugin-component';
 import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
@@ -9,8 +8,9 @@ import { Capture } from 'src/notes/zettel-types/capture';
 import { Log } from 'src/notes/zettel-types/log';
 import { Planner } from 'src/notes/planner';
 import { Project } from 'src/notes/zettel-types/project';
+import { CommandPluginComponent } from '../command-plugin-component';
 
-export class Command_CreateObakoNote extends PluginComponent {
+export class Command_CreateObakoNote extends CommandPluginComponent {
     componentName = 'Cmd: Create Obako note';
     commandId = 'create-obako-note';
     commandName = 'Create Obako note';
@@ -18,7 +18,7 @@ export class Command_CreateObakoNote extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
+            name: this.getCommandName(),
             callback: async () => {
                 new CreateObakoNoteModal(this.app, async (noteData) => {
                     createNote(noteData).then((file) => {

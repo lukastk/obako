@@ -1,11 +1,9 @@
 import { App, Notice, Modal, Setting } from 'obsidian';
-import PluginComponent from '../plugin-component';
-import type { ObakoSettingsTab } from 'src/settings';
-
+import { CommandPluginComponent } from '../command-plugin-component';
 import clipboardy from 'clipboardy';
 import { getDateStringFromNaturalLanguage } from 'src/utils';
 
-export class Command_GetDateString extends PluginComponent {
+export class Command_GetDateString extends CommandPluginComponent {
     componentName = 'Cmd: Get date string from natural language';
     commandId = 'get-date-string';
     commandName = 'Get date string from natural language';
@@ -13,7 +11,7 @@ export class Command_GetDateString extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
+            name: this.getCommandName(),
             callback: async () => {
                 new GetDateStringModal(this.app, (naturalLanguageDate) => {
                     const dateString = getDateStringFromNaturalLanguage(naturalLanguageDate);

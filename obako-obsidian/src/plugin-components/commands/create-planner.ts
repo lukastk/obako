@@ -1,12 +1,11 @@
 import { Modal, App, requestUrl, Setting, FuzzySuggestModal, Notice } from 'obsidian';
-import PluginComponent from '../plugin-component';
 import { createNote, getAllNotes, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
-import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
+import { CommandPluginComponent } from '../command-plugin-component';
 
-export class Command_CreatePlanner extends PluginComponent {
+export class Command_CreatePlanner extends CommandPluginComponent {
     componentName = 'Cmd: Create planner';
     commandId = 'create-planner';
     commandName = 'Create planner';
@@ -14,7 +13,7 @@ export class Command_CreatePlanner extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
+            name: this.getCommandName(),
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     new SetDateRangeModal(this.app, async (dateRangeStr) => {
