@@ -11,7 +11,7 @@
 
 	export let selected = false;
 
-	let dateStr = format(log.date, "'w'II EEE");
+	let dateStr = format(log.date, "yyyy-MM-dd 'w'II EEE");
 	let contentLoaded = false;
 	let content: string = "";
 
@@ -19,7 +19,7 @@
 
 	function handleClick(event: MouseEvent) {
 		dispatch("clicked", isCollapsed);
-        isCollapsed = !isCollapsed;
+		isCollapsed = !isCollapsed;
 		if (event.metaKey || event.ctrlKey) {
 			log.open(event.shiftKey);
 		}
@@ -31,36 +31,57 @@
 	});
 </script>
 
-<!-- Height is needed to make the vertical line visible -->
-<table style="height: 1px;" on:click={handleClick}>
-	<tr>
-		<td
-			class="content-collapser-col"
-			on:click={() => (isCollapsed = !isCollapsed)}
-		>
-			<div
-				class="content-collapser-vertical-line {selected
-					? 'selected-collapser-col'
-					: ''}"
-			></div>
-		</td>
+<!-- Wrap the table in a button for better accessibility -->
+<button
+	style="width: 100%; border: none; background: none; padding: 0;"
+	on:click={handleClick}
+	aria-expanded={!isCollapsed}
+>
+	<table style="height: 1px;">
+		<tr>
+			<td class="content-collapser-col">
+				<div
+					class="content-collapser-vertical-line {selected
+						? 'selected-collapser-col'
+						: ''}"
+				></div>
+			</td>
 
-		<td>
-			<h5 class="log-title">
-				<span class="log-date">{dateStr}</span>
-				<span class={selected ? "selected-log-title" : ""}>
-					<InternalLink note={log} text={log.logTitle} />
-				</span>
-			</h5>
+			<td>
+				<h5 class="log-title">
+					<span class="log-date">{dateStr}</span>
+					<span class={selected ? "selected-log-title" : ""}>
+						<InternalLink
+							note={log}
+							text={log.logTitle}
+							onClick={handleClick}
+						/>
+					</span>
+				</h5>
 
-			{#if !isCollapsed && contentLoaded}
-				<MarkdownElement {content} />
-			{/if}
-		</td>
-	</tr>
-</table>
+				{#if !isCollapsed && contentLoaded}
+					<MarkdownElement {content} />
+				{/if}
+			</td>
+		</tr>
+	</table>
+</button>
 
 <style>
+	button {
+		width: 100%;
+		height: auto;
+		border: none;
+		background: none;
+		padding: 0;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		text-align: left;
+		vertical-align: initial;
+		display: block;
+		white-space: normal;
+	}
+
 	.log-title {
 		margin: 0;
 	}

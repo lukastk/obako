@@ -141,7 +141,6 @@
 				if (selectedLogIndex != -1) logNotes[selectedLogIndex].open();
 				moveItem(1);
 			} else if (event.key === " ") {
-				console.log(123123);
 				event.preventDefault();
 				collapseStatus[getSelectedItem()] =
 					!collapseStatus[getSelectedItem()];
@@ -204,5 +203,9 @@
 		list-style-type: none;
 		padding: 0;
 		margin: 0;
+	}
+
+	li {
+		margin-bottom: 5px;
 	}
 </style>

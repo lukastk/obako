@@ -9,6 +9,8 @@
 	export let note: string | TFile | BasicNote;
 	export let displayTitleDecorator = false;
 
+	export let onClick: (event: MouseEvent) => void = () => {};
+
 	const linkId = generateRandomId();
 
 	if (typeof note === "string" || note instanceof TFile) {
@@ -25,6 +27,8 @@
 		event.preventDefault(); // Prevent the default browser action
 		const inNewPane = event.metaKey || event.ctrlKey;
 		note.open(inNewPane);
+
+		onClick(event);
 	}
 
 	let prefixDecorator: HTMLElement | null = null;

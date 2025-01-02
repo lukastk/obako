@@ -13,7 +13,7 @@
 	}
 </script>
 
-<div class="log-group-title {selected ? 'selected' : ''}" on:click={handleClick}>{title}</div>
+<button class="log-group-title {selected ? 'selected' : ''}" on:click={handleClick}>{title}</button>
 
 {#if !isCollapsed}
 	<div class="log-group-content">
@@ -22,6 +22,17 @@
 {/if}
 
 <style>
+	button {
+		width: 100%;
+		border: none;
+		background: none;
+		text-align: left;
+		vertical-align: initial;
+		display: block;
+		border: 0;
+		box-shadow: none;
+	}
+
 	.log-group-title {
 		font-size: 1.2em;
 		font-weight: bold;
