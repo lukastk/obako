@@ -86,7 +86,6 @@
 		padding-top: 5px;
 		padding-bottom: 5px;
 		text-align: left;
-		vertical-align: initial;
 		display: block;
 		white-space: normal;
 	}

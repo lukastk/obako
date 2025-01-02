@@ -1,6 +1,6 @@
 <script lang="ts">
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
-	import type { Planner } from "src/notes/planner";
+	import { Planner } from "src/notes/planner";
 	import { getAllNotes } from "src/note-loader";
 	export let note: Planner;
 

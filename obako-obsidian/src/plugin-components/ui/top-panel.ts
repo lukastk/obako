@@ -71,7 +71,7 @@ export class UI_TopPanel extends PluginComponent {
 
         // Add a new banner
         const note = loadNote(leaf.file);
-        if (note instanceof BasicNote) return;
+        if (note?.noteType === BasicNote.noteTypeStr) return;
 
         const panel = document.createElement("div");
         panel.className = PANEL_CLASS;

@@ -3,6 +3,7 @@
 	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
 	import Collapsible from "src/svelte-components/Collapsible.svelte";
 	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
+	import { Log } from "src/notes/zettel-types/log";
 
 	export let note;
 
