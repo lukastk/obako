@@ -2,6 +2,7 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import PluginComponent from "../plugin-component";
 import type { SvelteComponent } from "svelte";
 import type ObakoPlugin from "src/plugin";
+import { CommandPluginComponent } from "../command-plugin-component";
 
 export interface SvelteViewSettings {
     viewType: string;
@@ -53,10 +54,6 @@ export interface SvelteViewPluginComponentSettings {
     viewType: string;
     svelteViewClass: any;
 
-    addCommand: boolean;
-    commandId: string;
-    commandName: string;
-
     addRibbonIcon: boolean;
     ribbonIcon: string;
     ribbonIconTooltip: string;
@@ -79,28 +76,6 @@ export class SvelteViewPluginComponent extends PluginComponent {
         if (this.viewPluginSettings.addRibbonIcon) {
             this.plugin.addRibbonIcon(this.viewPluginSettings.ribbonIcon, this.viewPluginSettings.ribbonIconTooltip, () => {
                 this.activateView('right');
-            });
-        }
-
-        if (this.viewPluginSettings.addCommand) {
-            this.plugin.addCommand({
-                id: this.viewPluginSettings.commandId,
-                name: this.viewPluginSettings.commandName,
-                callback: async () => {
-                    const openInNewTab = this.plugin.modifierKeyPressed.meta || this.plugin.modifierKeyPressed.ctrl;
-                    const openInRightSidebar = openInNewTab && this.plugin.modifierKeyPressed.shift;
-
-                    let openIn: string;
-                    if (openInRightSidebar) {
-                        openIn = 'right';
-                    } else if (openInNewTab) {
-                        openIn = 'new';
-                    } else {
-                        openIn = 'current';
-                    }
-
-                    this.activateView(openIn);
-                }
             });
         }
     }
@@ -138,4 +113,37 @@ export class SvelteViewPluginComponent extends PluginComponent {
 
 		this.app.workspace.revealLeaf(leaf);
 	}
+}
+
+export abstract class OpenViewCommandPluginComponent extends CommandPluginComponent {
+    private svelteViewPluginComponentName: string;
+
+    constructor(plugin: ObakoPlugin, svelteViewPluginComponentName: string) {
+        super(plugin);
+        this.svelteViewPluginComponentName = svelteViewPluginComponentName;
+    }
+
+    load() {
+        const svelteViewPluginComponent: SvelteViewPluginComponent = this.plugin.pluginComponentLookup[this.svelteViewPluginComponentName] as SvelteViewPluginComponent;
+
+        this.plugin.addCommand({
+            id: this.commandId,
+            name: this.getCommandName(),
+            callback: async () => {
+                const openInNewTab = this.plugin.modifierKeyPressed.meta || this.plugin.modifierKeyPressed.ctrl;
+                const openInRightSidebar = openInNewTab && this.plugin.modifierKeyPressed.shift;
+
+                let openIn: string;
+                if (openInRightSidebar) {
+                    openIn = 'right';
+                } else if (openInNewTab) {
+                    openIn = 'new';
+                } else {
+                    openIn = 'current';
+                }
+
+                svelteViewPluginComponent.activateView(openIn);
+            }
+        });
+    }
 }

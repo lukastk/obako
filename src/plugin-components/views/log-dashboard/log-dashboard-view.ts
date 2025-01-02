@@ -23,10 +23,6 @@ const viewPluginSettings: SvelteViewPluginComponentSettings = {
     viewType: viewSettings.viewType,
     svelteViewClass: LogDashboardView,
 
-    addCommand: true,
-    commandId: 'open-log-dashboard',
-    commandName: 'Open Log Dashboard',
-
     addRibbonIcon: true,
     ribbonIcon: "logs",
     ribbonIconTooltip: "Activate Log Dashboard",

@@ -13,6 +13,10 @@ export abstract class CommandPluginComponent extends PluginComponent {
     getCommandName(): string {
         const globalPrefix = this.plugin.settings?.globalCommandPrefix;
         const shortcode = this.plugin.settings?.pluginComponentSettings[this.constructor.name]?.shortcode || '';
-        return `${globalPrefix}${shortcode} ${this.commandName}`;
+        const prefix = `${globalPrefix}${shortcode}`;
+        if (prefix) 
+            return `${prefix} ${this.commandName}`;
+        else
+            return this.commandName;
     }
 }

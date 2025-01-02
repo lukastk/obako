@@ -63,7 +63,7 @@ export class ObakoSettingsTab extends PluginSettingTab {
 
 		cmdShortcodesTitleEl.textContent = "Command shortcodes";
 
-		this.addTextDescription("Create shortcode prefixes for commands.", cmdShortcodesContentEl);
+		this.addTextDescription("Create shortcode prefixes for commands. Reload the app to see changes.", cmdShortcodesContentEl);
 		for (const comp of this.plugin.pluginComponents) {
 			if (comp instanceof CommandPluginComponent) {
 				this.addTextSetting(

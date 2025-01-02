@@ -23,10 +23,6 @@ const viewPluginSettings: SvelteViewPluginComponentSettings = {
     viewType: viewSettings.viewType,
     svelteViewClass: PlannerDashboardView,
 
-    addCommand: true,
-    commandId: 'open-planner-dashboard',
-    commandName: 'Open Planner Dashboard',
-
     addRibbonIcon: true,
     ribbonIcon: "chart-gantt",
     ribbonIconTooltip: "Activate Planner Dashboard",

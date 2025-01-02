@@ -12,6 +12,8 @@ import { Command_DownloadArticle } from './plugin-components/commands/download-a
 import { Command_MoveUnlinkedFiles } from './plugin-components/commands/move-unlinked-files';
 import { Command_GetDateString } from './plugin-components/commands/get-date-string';
 import { Command_FindNote } from './plugin-components/commands/find-note';
+import { Command_OpenPlannerDashboard } from './plugin-components/commands/open-planner-dashboard';
+import { Command_OpenLogDashboard } from './plugin-components/commands/open-log-dashboard';
 import { Command_CreateObakoNote } from './plugin-components/commands/create-obako-note';
 import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
@@ -31,6 +33,7 @@ export default class ObakoPlugin extends Plugin {
 	settings!: ObakoSettings;
 	defaultSettings!: ObakoSettings;
 	pluginComponents!: PluginComponent[];
+	pluginComponentLookup!: { [key: string]: PluginComponent };
 
 	modifierKeyPressed = {
 		meta: false,
@@ -60,6 +63,8 @@ export default class ObakoPlugin extends Plugin {
 			new Command_MoveUnlinkedFiles(this),
 			new Command_GetDateString(this),
 			new Command_FindNote(this),
+			new Command_OpenPlannerDashboard(this),
+			new Command_OpenLogDashboard(this),
 			new Command_CreateObakoNote(this),
 			new Command_CreateLog(this),
 			new Command_CreateCapture(this),
@@ -70,6 +75,11 @@ export default class ObakoPlugin extends Plugin {
 			new View_PlannerDashboard(this),
 			new View_LogDashboard(this),
 		];
+
+		this.pluginComponentLookup = {};
+		this.pluginComponents.forEach(comp => {
+			this.pluginComponentLookup[comp.constructor.name] = comp;
+		});
 
 		this.defaultSettings = DEFAULT_SETTINGS;
 		for (const comp of this.pluginComponents)
