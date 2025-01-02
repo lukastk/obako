@@ -1,13 +1,13 @@
 import { Modal, App, Setting } from 'obsidian';
-import PluginComponent from '../plugin-component';
 import { createNote } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import { Capture } from 'src/notes/zettel-types/capture';
+import PluginComponent from '../plugin-component';
 
 export class Command_CreateCapture extends PluginComponent {
     commandId = 'create-capture';
     commandName = 'Create capture';
-
+    
     load() {
         this.addCommand(false);
     }
@@ -15,7 +15,7 @@ export class Command_CreateCapture extends PluginComponent {
     addCommand(highPriorityCapture: boolean = false) {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     new SetContentModal(this.app, async (content) => {

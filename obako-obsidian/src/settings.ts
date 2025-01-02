@@ -4,12 +4,14 @@ import type ObakoPlugin from './plugin';
 export interface ObakoSettings {
 	zettelFolder: string;
 	plannerFolder: string;
+	commandPrefix: string;
 	pluginComponentSettings: any;
 }
 
 export const DEFAULT_SETTINGS: ObakoSettings = {
 	zettelFolder: 'zettels',
 	plannerFolder: 'planners',
+	commandPrefix: '',
 	pluginComponentSettings: {},
 }
 
@@ -36,6 +38,11 @@ export class ObakoSettingsTab extends PluginSettingTab {
 			'Folder where planner notes are stored.',
 			'Set the folder name',
 			'plannerFolder');
+		this.addTextSetting(
+			'Command prefix',
+			'Prefix added to the search terms for all commands.',
+			'Set the prefix',
+			'commandPrefix');
 
 		for (const comp of this.plugin.pluginComponents) {
 			comp.displaySettings(this, containerEl);
@@ -54,7 +61,7 @@ export class ObakoSettingsTab extends PluginSettingTab {
 				.setPlaceholder(placeholder)
 				.setValue(settingsDict[setting])
 				.onChange(async (value) => {
-					settingsDict[setting] = value;
+					settingsDict[setting] = value.trim();
 					await this.plugin.saveSettings();
 				}));
 	}

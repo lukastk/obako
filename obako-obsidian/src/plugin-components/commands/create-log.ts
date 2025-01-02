@@ -15,7 +15,7 @@ export class Command_CreateLog extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     //new SetDateModal(this.app, async (dateStr) => {

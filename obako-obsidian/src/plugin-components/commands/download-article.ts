@@ -12,7 +12,7 @@ export class Command_DownloadArticle extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new ArticleDownloadModal(this.app, async (url) => {
                     try {

@@ -17,7 +17,7 @@ export class Command_CreateObakoNote extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new CreateObakoNoteModal(this.app, async (noteData) => {
                     createNote(noteData).then((file) => {

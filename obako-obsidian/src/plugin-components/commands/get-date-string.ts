@@ -12,7 +12,7 @@ export class Command_GetDateString extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new GetDateStringModal(this.app, (naturalLanguageDate) => {
                     const dateString = getDateStringFromNaturalLanguage(naturalLanguageDate);

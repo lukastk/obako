@@ -13,7 +13,7 @@ export class Command_CreatePlanner extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     new SetDateRangeModal(this.app, async (dateRangeStr) => {

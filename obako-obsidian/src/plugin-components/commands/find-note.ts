@@ -13,7 +13,7 @@ export class Command_FindNote extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 new PickNoteLink(this.app, async (note: BasicNote) => {
                 }).open();

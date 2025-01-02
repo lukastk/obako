@@ -9,7 +9,7 @@ export class Command_MoveUnlinkedFiles extends PluginComponent {
     load() {
         this.plugin.addCommand({
             id: this.commandId,
-            name: this.commandName,
+            name: `${this.plugin.settings?.commandPrefix} ${this.commandName}`,
             callback: async () => {
                 const files = this.app.vault.getFiles();
                 const filesToMove: TFile[] = [];
