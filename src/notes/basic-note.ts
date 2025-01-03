@@ -121,6 +121,10 @@ export class BasicNote {
         titleSuffixDecoratorEl.innerHTML = this.getTitleSuffixDecoratorString();
     }
 
+    getDecoratedTitle(): string {
+        return `${this.getTitlePrefixDecoratorString()} ${this.name} ${this.getTitleSuffixDecoratorString()}`;
+    }
+
     async getContent(): Promise<string> {
         const noteContentWithFrontmatter = (await app.vault.cachedRead(this.file)).split("\n");
 
