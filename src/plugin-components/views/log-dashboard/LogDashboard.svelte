@@ -3,13 +3,9 @@
 	import { Log } from "src/notes/zettel-types/log";
 	import { Planner } from "src/notes/planner";
 	import { onMount } from "svelte";
-	import { renderMarkdown } from "src/utils";
-	import InternalLink from "src/svelte-components/InternalLink.svelte";
 	import LogContent from "./LogContent.svelte";
 	import LogGroup from "./LogGroup.svelte";
-	import Collapsible from "src/svelte-components/Collapsible.svelte";
 	import { format } from "date-fns";
-	import type { StringDecoder } from "string_decoder";
 
 	export let noteFilter: (note: Log | Planner) => boolean = () => true;
 	export let initialLogGroupCollapse: boolean = false;
@@ -220,6 +216,13 @@
 	.narrow-width {
 		margin: 0 auto;
 		width: 60%;
+	}
+
+	/* Add a media query to disable .narrow-width on small screens */
+	@media (max-width: 800px) {
+		.narrow-width {
+			width: 100%;
+		}
 	}
 
 	ul {

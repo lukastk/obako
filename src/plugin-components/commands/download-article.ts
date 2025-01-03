@@ -1,6 +1,6 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
 import { CommandPluginComponent } from '../command-plugin-component';
-import Parser from '@postlight/parser';
+//import Parser from '@postlight/parser';
 import clipboardy from 'clipboardy';
 import TurndownService from 'turndown';
 
@@ -18,6 +18,8 @@ export class Command_DownloadArticle extends CommandPluginComponent {
                     try {
                         const result = await requestUrl(url);
                         console.log(result.text);
+
+                        const Parser = await import('@postlight/parser'); // Lazy import as the module is not supported on mobile
 
                         const parsedResult = await Parser.parse(url, { html: result.text });
                         const turndownService = new TurndownService();

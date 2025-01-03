@@ -33,6 +33,7 @@
 		"date-fns": "^4.1.0",
 		"monkey-around": "^3.0.0",
 		"path": "^0.12.7",
+		"path-browserify": "^1.0.1",
 		"turndown": "^7.2.0",
 		"vis-timeline": "^7.7.3",
 		"weeknumber": "^1.2.1"
