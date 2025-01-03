@@ -11,7 +11,7 @@ import PlannerTopPanel from 'src/top-panels/planner/PlannerTopPanel.svelte';
 export class Planner extends ObakoNote {
     static noteTypeStr = "planner";
     static noteTypeDisplayName = "Planner";
-    static titleDecoratorString = "𝝣";
+    static noteIcon = "𝝣";
 
     public date: Date | null;
     public endDate: Date | null;

@@ -12,7 +12,7 @@ export class BasicNote {
 
     static noteTypeStr = "basic-note";
     static noteTypeDisplayName = "Basic Note";
-    static titleDecoratorString = "";
+    static noteIcon = "";
     static titleSuffixDecoratorString = "";
     
     file: TFile;
@@ -101,8 +101,12 @@ export class BasicNote {
     setTopPanel(panel: HTMLElement) {
     }
 
+    getNoteIcon(): string {
+        return this.constructor.noteIcon;
+    }
+
     getTitlePrefixDecoratorString(): string {
-        return this.constructor.titleDecoratorString;
+        return this.constructor.noteIcon;
     }
 
     setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {

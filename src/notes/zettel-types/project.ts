@@ -7,7 +7,7 @@ import ProjectTopPanel from 'src/top-panels/ProjectTopPanel.svelte';
 export class Project extends Zettel {
     static noteTypeStr = "proj";
     static noteTypeDisplayName = "Project";
-    static titleDecoratorString = "●";
+    static noteIcon = "●";
 
     constructor(file: TFile | string) {
         super(file);

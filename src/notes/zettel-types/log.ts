@@ -9,7 +9,7 @@ import type { FrontmatterSpec } from '../note-frontmatter';
 export class Log extends Zettel {
     static noteTypeStr = "log";
     static noteTypeDisplayName = "Log";
-    static titleDecoratorString = "⁍";
+    static noteIcon = "⁍";
 
     date: Date | null = null;
     logTitle: string = "";

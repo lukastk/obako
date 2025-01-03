@@ -29,7 +29,7 @@ import { parseObsidianLink } from 'src/utils';
 export abstract class Zettel extends ObakoNote {
     static noteTypeStr = "zettel";
     static noteTypeDisplayName = "Zettel";
-    static titleDecoratorString = "?zettel";
+    static noteIcon = "?zettel";
 
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
