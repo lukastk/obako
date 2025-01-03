@@ -303,16 +303,20 @@ let __onNoteChange__eventCreated = false;
 export function onMarkdownViewFileChange(leaf: MarkdownView, callback: (oldFile: TFile, newFile: TFile) => void) {
     if (!(leaf.leaf.id in __onNoteChange__leafFiles)) {
         __onNoteChange__leafFiles[leaf.leaf.id] = leaf.file;
-        __onNoteChange__leafCallbacks[leaf.leaf.id] = callback;
+        __onNoteChange__leafCallbacks[leaf.leaf.id] = [];
     }
+    __onNoteChange__leafCallbacks[leaf.leaf.id].push(callback);
 
     if (!__onNoteChange__eventCreated) {
         _obako_plugin.registerEvent(
             app.workspace.on('layout-change', () => {
                 for (const leafId of Object.keys(__onNoteChange__leafFiles)) {
                     const leaf = app.workspace.getLeafById(leafId);
+                    if (!leaf) continue;
                     if (leaf?.view?.file?.path != __onNoteChange__leafFiles[leafId].path) {
-                        __onNoteChange__leafCallbacks[leafId](__onNoteChange__leafFiles[leafId], leaf.view.file);
+                        for (const callback of __onNoteChange__leafCallbacks[leafId]) {
+                            callback(__onNoteChange__leafFiles[leafId], leaf.view.file);
+                        }
                         __onNoteChange__leafFiles[leafId] = leaf.view.file;
                     }
                 }
