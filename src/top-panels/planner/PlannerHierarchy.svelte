@@ -148,7 +148,6 @@
 	}
 
     th {
-        font-size: var(--font-small);
         padding: 0;
         text-align: left;
     }
