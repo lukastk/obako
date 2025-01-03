@@ -13,6 +13,10 @@ export class Project extends Zettel {
         super(file);
     }
 
+    get status(): string {
+        return this.frontmatter.status;
+    }
+
     getDescendantWorkUnits(): NoteHierarchy {
         return this.getDescendantZettels([Project]);
     }
