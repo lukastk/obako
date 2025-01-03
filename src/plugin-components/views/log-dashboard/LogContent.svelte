@@ -60,8 +60,8 @@
 
 			<td>
 				<h5 class="log-title">
-					<span class="note-decorator"
-						>{log.getTitlePrefixDecoratorString()}</span
+					<span class="note-icon"
+						>{log.getNoteIcon()}</span
 					>
 					<span class="log-date">{dateStr}</span>
 					<span class={selected ? "selected-log-title" : ""}>
@@ -107,9 +107,8 @@
 		font-size: var(--font-small);
 		color: var(--text-muted);
 	}
-	.note-decorator {
-		font-size: var(--font-small);
-		color: var(--text-muted);
+	.note-icon {
+		color: var(--text-accent);
 	}
 
 	.content-collapser-col {
