@@ -44,6 +44,12 @@ If your plugin does not need CSS, delete this file.
 /* Display cancelled tasks as muted */
 div[data-task="-"] {
     color: var(--text-muted);
+    text-decoration: line-through;
+}
+/* Display deferred tasks as muted */
+div[data-task=">"] {
+    color: var(--text-muted);
+    text-decoration: line-through;
 }
 
 /* Headings in settings. Added using ObakoSettingsTab.addHeading(level=NUMBER) in settings.ts */
