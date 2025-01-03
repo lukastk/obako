@@ -154,7 +154,7 @@
     }
 
 	td {
-        font-size: var(--font-smaller);
+        font-size: var(--font-small);
 		padding: 0.5rem;
         vertical-align: top;
         width: 25%;
