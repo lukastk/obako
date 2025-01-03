@@ -39,6 +39,7 @@
 		initialLogCollapse={true}
 		disableKeyboardNavigation={true}
 		fullWidth={true}
+		toggleCollapseOnOpen={false}
 		noteFilter={(log) => note.linkedBy(log)}
 	/>
 </Collapsible>
