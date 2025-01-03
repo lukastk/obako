@@ -136,4 +136,21 @@ export class ObakoSettingsTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 	}
+
+	addTextAreaSetting(name: string, desc: string, placeholder: string, setting: string, settingsDict: any = null, containerEl: HTMLElement | null = null) {
+		containerEl = containerEl || this.containerEl;
+		if (!settingsDict)
+			settingsDict = this.plugin.settings;
+
+		new Setting(containerEl)
+			.setName(name)
+			.setDesc(desc)
+			.addTextArea(text => text
+				.setPlaceholder(placeholder)
+				.setValue(settingsDict[setting])
+				.onChange(async (value) => {
+					settingsDict[setting] = value;
+					await this.plugin.saveSettings();
+				}));
+	}
 }

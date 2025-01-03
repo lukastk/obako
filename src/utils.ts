@@ -1,4 +1,4 @@
-import { MarkdownPreviewView, MarkdownView, Notice, TFile } from 'obsidian';
+import { Editor, MarkdownPreviewView, MarkdownView, Notice, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import BasicNote from './notes/basic-note';
 import * as weeknumber from 'weeknumber';
@@ -285,4 +285,14 @@ export function isDateValid(date: Date) {
 
 export function getDateStringFromDate(date: Date) {
     return date.toISOString().slice(0, 10);
+}
+
+export function getSelectionPositions(editor: Editor|null) {
+    if (!editor)
+        editor = app.workspace.getActiveViewOfType(MarkdownView)?.leaf.view.editor;
+
+    return {
+        start: editor.getCursor('from'),
+        end: editor.getCursor('to')
+    }
 }

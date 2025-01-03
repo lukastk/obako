@@ -1,5 +1,5 @@
 import { Notice } from 'obsidian';
-import path from 'path';
+import path from 'path-browserify';
 import { getFile, parseDatesInDateRangeTitle, isDateValid } from 'src/utils';
 import { getNoteType, loadNote } from './note-loader';
 
@@ -112,6 +112,10 @@ export class ObakoTask {
     }
 
     get filePath() { return this.task.taskLocation._tasksFile._path; }
+
+    get taskLine() {
+        return this.task.taskLocation._lineNumber;
+    }
 
     get blockLink() { return this.task.blockLink; }
     get cancelledDate() {
