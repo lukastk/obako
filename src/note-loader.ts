@@ -68,6 +68,19 @@ export function getAllNotes(): BasicNote[] {
     return getMarkdownFiles().map(file => loadNote(file)) as BasicNote[];
 }
 
+export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid: boolean = true): BasicNote[] {
+    let noteClass: typeof BasicNote;
+    if (typeof noteType === 'string')
+        noteClass = noteTypeToNoteClass[noteType];
+    else noteClass = noteType;
+
+    let notes = getMarkdownFiles().map(file =>loadNote(file));
+    notes = notes.filter(note => note instanceof noteClass);
+    if (onlyValid)
+        notes = notes.filter(note => note?.validate());
+    return notes;
+}
+
 export function searchNotes(query: string, noteType: string|null = null): BasicNote[] {
     const notes = getAllNotes();
     return notes.filter(note => {

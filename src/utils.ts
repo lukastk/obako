@@ -31,14 +31,6 @@ export function getMarkdownFiles(filter_func: (note: TFile) => boolean = () => t
     return app.vault.getMarkdownFiles().filter(filter_func);
 }
 
-export function getNotes(noteType: string, onlyValid: boolean = true): BasicNote[] {
-    let notes = getMarkdownFiles().map(file => obako.noteLoader.loadNote(file));
-    notes = notes.filter(note => note?.noteType === noteType);
-    if (onlyValid)
-        notes = notes.filter(note => note?.validate());
-    return notes;
-}
-
 export function parseObsidianLink(link: string): string | null {
     // Check if the input is a string and matches the pattern of an Obsidian link
     if (typeof link !== 'string' || !link.startsWith('[[') || !link.endsWith(']]')) {

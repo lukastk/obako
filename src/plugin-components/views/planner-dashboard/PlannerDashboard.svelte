@@ -2,16 +2,16 @@
 	import PlannerTimeline from "./PlannerTimeline.svelte";
 	import { writable } from "svelte/store";
 
-	import { registerVaultOn, getReloadKey } from "../../../internal-utils";
-	import { getNotes } from "../../../utils";
-	import { Planner } from "../../../notes/planner";
+	import { registerVaultOn, getReloadKey } from "src/internal-utils";
+	import { getAllNotesOfType } from "src/note-loader";
+	import { Planner } from "src/notes/planner";
 	import InternalLink from "src/svelte-components/InternalLink.svelte";
 
 	//export let isInFocus: () => boolean = () => true;
 
-	const planners = getNotes(Planner.noteTypeStr) as Planner[];
+	const planners = getAllNotesOfType(Planner.noteTypeStr) as Planner[];
 	planners.sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0));
-	const invalidPlanners = getNotes(Planner.noteTypeStr, false).filter(
+	const invalidPlanners = getAllNotesOfType(Planner.noteTypeStr, false).filter(
 		(note) => !note?.validate(),
 	) as Planner[];
 	const reloadKey = writable(0);
@@ -23,7 +23,7 @@
 	registerVaultOn("all", (file) => {
 		// Refresh the active planners list
 		setTimeout(() => {
-			const updatedPlanners = getNotes(Planner.noteTypeStr) as Planner[];
+			const updatedPlanners = getAllNotesOfType(Planner.noteTypeStr) as Planner[];
 			planners.length = 0;
 			planners.push(...updatedPlanners);
 		}, 10);

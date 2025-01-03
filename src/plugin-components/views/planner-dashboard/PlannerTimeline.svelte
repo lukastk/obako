@@ -2,10 +2,9 @@
 	import { onMount } from "svelte";
 	import { Timeline, DataSet } from "vis-timeline/standalone";
 	import "vis-timeline/styles/vis-timeline-graph2d.min.css";
-	import { getNotes } from "../../../utils";
-	import { Planner } from "../../../notes/planner";
-	import { getWeekNumber } from "../../../utils";
-	import { registerVaultOn } from "../../../internal-utils";
+	import { getAllNotesOfType } from "src/note-loader";
+	import { Planner } from "src/notes/planner";
+	import { getWeekNumber } from "src/utils";
 
 	export let initialStart: Date | null = null;
 	export let initialEnd: Date | null = null;
@@ -134,7 +133,7 @@
 	function refreshItems() {
 		items.clear();
 
-		const planners = getNotes(Planner.noteTypeStr).filter((note) =>
+		const planners = getAllNotesOfType(Planner.noteTypeStr).filter((note) =>
 			note.validate(),
 		) as Planner[];
 
