@@ -50,17 +50,6 @@ export class UI_TopPanel extends PluginComponent {
                 }
             })
         )
-
-        // Whenever the note is changed (will also trigger when moving between source and preview, potentially doubling up with `registerModeSwitchObserver`)
-        // this.plugin.registerEvent(
-        //     this.app.workspace.on('layout-change', () => {
-        //         self.createTopPanel();
-        //     })
-        // )
-
-        // this.app.workspace.on('file-open', (f, ctx) => {
-        //      self.createTopPanel();
-        // });
     }
 
     unload() {
