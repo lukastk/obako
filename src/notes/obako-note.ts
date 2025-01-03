@@ -7,7 +7,7 @@ import type { NoteCreationData } from 'src/note-loader';
 export abstract class ObakoNote extends BasicNote {
     static noteTypeStr = "obako-note";
     static noteTypeDisplayName = "Obako Note";
-    static titleDecoratorString = "?obako-note";
+    static noteIcon = "?obako-note";
 
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
