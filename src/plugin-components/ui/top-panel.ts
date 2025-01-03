@@ -6,7 +6,7 @@ import { MarkdownView, TFile } from 'obsidian';
 import { loadNote } from '../../note-loader';
 import PluginComponent from '../plugin-component';
 import { around } from 'monkey-around';
-import { getMarkdownViewMode } from 'src/utils';
+import { getMarkdownViewMode, onMarkdownViewFileChange } from 'src/utils';
 import { BasicNote } from 'src/notes/basic-note';
 
 const PANEL_CLASS = "obako-note-top-panel";
@@ -39,6 +39,10 @@ export class UI_TopPanel extends PluginComponent {
                                 // Register observer to detect mode switch, upon which the panel will be updated
                                 self.registerModeSwitchObserver(this.leaf.view);
                                 self.createTopPanel(this.leaf.view);
+
+                                onMarkdownViewFileChange(this.leaf.view, (oldFile, newFile) => {
+                                    self.createTopPanel(this.leaf.view);
+                                });
                             }
                         }, 10);
                         return next.call(this, ...args)
@@ -48,11 +52,15 @@ export class UI_TopPanel extends PluginComponent {
         )
 
         // Whenever the note is changed (will also trigger when moving between source and preview, potentially doubling up with `registerModeSwitchObserver`)
-        this.plugin.registerEvent(
-            this.app.workspace.on('layout-change', () => {
-                self.createTopPanel();
-            })
-        )
+        // this.plugin.registerEvent(
+        //     this.app.workspace.on('layout-change', () => {
+        //         self.createTopPanel();
+        //     })
+        // )
+
+        // this.app.workspace.on('file-open', (f, ctx) => {
+        //      self.createTopPanel();
+        // });
     }
 
     unload() {
@@ -63,6 +71,7 @@ export class UI_TopPanel extends PluginComponent {
 
     createTopPanel(leaf: MarkdownView | null = null) {
         if (!leaf) leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
+
         const containerEl = leaf?.containerEl;
         if (!leaf || !containerEl) return;
 

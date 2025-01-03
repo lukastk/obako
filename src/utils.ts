@@ -229,7 +229,7 @@ export function renderMarkdown(content: string, container: HTMLElement) {
     MarkdownPreviewView.render(app, content, container, '', _obako_plugin);
 }
 
-export function parseDatesInDateRangeTitle(datedTitleStr: string, defaultYear?: string) : {
+export function parseDatesInDateRangeTitle(datedTitleStr: string, defaultYear?: string): {
     plannerTitle: string,
     date: Date | null,
     endDate: Date | null,
@@ -287,12 +287,37 @@ export function getDateStringFromDate(date: Date) {
     return date.toISOString().slice(0, 10);
 }
 
-export function getSelectionPositions(editor: Editor|null) {
+export function getSelectionPositions(editor: Editor | null) {
     if (!editor)
         editor = app.workspace.getActiveViewOfType(MarkdownView)?.leaf.view.editor;
 
     return {
         start: editor.getCursor('from'),
         end: editor.getCursor('to')
+    }
+}
+
+const __onNoteChange__leafFiles = {};
+const __onNoteChange__leafCallbacks = {};
+let __onNoteChange__eventCreated = false;
+export function onMarkdownViewFileChange(leaf: MarkdownView, callback: (oldFile: TFile, newFile: TFile) => void) {
+    if (!(leaf.leaf.id in __onNoteChange__leafFiles)) {
+        __onNoteChange__leafFiles[leaf.leaf.id] = leaf.file;
+        __onNoteChange__leafCallbacks[leaf.leaf.id] = callback;
+    }
+
+    if (!__onNoteChange__eventCreated) {
+        _obako_plugin.registerEvent(
+            app.workspace.on('layout-change', () => {
+                for (const leafId of Object.keys(__onNoteChange__leafFiles)) {
+                    const leaf = app.workspace.getLeafById(leafId);
+                    if (leaf?.view?.file?.path != __onNoteChange__leafFiles[leafId].path) {
+                        __onNoteChange__leafCallbacks[leafId](__onNoteChange__leafFiles[leafId], leaf.view.file);
+                        __onNoteChange__leafFiles[leafId] = leaf.view.file;
+                    }
+                }
+            })
+        )
+        __onNoteChange__eventCreated = true;
     }
 }
