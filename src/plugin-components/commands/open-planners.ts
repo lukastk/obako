@@ -40,7 +40,7 @@ abstract class OpenPlannerCommand extends CommandPluginComponent {
                         }, 10);
                     });
                 } else {
-                    selPlanner.open();
+                    selPlanner.open(true);
                 }
             }
         });
