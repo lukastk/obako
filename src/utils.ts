@@ -40,7 +40,11 @@ export function parseObsidianLink(link: string): string | null {
     const regex = /\[\[([^\]]+)\]\]/;
     const match = link.match(regex);
     if (match) {
-        return match[1]; // This will return the content inside the brackets
+        if (match[1].includes('|')) {
+            return match[1].split('|')[0];
+        } else {
+            return match[1];
+        }
     }
     return null; // Return null if no match is found
 }
