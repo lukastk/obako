@@ -75,33 +75,6 @@ class PickLogLink extends FuzzySuggestModal<BasicNote> {
     }
 }
 
-class SetDateModal extends Modal {
-    constructor(app: App, onSubmit: (dateStr: string) => void) {
-        super(app);
-        this.setTitle('Set log date');
-
-        let dateStr = 'today';
-        new Setting(this.contentEl)
-            .setName('Date')
-            .addText((text) =>
-                text
-                    .setValue(dateStr)
-                    .onChange((value) => {
-                        dateStr = value;
-                    }));
-            .components[0].inputEl.select();
-
-        // Add event listener for ENTER key
-        this.contentEl.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                this.close();
-                onSubmit(dateStr);
-            }
-        });
-    }
-}
-
 class SetTitleModal extends Modal {
     constructor(app: App, onSubmit: (title: string) => void) {
         super(app);
