@@ -53,7 +53,7 @@ class SetDateRangeModal extends Modal {
                     .setValue(dateRangeStr)
                     .onChange((value) => {
                         dateRangeStr = value;
-                    }));
+                    }))
             .components[0].inputEl.select();
 
         // Add event listener for ENTER key
