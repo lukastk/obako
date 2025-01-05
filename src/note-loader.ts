@@ -10,6 +10,7 @@ import { Capture } from './notes/zettel-types/capture';
 import { Pad } from './notes/zettel-types/pad';
 import { BasicNote } from './notes/basic-note';
 import { Memo } from './notes/zettel-types/memo';
+import { Doc } from './notes/zettel-types/doc';
 import { Log } from './notes/zettel-types/log';
 import { Project } from './notes/zettel-types/project';
 import { processFrontmatter } from './notes/note-frontmatter';
@@ -19,6 +20,7 @@ import { Transient } from './notes/zettel-types/transient';
 
 export const noteTypeToNoteClass: Record<string, any> = {
     [Memo.noteTypeStr]: Memo, 
+    [Doc.noteTypeStr]: Doc,
     [Pad.noteTypeStr]: Pad,
     [Capture.noteTypeStr]: Capture,
     [Log.noteTypeStr]: Log,

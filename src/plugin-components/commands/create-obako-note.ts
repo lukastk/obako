@@ -3,6 +3,7 @@ import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import { Memo } from 'src/notes/zettel-types/memo';
+import { Doc } from 'src/notes/zettel-types/doc';
 import { Pad } from 'src/notes/zettel-types/pad';
 import { Capture } from 'src/notes/zettel-types/capture';
 import { Log } from 'src/notes/zettel-types/log';
@@ -50,6 +51,7 @@ export class CreateObakoNoteModal extends Modal {
     noteData: NoteCreationData;
     noteTypes: string[] = [
         Memo.noteTypeStr,
+        Doc.noteTypeStr,
         Pad.noteTypeStr,
         Capture.noteTypeStr,
         Log.noteTypeStr,
