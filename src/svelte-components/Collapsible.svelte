@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let title: string | null = null;
+	export let postTitleText: string = "";
 	export let disabled = false;
 	export let isCollapsed = true;
 	export let reloadButton = false;
@@ -25,7 +26,7 @@
 			: 'inherit'}"
 	>
 		{#if title}
-			<b>{title}</b>&nbsp;{isCollapsed ? "▼" : "▲"}
+			<b>{title}</b> {postTitleText} &nbsp;{isCollapsed ? "▼" : "▲"} 
 		{/if}
 	</button>
 

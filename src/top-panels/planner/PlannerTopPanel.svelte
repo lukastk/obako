@@ -12,6 +12,7 @@
 	import type { ObakoTask } from "src/task-utils";
 	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
+
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -54,19 +55,32 @@
 		.getIncomingLinkedNotes()
 		.filter((note) => note.noteType === Log.noteTypeStr);
 
-	let numScheduledTodos: number = tasks
+	const numScheduledTodos: number = tasks
 		.filter(scheduledTasksFilter)
 		.filter((task) => task.isTodo()).length;
-	let numDueTodos: number = tasks
+	const numDueTodos: number = tasks
 		.filter(dueTasksFilter)
 		.filter((task) => task.isTodo()).length;
-	let numReminders: number = tasks
+	const numReminders: number = tasks
 		.filter(remindersFilter)
 		.filter((task) => task.isTodo()).length;
 
+	const numScheduledTodosOutsideOfNote: number = tasks
+		.filter(scheduledTasksFilter)
+		.filter((task) => task.isTodo())
+		.filter((task) => note.filepath !== task.filePath).length;
+	const numDueTodosOutsideOfNote: number = tasks
+		.filter(dueTasksFilter)
+		.filter((task) => task.isTodo())
+		.filter((task) => note.filepath !== task.filePath).length;
+	const numRemindersOutsideOfNote: number = tasks
+		.filter(remindersFilter)
+		.filter((task) => task.isTodo())
+		.filter((task) => note.filepath !== task.filePath).length;
+
 	let notesCreatedDuringPlannerPeriod = getAllNotes().filter(
 		(_note) =>
-			!(_note.equals(note)) &&
+			!_note.equals(note) &&
 			_note instanceof ObakoNote &&
 			_note.createdAt &&
 			_note.createdAt >= note.date &&
@@ -79,7 +93,8 @@
 </Collapsible>
 
 <Collapsible
-	title={`Tasks (s${numScheduledTodos} d${numDueTodos} r${numReminders})`}
+	title={`Tasks`}
+	postTitleText={`(scheduled: ${numScheduledTodos}[${numScheduledTodosOutsideOfNote}] due: ${numDueTodos}[${numDueTodosOutsideOfNote}] reminders: ${numReminders}[${numRemindersOutsideOfNote}])`}
 	isCollapsed={true}
 >
 	<CollapsibleTaskList
@@ -120,7 +135,10 @@
 		disableKeyboardNavigation={true}
 		fullWidth={true}
 		toggleCollapseOnOpen={false}
-		noteFilter={(_note) => (_note.date >= note.date && _note.date <= note.endDate) && !note.equals(_note)}
+		noteFilter={(_note) =>
+			_note.date >= note.date &&
+			_note.date <= note.endDate &&
+			!note.equals(_note)}
 	/>
 </Collapsible>
 
