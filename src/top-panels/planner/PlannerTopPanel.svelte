@@ -1,5 +1,4 @@
 <script lang="ts">
-	import clipboardy from "clipboardy";
 	import { ObakoNote } from "src/notes/obako-note";
 	import type { Planner } from "src/notes/planner";
 	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
@@ -48,7 +47,7 @@
 		const markdown = scheduledTasks
 			.map((task) => task.originalMarkdown)
 			.join("\n");
-		await clipboardy.write(markdown);
+		navigator.clipboard.writeText(markdown);
 	}
 
 	const incomingLinkedLogs = note

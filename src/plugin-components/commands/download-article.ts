@@ -1,7 +1,6 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
 import { CommandPluginComponent } from '../command-plugin-component';
 //import Parser from '@postlight/parser';
-import clipboardy from 'clipboardy';
 import TurndownService from 'turndown';
 
 export class Command_DownloadArticle extends CommandPluginComponent {
@@ -25,8 +24,7 @@ export class Command_DownloadArticle extends CommandPluginComponent {
                         const turndownService = new TurndownService();
                         const markdown = turndownService.turndown(parsedResult.content);
 
-                        // Copy result.content to the clipboard using clipboardy
-                        await clipboardy.write(markdown);
+                        navigator.clipboard.writeText(markdown);
                         console.log('Content copied to clipboard');
                     } catch (err) {
                         console.error('Failed to process the article: ', err);

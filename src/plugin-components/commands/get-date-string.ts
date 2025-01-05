@@ -1,6 +1,5 @@
 import { App, Notice, Modal, Setting } from 'obsidian';
 import { CommandPluginComponent } from '../command-plugin-component';
-import clipboardy from 'clipboardy';
 import { getDateStringFromNaturalLanguage } from 'src/utils';
 
 export class Command_GetDateString extends CommandPluginComponent {
@@ -15,9 +14,12 @@ export class Command_GetDateString extends CommandPluginComponent {
             callback: async () => {
                 new GetDateStringModal(this.app, (naturalLanguageDate) => {
                     const dateString = getDateStringFromNaturalLanguage(naturalLanguageDate);
-                    clipboardy.write(dateString).then(() => {
+                    if (dateString) {
+                        navigator.clipboard.writeText(dateString);
                         new Notice(`Copied '${dateString}' to clipboard.`);
-                    });
+                    } else {
+                        new Notice('Failed to get date string from natural language date.');
+                    }
                 }).open();
             }
         });
