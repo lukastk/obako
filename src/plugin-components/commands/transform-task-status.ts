@@ -26,8 +26,6 @@ export class Command_TransformTaskStatus extends CommandPluginComponent {
     unload() { }
 
     applyTaskConversion(taskStatusConversionRules: { [key: string]: string }, lineStart: number, lineEnd: number) {
-        console.log(lineStart, lineEnd);
-        console.log(taskStatusConversionRules);
         const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
         const editor = leaf?.leaf.view.editor;
         const notePath = leaf.path;
