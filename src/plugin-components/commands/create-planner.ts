@@ -27,7 +27,7 @@ export class Command_CreatePlanner extends CommandPluginComponent {
                         createNote(noteData).then((file) => {
                             setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
                                 if (file)
-                                    app.workspace.openLinkText(file.path, "", true);
+                                    this.app.workspace.openLinkText(file.path, "", true);
                             }, 10);
                         });
                     }).open();
@@ -37,30 +37,6 @@ export class Command_CreatePlanner extends CommandPluginComponent {
     }
 
     unload() { }
-}
-
-class PickLogLink extends FuzzySuggestModal<BasicNote> {
-    private allNotes: BasicNote[];
-    private onSubmit;
-
-    constructor(app: App, onSubmit: (result: BasicNote, event: MouseEvent | KeyboardEvent) => void) {
-        super(app);
-        this.allNotes = getAllNotes().filter(note => note instanceof ObakoNote);
-        this.allNotes.sort((a, b) => `${a.noteType}: ${a.name}`.localeCompare(`${b.noteType}: ${b.name}`));
-        this.onSubmit = onSubmit;
-    }
-
-    getItems(): BasicNote[] {
-        return this.allNotes;
-    }
-
-    getItemText(note: BasicNote): string {
-        return `${note.noteType}: ${note.name}`;
-    }
-
-    onChooseItem(note: BasicNote, event: MouseEvent | KeyboardEvent) {
-        this.onSubmit(note, event);
-    }
 }
 
 class SetDateRangeModal extends Modal {
