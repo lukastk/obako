@@ -1,8 +1,8 @@
 import { getSelectionPositions } from 'src/utils';
-import { Command_ToggleTaskStatus } from './toggle-task-status';
+import { Command_TransformTaskStatus } from './transform-task-status';
 import { MarkdownView } from 'obsidian';
 
-export class Command_ToggleTaskCancel extends Command_ToggleTaskStatus {
+export class Command_ToggleTaskCancel extends Command_TransformTaskStatus {
     componentName = 'Cmd: Toggle task cancel';
     commandId = 'toggle-task-cancel';
     commandName = 'Toggle task cancel';

@@ -3,10 +3,10 @@ import { CommandPluginComponent } from '../command-plugin-component';
 import { getTasks } from 'src/task-utils';
 import { getSelectionPositions } from 'src/utils';
 
-export class Command_ToggleTaskStatus extends CommandPluginComponent {
-    componentName = 'Cmd: Toggle task status';
-    commandId = 'toggle-task-status';
-    commandName = 'Toggle task status';
+export class Command_TransformTaskStatus extends CommandPluginComponent {
+    componentName = 'Cmd: Transform task status';
+    commandId = 'transform-task-status';
+    commandName = 'Transform task status';
 
     load() {
         this.plugin.addCommand({
