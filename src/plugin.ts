@@ -24,6 +24,7 @@ import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
 import { Command_CreateHighPriorityCapture } from './plugin-components/commands/create-high-priority-capture';
 import { Command_CreatePlanner } from './plugin-components/commands/create-planner';
+import { Command_OpenTodaysPlanner } from './plugin-components/commands/open-todays-planner';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -80,6 +81,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_CreateCapture(this),
 			new Command_CreateHighPriorityCapture(this),
 			new Command_CreatePlanner(this),
+			new Command_OpenTodaysPlanner(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
