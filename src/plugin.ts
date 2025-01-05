@@ -1,6 +1,7 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginManifest, PluginSettingTab, Setting, TFile, TAbstractFile, WorkspaceLeaf } from 'obsidian';
-
-import { ObakoSettings, ObakoSettingsTab, DEFAULT_SETTINGS } from './settings';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, TAbstractFile, WorkspaceLeaf } from 'obsidian';
+import type { PluginManifest } from 'obsidian';
+import { ObakoSettingsTab, DEFAULT_SETTINGS } from './settings';
+import type { ObakoSettings } from './settings';
 import PluginComponent from './plugin-components/plugin-component';
 
 import * as utils from './utils';
@@ -24,7 +25,13 @@ import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
 import { Command_CreateHighPriorityCapture } from './plugin-components/commands/create-high-priority-capture';
 import { Command_CreatePlanner } from './plugin-components/commands/create-planner';
-import { Command_OpenTodaysPlanner } from './plugin-components/commands/open-todays-planner';
+import {
+	Command_OpenTodayPlanner, Command_OpenYesterdaysPlanner, Command_OpenTomorrowsPlanner,
+	Command_OpenThisWeeksPlanner, Command_OpenLastWeeksPlanner, Command_OpenNextWeeksPlanner,
+	Command_OpenThisMonthsPlanner, Command_OpenLastMonthsPlanner, Command_OpenNextMonthsPlanner,
+	Command_OpenThisQuartersPlanner, Command_OpenLastQuartersPlanner, Command_OpenNextQuartersPlanner,
+	Command_OpenThisYearsPlanner, Command_OpenLastYearsPlanner, Command_OpenNextYearsPlanner,
+} from './plugin-components/commands/open-planners';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -81,7 +88,11 @@ export default class ObakoPlugin extends Plugin {
 			new Command_CreateCapture(this),
 			new Command_CreateHighPriorityCapture(this),
 			new Command_CreatePlanner(this),
-			new Command_OpenTodaysPlanner(this),
+			new Command_OpenTodayPlanner(this), new Command_OpenYesterdaysPlanner(this), new Command_OpenTomorrowsPlanner(this),
+			new Command_OpenThisWeeksPlanner(this), new Command_OpenLastWeeksPlanner(this), new Command_OpenNextWeeksPlanner(this),
+			new Command_OpenThisMonthsPlanner(this), new Command_OpenLastMonthsPlanner(this), new Command_OpenNextMonthsPlanner(this),
+			new Command_OpenThisQuartersPlanner(this), new Command_OpenLastQuartersPlanner(this), new Command_OpenNextQuartersPlanner(this),
+			new Command_OpenThisYearsPlanner(this), new Command_OpenLastYearsPlanner(this), new Command_OpenNextYearsPlanner(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),

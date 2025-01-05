@@ -1,7 +1,7 @@
 import type { TFile } from 'obsidian';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { ObakoNote } from './obako-note';
-import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, parseDateRangeStr } from 'src/utils';
+import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, parseDateRangeStr, getWeekNumberStr } from 'src/utils';
 import { getTasks } from 'src/task-utils';
 import type { Task } from 'src/task-utils';
 import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
@@ -123,7 +123,22 @@ export class Planner extends ObakoNote {
             let { date, endDate, rangeType } = parseDatesInDateRangeTitle(noteData.extraData.dateRangeStr, currentYear);
             // If still not valid, try to parse it as natural language
             if (!isDateValid(date)) {
-                noteData.extraData.dateRangeStr = getDateStringFromNaturalLanguage(noteData.extraData.dateRangeStr);
+                const res = getDateStringFromNaturalLanguage(noteData.extraData.dateRangeStr);
+                const resDate = new Date(res);
+
+                // If 'week' is in the date range string, then we presume the date range is 'week'
+                if (noteData.extraData.dateRangeStr.includes('week')) {
+                    noteData.extraData.dateRangeStr = `${resDate.getFullYear()} w${getWeekNumberStr(resDate)}`;
+                } else if (noteData.extraData.dateRangeStr.includes('month')) {
+                    noteData.extraData.dateRangeStr = `${resDate.getFullYear()} ${resDate.getMonth() + 1}`;
+                } else if (noteData.extraData.dateRangeStr.includes('quarter')) {
+                    noteData.extraData.dateRangeStr = `${resDate.getFullYear()} Q${Math.floor(resDate.getMonth() / 3) + 1}`;
+                } else if (noteData.extraData.dateRangeStr.includes('year')) {
+                    noteData.extraData.dateRangeStr = `${resDate.getFullYear()}`;
+                } else {
+                    noteData.extraData.dateRangeStr = resDate; // date range: 'day'
+                }
+
                 if (!noteData.extraData.dateRangeStr) return false;
             } else {
                 // If valid, then we know the date string is missing a year, so we add it

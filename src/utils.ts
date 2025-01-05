@@ -221,6 +221,14 @@ export function getWeekNumber(date: Date): number {
     return weeknumber.weekNumber(date);
 }
 
+export function getWeekNumberStr(date: Date): string {
+    const weekNumber = getWeekNumber(date);
+    if (weekNumber < 10)
+        return `0${weekNumber}`;
+    else
+        return `${weekNumber}`;
+}
+
 export function generateRandomId(length: number = 8): string {
     return Math.random().toString(36).substr(2, length);
 }
