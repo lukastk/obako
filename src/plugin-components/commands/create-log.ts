@@ -20,25 +20,25 @@ export class Command_CreateLog extends CommandPluginComponent {
             callback: async () => {
                 new SetTitleModal(this.app, async (title) => {
                     //new SetDateModal(this.app, async (dateStr) => {
-                        new PickLogLink(this.app, async (logLinkNote, event) => {
-                            const dateStr = getDateStringFromDate(new Date());
-                            const noteData: NoteCreationData = {
-                                title: title,
-                                noteType: Log.noteTypeStr,
-                                frontmatterData: {
-                                    links: logLinkNote ? [logLinkNote.filepath] : [],
-                                },
-                                extraData: {
-                                    logDate: dateStr,
-                                },
-                            };
-                            createNote(noteData).then((file) => {
-                                setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
-                                    if (file)
-                                        app.workspace.openLinkText(file.path, "", true);
-                                }, 10);
-                            });
-                        }).open();
+                    new PickLogLink(this.app, async (logLinkNote, event) => {
+                        const dateStr = getDateStringFromDate(new Date());
+                        const noteData: NoteCreationData = {
+                            title: title,
+                            noteType: Log.noteTypeStr,
+                            frontmatterData: {
+                                links: logLinkNote ? [logLinkNote.filepath] : [],
+                            },
+                            extraData: {
+                                logDate: dateStr,
+                            },
+                        };
+                        createNote(noteData).then((file) => {
+                            setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
+                                if (file)
+                                    app.workspace.openLinkText(file.path, "", true);
+                            }, 10);
+                        });
+                    }).open();
                     //}).open();
                 }).open();
             }
@@ -65,7 +65,7 @@ class PickLogLink extends FuzzySuggestModal<BasicNote> {
         return this.allNotes;
     }
 
-    getItemText(note: BasicNote|null): string {
+    getItemText(note: BasicNote | null): string {
         if (!note) return 'No link';
         return `${note.noteType}: ${note.name}`;
     }
@@ -89,6 +89,7 @@ class SetDateModal extends Modal {
                     .onChange((value) => {
                         dateStr = value;
                     }));
+            .components[0].inputEl.select();
 
         // Add event listener for ENTER key
         this.contentEl.addEventListener('keydown', (event) => {

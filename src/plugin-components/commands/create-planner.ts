@@ -54,6 +54,7 @@ class SetDateRangeModal extends Modal {
                     .onChange((value) => {
                         dateRangeStr = value;
                     }));
+            .components[0].inputEl.select();
 
         // Add event listener for ENTER key
         this.contentEl.addEventListener('keydown', (event) => {
