@@ -15,7 +15,7 @@ import { Command_GetDateString } from './plugin-components/commands/get-date-str
 import { Command_FindNote } from './plugin-components/commands/find-note';
 import { Command_CopyLines } from './plugin-components/commands/copy-lines';
 import { Command_CutLines } from './plugin-components/commands/cut-lines';
-import { Command_ToggleTaskStatus } from './plugin-components/commands/toggle-task-status';
+import { Command_TransformTaskStatus } from './plugin-components/commands/transform-task-status';
 import { Command_ToggleTaskCancel } from './plugin-components/commands/toggle-task-cancel';
 import { Command_ToggleTaskDeferred } from './plugin-components/commands/toggle-task-deferred';
 import { Command_OpenPlannerDashboard } from './plugin-components/commands/open-planner-dashboard';
@@ -78,7 +78,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_FindNote(this),
 			new Command_CopyLines(this),
 			new Command_CutLines(this),
-			new Command_ToggleTaskStatus(this),
+			new Command_TransformTaskStatus(this),
 			new Command_ToggleTaskCancel(this),
 			new Command_ToggleTaskDeferred(this),
 			new Command_OpenPlannerDashboard(this),

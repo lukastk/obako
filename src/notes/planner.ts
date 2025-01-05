@@ -136,7 +136,7 @@ export class Planner extends ObakoNote {
                 } else if (noteData.extraData.dateRangeStr.includes('year')) {
                     noteData.extraData.dateRangeStr = `${resDate.getFullYear()}`;
                 } else {
-                    noteData.extraData.dateRangeStr = resDate; // date range: 'day'
+                    noteData.extraData.dateRangeStr = res; // date range: 'day'
                 }
 
                 if (!noteData.extraData.dateRangeStr) return false;

@@ -103,6 +103,13 @@ export class ObakoTask {
         return this.isStatus('NON_TASK');
     }
 
+    get hasDueDate() {
+        return this.dueDate != null;
+    }
+    get hasScheduledDate() {
+        return this.scheduledDate != null;
+    }
+
     get status() {
         return this.task.status?.configuration?.type
     }
