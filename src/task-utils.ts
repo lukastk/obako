@@ -139,8 +139,8 @@ export class ObakoTask {
         // Get due date from Task object
         let dueDate = this.task.dueDate?._d;
 
-        if (!dueDate && this.scheduledDate) {
-            return null; // If there is a scheduled date, then the task may not inherit its due date from other metadata
+        if (!dueDate && this.task.scheduledDate?._d) {
+            return null; // If there is an explicit scheduled date, then the task may not inherit its due date from other metadata
         }
 
         // Get due date from parent
@@ -168,8 +168,8 @@ export class ObakoTask {
         // Get scheduled date from Task object
         let scheduledDate = this.task.scheduledDate?._d;
 
-        if (!scheduledDate && this.dueDate) {
-            return null; // If there is a due date, then the task may not inherit its scheduled date from other metadata
+        if (!scheduledDate && this.task.dueDate?._d) {
+            return null; // If there is an explicit due date, then the task may not inherit its scheduled date from other metadata
         }
 
         // Get scheduled date from parent
