@@ -94,6 +94,10 @@ export function formatDateWithWeekNumber(dateString: string) {
     return `${year}-${month}-${day} w${weekNumber} ${dayOfWeek}`;
 }
 
+export function getDateFromNaturalLanguage(text: string) {
+    return chrono.parseDate(text);
+}
+
 /**
  * Parses a text string of date in natural language and returns a date string in the format "YYYY-MM-DD w{Week Number} ddd".
  * 
@@ -103,12 +107,28 @@ export function formatDateWithWeekNumber(dateString: string) {
  *                     Example: "2024-12-16 w51 Mon"
  */
 export function getDateStringFromNaturalLanguage(text: string, includeWeekNumber: boolean = false) {
-    const parsedDate = chrono.parseDate(text);
+    const parsedDate = getDateFromNaturalLanguage(text);
     if (!parsedDate) return null;
     if (includeWeekNumber)
         return formatDateWithWeekNumber(parsedDate.toISOString());
     else
         return getDateStringFromDate(parsedDate);
+}
+
+/**
+ * Can be either in natural language or in a date string format.
+ */
+export function getDateFromText(dateStr: string): Date | null {
+    let date: Date | null = new Date(dateStr);
+    if (isDateValid(date)) return date;
+    date = getDateFromNaturalLanguage(dateStr);
+    if (!date) return null;
+    return date;
+}
+
+export function getLeadingWhitespace(str: string) {
+    const match = str.match(/^\s*/); // Matches all whitespace at the start of the string
+    return match ? match[0] : "";   // Return the matched whitespace or an empty string if no match
 }
 
 export function getDateFromWeekNumber(year: number, week: number): [Date, Date] {

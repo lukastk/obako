@@ -1,6 +1,6 @@
 import { Notice } from 'obsidian';
 import path from 'path-browserify';
-import { getFile, parseDatesInDateRangeTitle, isDateValid } from 'src/utils';
+import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace } from 'src/utils';
 import { getNoteType, loadNote } from './note-loader';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
@@ -56,16 +56,15 @@ export class ObakoTask {
         }
     }
 
-    isInDateRange(dateTypes: ('scheduled' | 'due' | 'done')[] | ('scheduled' | 'due' | 'done'), startDate: Date, endDate: Date) {
+    isInDateRange(dateTypes: ('scheduled' | 'due' | 'done')[] | ('scheduled' | 'due' | 'done'), startDate: Date|null, endDate: Date|null) {
         if (typeof startDate === 'string') startDate = new Date(startDate);
         if (typeof endDate === 'string') endDate = new Date(endDate);
-        if (!endDate) endDate = startDate;
         if (typeof dateTypes === 'string') dateTypes = [dateTypes];
 
         for (const dateType of dateTypes) {
             const date = this.getTaskDate(dateType);
             if (!date) return false;
-            if (date >= startDate && date <= endDate) return true;
+            if ( (!startDate || date >= startDate) && (!endDate || date <= endDate)) return true;
         }
 
         return false;
@@ -84,6 +83,12 @@ export class ObakoTask {
     }
     isDoneInDateRange(startDate: Date, endDate: Date) {
         return this.isInDateRange('done', startDate, endDate);
+    }
+
+    getMarkdownWithStatus(status: string) {
+        const leadingWhitespace = getLeadingWhitespace(this.originalMarkdown);
+        const transformedTask = this.originalMarkdown.replace(/^\s*- \[.*?\]/, `- [${status}]`);
+        return `${leadingWhitespace}${transformedTask}`;
     }
 
 
@@ -233,10 +238,6 @@ export function getTasks(includeNonTasks: boolean = false, includeCancelled: boo
         tasks = tasks.filter(task => !task.isCancelled());
     }
     return tasks;
-}
-
-export function isTaskInDateRange(task: Task, dateType: 'scheduled' | 'due' | 'done', startDate: Date, endDate: Date) {
-    return (new ObakoTask(task)).isInDateRange(dateType, startDate, endDate);
 }
 
 export function isTaskStatus(task: Task, status: string) {
