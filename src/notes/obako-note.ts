@@ -13,7 +13,7 @@ export abstract class ObakoNote extends BasicNote {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
             "cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note has been consolidated." },
-            "cons-hp": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note consolidation is high priority." },
+            "is-hp-cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note consolidation is high priority." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -27,8 +27,8 @@ export abstract class ObakoNote extends BasicNote {
         return this.frontmatter.cons;
     }
 
-    get consolidateHighPriority(): boolean {
-        return this.frontmatter['cons-hp'];
+    get isHighPriorityConsolidate(): boolean {
+        return this.frontmatter['is-hp-cons'];
     }
 
     setTopPanel(panel: HTMLElement) {

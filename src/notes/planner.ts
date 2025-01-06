@@ -24,6 +24,10 @@ export class Planner extends ObakoNote {
             "planner-active": { default: true, type: "boolean", description: "Whether the planner is active." },
         };
         spec.notetype.default = this.noteTypeStr;
+        spec.cons.default = false;
+        spec.cons.skipCreationIfAbsent = false;
+        spec['is-hp-cons'].default = true;
+        spec['is-hp-cons'].skipCreationIfAbsent = false;
         return spec;
     }
 
@@ -160,7 +164,7 @@ export class Planner extends ObakoNote {
         const isDayPlanner = rangeType === 'day';
         if (isDayPlanner) {
             noteData.frontmatterData.cons = false;
-            noteData.frontmatterData['cons-hp'] = true;
+            noteData.frontmatterData['is-hp-cons'] = true;
         }
 
         return true;

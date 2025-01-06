@@ -31,7 +31,8 @@ import {
 	Command_OpenThisMonthsPlanner, Command_OpenLastMonthsPlanner, Command_OpenNextMonthsPlanner,
 	Command_OpenThisQuartersPlanner, Command_OpenLastQuartersPlanner, Command_OpenNextQuartersPlanner,
 	Command_OpenThisYearsPlanner, Command_OpenLastYearsPlanner, Command_OpenNextYearsPlanner,
-} from './plugin-components/commands/open-planners';
+} from './plugin-components/commands/open-planners-relative';
+import { Command_OpenPlanner } from './plugin-components/commands/open-planner';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -93,6 +94,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_OpenThisMonthsPlanner(this), new Command_OpenLastMonthsPlanner(this), new Command_OpenNextMonthsPlanner(this),
 			new Command_OpenThisQuartersPlanner(this), new Command_OpenLastQuartersPlanner(this), new Command_OpenNextQuartersPlanner(this),
 			new Command_OpenThisYearsPlanner(this), new Command_OpenLastYearsPlanner(this), new Command_OpenNextYearsPlanner(this),
+			new Command_OpenPlanner(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),

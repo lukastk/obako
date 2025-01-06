@@ -26,7 +26,7 @@ export class Command_CreateCapture extends CommandPluginComponent {
                             noteType: Capture.noteTypeStr,
                             frontmatterData: {
                                 "cons": false,
-                                "cons-hp": highPriorityCapture,
+                                "is-hp-cons": highPriorityCapture,
                             },
                             extraData: {
                             },

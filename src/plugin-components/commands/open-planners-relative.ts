@@ -4,7 +4,7 @@ import { getDateStringFromDate, getWeekNumberStr } from 'src/utils';
 import { Planner } from 'src/notes/planner';
 import { Notice } from 'obsidian';
 
-abstract class OpenPlannerCommand extends CommandPluginComponent {
+abstract class OpenRelativePlannerCommand extends CommandPluginComponent {
     abstract getDateStr(): string;
 
     load() {
@@ -30,7 +30,7 @@ abstract class OpenPlannerCommand extends CommandPluginComponent {
                         title: "",
                         noteType: 'planner',
                         extraData: {
-                            dateRangeStr: this.getDateStr(),
+                            dateRangeStr: plannerDateStr,
                         },
                     };
                     createNote(noteData).then((file) => {
@@ -49,7 +49,7 @@ abstract class OpenPlannerCommand extends CommandPluginComponent {
     unload() { }
 }
 
-export class Command_OpenTodayPlanner extends OpenPlannerCommand {
+export class Command_OpenTodayPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open today's planner";
     commandId = 'open-today-planner';
     commandName = "Open today's planner";
@@ -59,7 +59,7 @@ export class Command_OpenTodayPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenYesterdaysPlanner extends OpenPlannerCommand {
+export class Command_OpenYesterdaysPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open yesterday's planner";
     commandId = 'open-yesterdays-planner';
     commandName = "Open yesterday's planner";
@@ -71,7 +71,7 @@ export class Command_OpenYesterdaysPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenTomorrowsPlanner extends OpenPlannerCommand {
+export class Command_OpenTomorrowsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open tomorrow's planner";
     commandId = 'open-tomorrows-planner';
     commandName = "Open tomorrow's planner";
@@ -83,7 +83,7 @@ export class Command_OpenTomorrowsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenThisWeeksPlanner extends OpenPlannerCommand {
+export class Command_OpenThisWeeksPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open this week's planner";
     commandId = 'open-this-weeks-planner';
     commandName = "Open this week's planner";
@@ -93,7 +93,7 @@ export class Command_OpenThisWeeksPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenLastWeeksPlanner extends OpenPlannerCommand {
+export class Command_OpenLastWeeksPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open last week's planner";
     commandId = 'open-last-weeks-planner';
     commandName = "Open last week's planner";
@@ -105,7 +105,7 @@ export class Command_OpenLastWeeksPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenNextWeeksPlanner extends OpenPlannerCommand {
+export class Command_OpenNextWeeksPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open next week's planner";
     commandId = 'open-next-weeks-planner';
     commandName = "Open next week's planner";
@@ -118,7 +118,7 @@ export class Command_OpenNextWeeksPlanner extends OpenPlannerCommand {
 };
 
 
-export class Command_OpenThisMonthsPlanner extends OpenPlannerCommand {
+export class Command_OpenThisMonthsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open this month's planner";
     commandId = 'open-this-months-planner';
     commandName = "Open this month's planner";
@@ -128,7 +128,7 @@ export class Command_OpenThisMonthsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenLastMonthsPlanner extends OpenPlannerCommand {
+export class Command_OpenLastMonthsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open last month's planner";
     commandId = 'open-last-months-planner';
     commandName = "Open last month's planner";
@@ -140,7 +140,7 @@ export class Command_OpenLastMonthsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenNextMonthsPlanner extends OpenPlannerCommand {
+export class Command_OpenNextMonthsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open next month's planner";
     commandId = 'open-next-months-planner';
     commandName = "Open next month's planner";
@@ -152,7 +152,7 @@ export class Command_OpenNextMonthsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenThisQuartersPlanner extends OpenPlannerCommand {
+export class Command_OpenThisQuartersPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open this quarter's planner";
     commandId = 'open-this-quarters-planner';
     commandName = "Open this quarter's planner";
@@ -162,7 +162,7 @@ export class Command_OpenThisQuartersPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenLastQuartersPlanner extends OpenPlannerCommand {
+export class Command_OpenLastQuartersPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open last quarter's planner";
     commandId = 'open-last-quarters-planner';
     commandName = "Open last quarter's planner";
@@ -174,7 +174,7 @@ export class Command_OpenLastQuartersPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenNextQuartersPlanner extends OpenPlannerCommand {
+export class Command_OpenNextQuartersPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open next quarter's planner";
     commandId = 'open-next-quarters-planner';
     commandName = "Open next quarter's planner";
@@ -186,7 +186,7 @@ export class Command_OpenNextQuartersPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenThisYearsPlanner extends OpenPlannerCommand {
+export class Command_OpenThisYearsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open this year's planner";
     commandId = 'open-this-years-planner';
     commandName = "Open this year's planner";
@@ -196,7 +196,7 @@ export class Command_OpenThisYearsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenLastYearsPlanner extends OpenPlannerCommand {
+export class Command_OpenLastYearsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open last year's planner";
     commandId = 'open-last-years-planner';
     commandName = "Open last year's planner";
@@ -208,7 +208,7 @@ export class Command_OpenLastYearsPlanner extends OpenPlannerCommand {
     }
 };
 
-export class Command_OpenNextYearsPlanner extends OpenPlannerCommand {
+export class Command_OpenNextYearsPlanner extends OpenRelativePlannerCommand {
     componentName = "Cmd: Open next year's planner";
     commandId = 'open-next-years-planner';
     commandName = "Open next year's planner";
