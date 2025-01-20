@@ -14,7 +14,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, excludeTasksFromThisNote } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -26,7 +26,9 @@ export class Command_CopyTasks extends CommandPluginComponent {
                         if (copyDueTasks)
                             tasks = tasks.filter(task => task.isInDateRange('due', earliest, latest));
 
-                        
+                        if (excludeTasksFromThisNote)
+                            tasks = tasks.filter(task => task.filePath !== this.plugin.app.workspace.getActiveFile()?.path);
+
                         const indentedTaskList = getIndentedHierarchicalTaskList(tasks);
 
                         let md = '';
@@ -48,7 +50,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
 };
 
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean }) => void) {
+    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, excludeTasksFromThisNote: boolean }) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
@@ -99,6 +101,17 @@ class CopyTaskModal extends Modal {
                         copyDueTasks = value;
                     }));
 
+        let excludeTasksFromThisNote = true;
+        new Setting(this.contentEl)
+            .setName('Exclude tasks from this note')
+            .setDesc('Whether to exclude tasks from this note.')
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(excludeTasksFromThisNote)
+                    .onChange((value) => {
+                        excludeTasksFromThisNote = value;
+                    }));
+
         let submit = () => {
             this.close();
             onSubmit({
@@ -106,6 +119,7 @@ class CopyTaskModal extends Modal {
                 latestDate: latestDate,
                 copyScheduledTasks: copyScheduledTasks,
                 copyDueTasks: copyDueTasks,
+                excludeTasksFromThisNote: excludeTasksFromThisNote,
             });
         }
 
