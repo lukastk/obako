@@ -1,7 +1,7 @@
 import { App, Editor, MarkdownView, Modal, Notice, Setting } from 'obsidian';
 import { CommandPluginComponent } from '../command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
-import { getDateFromText, getSelectionPositions, isDateValid } from 'src/utils';
+import { getDateFromText, getSelectionPositions, isDateValid, trimBlockIdsFromText } from 'src/utils';
 
 export class Command_CopyTasks extends CommandPluginComponent {
     componentName = 'Cmd: Copy tasks';
@@ -25,7 +25,6 @@ export class Command_CopyTasks extends CommandPluginComponent {
                             tasks = tasks.filter(task => task.isInDateRange('scheduled', earliest, latest));
                         if (copyDueTasks)
                             tasks = tasks.filter(task => task.isInDateRange('due', earliest, latest));
-
                         if (excludeTasksFromThisNote)
                             tasks = tasks.filter(task => task.filePath !== this.plugin.app.workspace.getActiveFile()?.path);
 
@@ -33,8 +32,9 @@ export class Command_CopyTasks extends CommandPluginComponent {
 
                         let md = '';
                         for (const task of indentedTaskList) {
-                            const taskMarkdown = task.task.getMarkdownWithStatus('d').trim();
-                            md += `${'\t'.repeat(task.indents)}${taskMarkdown}\n`;
+                            const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('d'))).trim();
+                            const taskBlockLink = await task.task.getBlockLink();
+                            md += `${'\t'.repeat(task.indents)}${taskMarkdown} [[${taskBlockLink}|🔗]]\n`;
                         }
 
                         navigator.clipboard.writeText(md);

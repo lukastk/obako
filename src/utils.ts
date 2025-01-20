@@ -357,3 +357,44 @@ export function onMarkdownViewFileChange(leaf: MarkdownView, callback: (oldFile:
         __onNoteChange__eventCreated = true;
     }
 }
+
+export async function getBlockEmbed(lineNumber: number, file: TFile) {
+    const mdLines = (await app.vault.read(file)).split('\n');
+    const line = mdLines[lineNumber];
+    if (!line) throw new Error('Line not found');
+    const lastPart = line.split(/\s+/).pop();
+
+    let blockRef: string;
+    if (lastPart.startsWith('^')) {
+        blockRef = lastPart;
+    } else {
+        blockRef = `^${generateAlphaNumericId(6)}`;
+        await app.vault.process(file, (data) => {
+            const lines = data.split('\n');
+            lines[lineNumber] = `${lines[lineNumber]} ${blockRef}`;
+            return lines.join('\n');
+        });
+    }
+
+    return `${file.path}#${blockRef}`;
+}
+
+export async function trimBlockIdsFromText(text: string): string {
+    const mdLines = text.split('\n');
+
+    const trimmedLines = mdLines.map(line => {
+        const lastPart = line.split(/\s+/).pop();
+
+        if (lastPart && lastPart.startsWith('^')) {
+            return line.slice(0, -lastPart.length);
+        } else {
+            return line;
+        }
+    });
+
+    return trimmedLines.join('\n');
+}
+
+export function generateAlphaNumericId(length: number = 6): string {
+    return Math.random().toString(36).slice(2, length + 2);
+}

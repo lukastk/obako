@@ -1,6 +1,6 @@
 import { Notice } from 'obsidian';
 import path from 'path-browserify';
-import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace } from 'src/utils';
+import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace, getBlockEmbed } from 'src/utils';
 import { getNoteType, loadNote } from './note-loader';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
@@ -89,6 +89,16 @@ export class ObakoTask {
         const leadingWhitespace = getLeadingWhitespace(this.originalMarkdown);
         const transformedTask = this.originalMarkdown.replace(/^\s*- \[.*?\]/, `- [${status}]`);
         return `${leadingWhitespace}${transformedTask}`;
+    }
+
+    getBlockLink() {
+        const file = getFile(this.filePath);
+        if (!file) throw new Error('File not found');
+        return getBlockEmbed(this.taskLine, file);
+    }
+
+    modifyTaskDescriptionMarkdown(newMarkdown: string, append: boolean = false): string {
+        this.task.originalMarkdown = modifyTaskMarkdown(this.task, newMarkdown, append);
     }
 
 
@@ -265,6 +275,38 @@ export async function toggleTaskStatus(task: Task) {
     }
 
     return toggledMarkdown;
+}
+
+export function extractTaskDescriptionMarkdown(taskMarkdown: string): { taskStatus: string, taskDescription: string } | null {
+    const regex = /^(\s*-\s*\[.*?\]\s*)(.*)$/;
+    const match = taskMarkdown.match(regex);
+    return match ? { taskStatus: match[1], taskDescription: match[2] } : null;
+}
+
+export async function modifyTaskMarkdown(task: Task, newMarkdown: string, append: boolean = false) {
+    if (!app.plugins.plugins['obsidian-tasks-plugin']) {
+        new Notice(`obsidian-tasks-plugin is not installed.`);
+        return [];
+    }
+
+    const tasksApiV1 = app.plugins.plugins['obsidian-tasks-plugin'].apiV1;
+    const { taskStatus, taskDescription } = extractTaskDescriptionMarkdown(task.originalMarkdown);
+    const newTaskDescription = append ? `${taskDescription}${newMarkdown}` : newMarkdown;
+
+    const lineNumber = task.taskLocation._lineNumber;
+    const file = getFile(task.taskLocation._tasksFile._path);
+
+    if (file) {
+        await app.vault.process(file, (data) => {
+            const lines = data.split('\n');
+            lines[lineNumber] = `${taskStatus}${newTaskDescription}`;
+            return lines.join('\n');
+        });
+
+        return newTaskDescription
+    }
+
+    throw new Error('Failed to modify task markdown');
 }
 
 export function getTaskHierarchy(tasks: ObakoTask[]) {
