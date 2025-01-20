@@ -48,7 +48,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
 };
 
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: { dateCutoff: string, copyScheduledTasks: boolean, copyDueTasks: boolean }) => void) {
+    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean }) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
@@ -99,17 +99,31 @@ class CopyTaskModal extends Modal {
                         copyDueTasks = value;
                     }));
 
+        let submit = () => {
+            this.close();
+            onSubmit({
+                earliestDate: earliestDate,
+                latestDate: latestDate,
+                copyScheduledTasks: copyScheduledTasks,
+                copyDueTasks: copyDueTasks,
+            });
+        }
+
+        /* submit button */
+        new Setting(this.contentEl)
+            .addButton((btn) =>
+                btn
+                    .setButtonText('Submit')
+                    .setCta()
+                    .onClick(() => {
+                        submit();
+                    }));
+
         // Add event listener for Cmd+Enter key
         this.contentEl.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                 event.preventDefault();
-                this.close();
-                onSubmit({
-                    earliestDate: earliestDate,
-                    latestDate: latestDate,
-                    copyScheduledTasks: copyScheduledTasks,
-                    copyDueTasks: copyDueTasks,
-                });
+                submit();
             }
         });
     }
