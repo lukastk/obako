@@ -1,4 +1,4 @@
-import { Modal } from "obsidian";
+import { App, Modal } from "obsidian";
 
 import { createNote, getAllNotesOfType, type NoteCreationData } from 'src/note-loader';
 import { CommandPluginComponent } from '../command-plugin-component';

@@ -151,6 +151,12 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
 
     const noteFilepath = noteFolder + "/" + noteData.title + ".md";
 
-    const file = await app.vault.create(noteFilepath, noteFullContent);
-    return file;
+    const existingFile = getFile(noteFilepath);
+    if (existingFile) {
+        new Notice(`Note already exists: ${noteFilepath}`);
+        return existingFile;
+    } else {
+        const file = await app.vault.create(noteFilepath, noteFullContent);
+        return file;
+    }
 }
