@@ -14,7 +14,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -25,6 +25,28 @@ export class Command_CopyTasks extends CommandPluginComponent {
                             tasks = tasks.filter(task => task.isInDateRange('scheduled', earliest, latest));
                         if (copyDueTasks)
                             tasks = tasks.filter(task => task.isInDateRange('due', earliest, latest));
+
+                        let minPriority: number;
+                        let maxPriority: number;
+                        if (priorityRangeStr) {
+                            try {
+                                if (priorityRangeStr.includes('-')) {
+                                    const priorityRange = priorityRangeStr.split('-').map(Number)
+                                    minPriority = Math.min(...priorityRange);
+                                    maxPriority = Math.max(...priorityRange);
+                                } else {
+                                    minPriority = Number(priorityRangeStr);
+                                    maxPriority = minPriority;
+                                }
+                            } catch (e) {
+                                new Notice('Invalid priority range');
+                            }
+                        } else {
+                            minPriority = 1;
+                            maxPriority = 6;
+                        }
+
+                        tasks = tasks.filter(task => task.priorityNumber >= minPriority && task.priorityNumber <= maxPriority);
 
                         switch (notesToInclude) {
                             case 'all-but-current':
@@ -59,7 +81,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
 };
 
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, notesToInclude: string }) => void) {
+    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, notesToInclude: string, priorityRangeStr: string }) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
@@ -125,6 +147,17 @@ class CopyTaskModal extends Modal {
                 }
             );
 
+        let priorityRangeStr = '0-5';
+        new Setting(this.contentEl)
+            .setName('Priority range')
+            .setDesc('0 - highest. 1 - high. 2 - medium. 3 - none. 4 - low. 5 - lowest.')
+            .addText((text) =>
+                text
+                    .setValue(priorityRangeStr)
+                    .onChange((value) => {
+                        priorityRangeStr = value;
+                    }));
+
         let submit = () => {
             this.close();
             onSubmit({
@@ -133,6 +166,7 @@ class CopyTaskModal extends Modal {
                 copyScheduledTasks: copyScheduledTasks,
                 copyDueTasks: copyDueTasks,
                 notesToInclude: notesToInclude,
+                priorityRangeStr: priorityRangeStr,
             });
         }
 
