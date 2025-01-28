@@ -80,8 +80,17 @@ export class Command_CopyTasks extends CommandPluginComponent {
     unload() { }
 };
 
+interface CopyTaskOptions {
+    earliestDate: string;
+    latestDate: string;
+    copyScheduledTasks: boolean;
+    copyDueTasks: boolean;
+    notesToInclude: string;
+    priorityRangeStr: string;
+}
+
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, notesToInclude: string, priorityRangeStr: string }) => void) {
+    constructor(app: App, onSubmit: (options: CopyTaskOptions) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
