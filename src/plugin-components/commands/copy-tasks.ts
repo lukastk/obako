@@ -14,7 +14,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, excludeTasksFromThisNote } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -25,8 +25,17 @@ export class Command_CopyTasks extends CommandPluginComponent {
                             tasks = tasks.filter(task => task.isInDateRange('scheduled', earliest, latest));
                         if (copyDueTasks)
                             tasks = tasks.filter(task => task.isInDateRange('due', earliest, latest));
-                        if (excludeTasksFromThisNote)
-                            tasks = tasks.filter(task => task.filePath !== this.plugin.app.workspace.getActiveFile()?.path);
+
+                        switch (notesToInclude) {
+                            case 'all-but-current':
+                                tasks = tasks.filter(task => task.filePath !== this.plugin.app.workspace.getActiveFile()?.path);
+                                break;
+                            case 'all':
+                                break;
+                            case 'current':
+                                tasks = tasks.filter(task => task.filePath === this.plugin.app.workspace.getActiveFile()?.path);
+                                break;
+                        }
 
                         const indentedTaskList = getIndentedHierarchicalTaskList(tasks);
 
@@ -50,11 +59,10 @@ export class Command_CopyTasks extends CommandPluginComponent {
 };
 
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, excludeTasksFromThisNote: boolean }) => void) {
+    constructor(app: App, onSubmit: (options: { earliestDate: string, latestDate: string, copyScheduledTasks: boolean, copyDueTasks: boolean, notesToInclude: string }) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
-
 
         let earliestDate = '';
         new Setting(this.contentEl)
@@ -101,16 +109,21 @@ class CopyTaskModal extends Modal {
                         copyDueTasks = value;
                     }));
 
-        let excludeTasksFromThisNote = true;
+        let notesToInclude = 'all-but-current';
         new Setting(this.contentEl)
-            .setName('Exclude tasks from this note')
-            .setDesc('Whether to exclude tasks from this note.')
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(excludeTasksFromThisNote)
+            .setName('Notes to include')
+            .setDesc('Notes from which to copy tasks.')
+            .addDropdown((dropdown) => {
+                dropdown.addOption('all-but-current', 'All but current note');
+                dropdown.addOption('all', 'All');
+                dropdown.addOption('current', 'Current note');
+                dropdown
+                    .setValue(notesToInclude)
                     .onChange((value) => {
-                        excludeTasksFromThisNote = value;
-                    }));
+                        notesToInclude = value;
+                    });
+                }
+            );
 
         let submit = () => {
             this.close();
@@ -119,7 +132,7 @@ class CopyTaskModal extends Modal {
                 latestDate: latestDate,
                 copyScheduledTasks: copyScheduledTasks,
                 copyDueTasks: copyDueTasks,
-                excludeTasksFromThisNote: excludeTasksFromThisNote,
+                notesToInclude: notesToInclude,
             });
         }
 
