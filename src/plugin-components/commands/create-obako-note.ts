@@ -9,7 +9,9 @@ import { Capture } from 'src/notes/zettel-types/capture';
 import { Log } from 'src/notes/zettel-types/log';
 import { Planner } from 'src/notes/planner';
 import { Project } from 'src/notes/zettel-types/project';
+import { Module } from 'src/notes/zettel-types/module';
 import { CommandPluginComponent } from '../command-plugin-component';
+import type { BasicNote } from 'src/notes/basic-note';
 
 export class Command_CreateObakoNote extends CommandPluginComponent {
     componentName = 'Cmd: Create Obako note';
@@ -49,14 +51,15 @@ export class CreateObakoNoteModal extends Modal {
     noteSettingsContainerEl: HTMLElement;
 
     noteData: NoteCreationData;
-    noteTypes: string[] = [
-        Memo.noteTypeStr,
-        Doc.noteTypeStr,
-        Pad.noteTypeStr,
-        Capture.noteTypeStr,
-        Log.noteTypeStr,
-        Planner.noteTypeStr,
-        Project.noteTypeStr,
+    noteTypes: (typeof BasicNote)[] = [
+        Memo,
+        Doc,
+        Pad,
+        Capture,
+        Log,
+        Planner,
+        Project,
+        Module,
     ];
 
     constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {
@@ -75,7 +78,7 @@ export class CreateObakoNoteModal extends Modal {
 
         this.noteData = options.noteData || {};
         if (!('title' in this.noteData)) this.noteData.title = '';
-        if (!('noteType' in this.noteData)) this.noteData.noteType = this.noteTypes[0];
+        if (!('noteType' in this.noteData)) this.noteData.noteType = this.noteTypes[0].noteTypeStr;
         if (!('frontmatterData' in this.noteData)) this.noteData.frontmatterData = {};
         if (!('content' in this.noteData)) this.noteData.content = '';
         if (!('extraData' in this.noteData)) this.noteData.extraData = {};
@@ -86,7 +89,8 @@ export class CreateObakoNoteModal extends Modal {
             this.addDropdownSetting(
                 'Note type',
                 'Select the Obako note type.',
-                this.noteTypes,
+                this.noteTypes.map(noteType => noteType.noteTypeStr),
+                this.noteTypes.map(noteType => noteType.noteTypeDisplayName),
                 (value) => {
                     this.noteData.noteType = value;
                     this.noteData.frontmatterData = {};
@@ -186,14 +190,14 @@ export class CreateObakoNoteModal extends Modal {
             });
     }
 
-    addDropdownSetting(name: string, description: string, options: string[], onChange: (value: string) => void, initialValueIndex?: number, containerEl?: HTMLElement) {
+    addDropdownSetting(name: string, description: string, options: string[], optionDisplayNames: string[], onChange: (value: string) => void, initialValueIndex?: number, containerEl?: HTMLElement) {
         initialValueIndex = initialValueIndex || 0;
         const setting = new Setting(containerEl || this.noteSettingsContainerEl)
             .setName(name)
             .setDesc(description)
             .addDropdown((dropdown) => {
-                options.forEach(option => {
-                    dropdown.addOption(option, option);
+                options.forEach((option, index) => {
+                    dropdown.addOption(option, optionDisplayNames[index]);
                 });
                 dropdown
                     .setValue(options[initialValueIndex])

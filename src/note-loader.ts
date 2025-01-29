@@ -13,6 +13,7 @@ import { Memo } from './notes/zettel-types/memo';
 import { Doc } from './notes/zettel-types/doc';
 import { Log } from './notes/zettel-types/log';
 import { Project } from './notes/zettel-types/project';
+import { Module } from './notes/zettel-types/module';
 import { processFrontmatter } from './notes/note-frontmatter';
 import { Zettel } from './notes/zettel';
 import { ObakoNote } from './notes/obako-note';
@@ -26,6 +27,7 @@ export const noteTypeToNoteClass: Record<string, any> = {
     [Log.noteTypeStr]: Log,
     [Planner.noteTypeStr]: Planner,
     [Project.noteTypeStr]: Project,
+    [Module.noteTypeStr]: Module,
 
     [ObakoNote.noteTypeStr]: ObakoNote,
     [Transient.noteTypeStr]: Transient,

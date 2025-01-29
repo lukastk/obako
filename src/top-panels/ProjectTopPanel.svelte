@@ -15,7 +15,7 @@
     
 <CollapsibleZettelHierarchyDisplay
     displayTitle="Child projects"
-    noteHierarchy={note.getDescendantWorkUnits()}
+    noteHierarchy={note.getDescendantProjects()}
     isCollapsed={false}
 />
 <CollapsibleZettelHierarchyDisplay

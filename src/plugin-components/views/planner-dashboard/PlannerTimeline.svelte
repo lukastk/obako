@@ -4,6 +4,8 @@
 	import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 	import { getAllNotesOfType } from "src/note-loader";
 	import { Planner } from "src/notes/planner";
+	import { Project } from "src/notes/zettel-types/project";
+	import { Module } from "src/notes/zettel-types/module";
 	import { getWeekNumber } from "src/utils";
 
 	export let initialStart: Date | null = null;
@@ -30,7 +32,9 @@
 	const PLANNER_MONTHLY_GROUP_ID = 4;
 	const PLANNER_QUARTERLY_GROUP_ID = 5;
 	const PLANNER_YEARLY_GROUP_ID = 6;
-	const PROJECT_GROUP_ID = 7;
+
+	const PROJECTS_GROUP_ID = 7;
+	const MODULES_GROUP_ID = 8;
 
 	const itemMargin = 60 * 60 * 1000;
 	const oneDay = 24 * 60 * 60 * 1000;
@@ -61,7 +65,9 @@
 		{ id: PLANNER_QUARTERLY_GROUP_ID, content: "Quarterly" },
 		{ id: PLANNER_YEARLY_GROUP_ID, content: "Yearly" },
 
-		{ id: PROJECT_GROUP_ID, content: "Projects" },
+		{ id: PROJECTS_GROUP_ID, content: "Projects" },
+		{ id: MODULES_GROUP_ID, content: "Modules" },
+
 		//{ id: 4, content: "Group 4", nestedGroups: [1, 2] },
 	]);
 
@@ -133,6 +139,8 @@
 	function refreshItems() {
 		items.clear();
 
+		/* Planners */
+		
 		const planners = getAllNotesOfType(Planner.noteTypeStr).filter((note) =>
 			note.validate(),
 		) as Planner[];
@@ -194,6 +202,24 @@
 
 			items.add(item);
 		});
+
+		/* Projects */
+
+		// const projects = getAllNotesOfType(Project.noteTypeStr)
+		// 	.filter((proj) => proj.validate())
+		// 	.filter((proj) => proj.startDate && proj.endDate) as Project[];
+
+		// projects.forEach((proj) => {
+		// 	const item = {
+		// 		id: proj.file.basename,
+		// 		content: proj.file.basename,
+		// 		start: proj.startDate.toISOString(),
+		// 		end: proj.endDate.toISOString(),
+		// 		group: PROJECTS_GROUP_ID,
+		// 	};
+
+		// 	items.add(item);
+		// });
 	}
 
 	let timelineContainer: HTMLElement | null = null;
@@ -258,7 +284,7 @@
 	}
 
 	:global(.inactive-planner) {
-		opacity: 0.6;
+		opacity: 0.4;
 	}
 
 	:global(.vis-saturday),
