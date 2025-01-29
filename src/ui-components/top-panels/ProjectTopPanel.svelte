@@ -48,7 +48,7 @@
 <CollapsibleNoteList
 	title="Linked"
 	notes={note.getIncomingLinkedNotes()}
-	isCollapsed={true}
+	isCollapsed={false}
 	groupByNoteType={true}
 />
 
