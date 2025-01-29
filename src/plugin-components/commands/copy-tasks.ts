@@ -61,12 +61,16 @@ export class Command_CopyTasks extends CommandPluginComponent {
 
                         const indentedTaskList = getIndentedHierarchicalTaskList(tasks);
 
-                        let md = '';
+                        let mdElems: string[] = [];
                         for (const task of indentedTaskList) {
                             const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('d'))).trim();
                             const taskBlockLink = await task.task.getBlockLink();
-                            md += `${'\t'.repeat(task.indents)}${taskMarkdown} [[${taskBlockLink}|🔗]]\n`;
+                            const indents = '\t'.repeat(task.indents);
+                            mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);
+                            const subtext = task.task.getSubtext(indents + "\t");
+                            if (subtext.trim()) mdElems.push(subtext);
                         }
+                        const md = mdElems.join('\n');
 
                         navigator.clipboard.writeText(md);
                     } else {

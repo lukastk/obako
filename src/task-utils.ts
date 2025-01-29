@@ -117,6 +117,19 @@ export class ObakoTask {
         return this.isStatus('NON_TASK');
     }
 
+    getSubtext(startingIndent="", indent="  ") {
+        let subtext: string[] = [];
+        this.__getSubtext_helper(this.task, subtext, startingIndent, indent);
+        return subtext.join('\n');
+    }
+    __getSubtext_helper(elem, subtext, currIndent, indent) {
+        for (const child of elem.children) {
+            if (child.status) continue; // If a child has a status attribute, it is a task
+            subtext.push(`${currIndent}${child.originalMarkdown.trim()}`);
+            this.__getSubtext_helper(child, subtext, currIndent + indent, indent);
+        }
+    }
+
     get hasDueDate() {
         return this.dueDate != null;
     }
