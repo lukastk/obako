@@ -1,8 +1,7 @@
 import { WorkspaceLeaf } from "obsidian";
 import { SvelteView, SvelteViewPluginComponent, type SvelteViewPluginComponentSettings, type SvelteViewSettings } from "../svelte-view";
 
-import PlannerDashboard from "./PlannerDashboard.svelte";
-import PluginComponent from "../../plugin-component";
+import PlannerDashboard from "src/ui-components/dashboards/planner/PlannerDashboard.svelte";
 import type ObakoPlugin from "src/plugin";
 
 const viewSettings: SvelteViewSettings = {

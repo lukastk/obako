@@ -5,7 +5,7 @@
 	import { registerVaultOn, getReloadKey } from "src/internal-utils";
 	import { getAllNotesOfType } from "src/note-loader";
 	import { Planner } from "src/notes/planner";
-	import InternalLink from "src/svelte-components/InternalLink.svelte";
+	import InternalLink from "src/ui-components/svelte-lib/InternalLink.svelte";
 
 	//export let isInFocus: () => boolean = () => true;
 

@@ -1,5 +1,5 @@
-import { App, Notice, Modal, Setting } from 'obsidian';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { App, Modal, Notice, Setting } from 'obsidian';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getDateStringFromNaturalLanguage } from 'src/utils';
 
 export class Command_GetDateString extends CommandPluginComponent {

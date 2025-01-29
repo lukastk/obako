@@ -1,6 +1,6 @@
 import type ObakoPlugin from 'src/plugin';
-import { OpenViewCommandPluginComponent } from '../views/svelte-view';
-import { View_LogDashboard } from '../views/log-dashboard/log-dashboard-view';
+import { OpenViewCommandPluginComponent } from 'src/plugin-components/views/svelte-view';
+import { View_LogDashboard } from 'src/plugin-components/views/log-dashboard/log-dashboard-view';
 
 export class Command_OpenLogDashboard extends OpenViewCommandPluginComponent {
     componentName = 'Cmd: Open log dashboard';

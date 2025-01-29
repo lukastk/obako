@@ -1,6 +1,5 @@
-import { Editor, MarkdownPreviewView, MarkdownView, Notice, TFile } from 'obsidian';
+import { Editor, MarkdownPreviewView, MarkdownView, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
-import BasicNote from './notes/basic-note';
 import * as weeknumber from 'weeknumber';
 
 export function getFile(file: TFile | string | null): TFile | null {
@@ -317,6 +316,11 @@ export function isDateValid(date: Date) {
 
 export function getDateStringFromDate(date: Date) {
     return date.toISOString().slice(0, 10);
+}
+
+export function getDateFromDateString(dateStr: string) {
+    const date = new Date(dateStr);
+    return isDateValid(date) ? date : null;
 }
 
 export function getSelectionPositions(editor: Editor | null) {

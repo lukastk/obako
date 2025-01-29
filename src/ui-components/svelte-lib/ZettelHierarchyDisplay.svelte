@@ -1,17 +1,22 @@
 <script lang="ts">
 	import InternalLink from "./InternalLink.svelte";
 	
-	import type { NoteHierarchy } from "../notes/obako-note";
+	import type { NoteHierarchy } from "src/notes/parentable-note";
 
 	export let noteHierarchy: NoteHierarchy;
 	export let topLevel = true;
 	export let displayTitleDecorator = false;
 	export let sortByNoteType = false;
+	export let sortFunction: null|((a: NoteHierarchy, b: NoteHierarchy) => number) = null;
 
 	if (sortByNoteType) {
 		noteHierarchy.children.sort((a, b) => {
 			return a.note.noteType.localeCompare(b.note.noteType);
 		});
+	}
+
+	if (sortFunction) {
+		noteHierarchy.children.sort(sortFunction);
 	}
 </script>
 

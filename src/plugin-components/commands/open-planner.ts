@@ -1,10 +1,8 @@
-import { App, Modal } from "obsidian";
-
+import { App, Modal, Notice, Setting } from "obsidian";
 import { createNote, getAllNotesOfType, type NoteCreationData } from 'src/note-loader';
-import { CommandPluginComponent } from '../command-plugin-component';
-import { getDateStringFromDate, getDateStringFromNaturalLanguage, getWeekNumberStr } from 'src/utils';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
+import { getDateStringFromNaturalLanguage } from 'src/utils';
 import { Planner } from 'src/notes/planner';
-import { Notice, Setting } from 'obsidian';
 
 export class Command_OpenPlanner extends CommandPluginComponent {
     componentName = "Cmd: Open planner";

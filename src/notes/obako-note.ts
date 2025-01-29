@@ -31,10 +31,10 @@ export abstract class ObakoNote extends BasicNote {
         return this.frontmatter['is-hp-cons'];
     }
 
-    setTopPanel(panel: HTMLElement) {
+    async setTopPanel(panel: HTMLElement) {
         super.setTopPanel(panel);
     }
-
+    
     static setNoteCreationModalSettings(containerEl: HTMLElement, modal: CreateObakoNoteModal, noteData: NoteCreationData) {
         super.setNoteCreationModalSettings(containerEl, modal, noteData);
         modal.addFrontmatterSettings(this.noteTypeStr, modal.noteData.frontmatterData);

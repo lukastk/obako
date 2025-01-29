@@ -47,7 +47,7 @@ export class BasicNote {
      * Validate the note.
      * @returns true if the note is valid, false otherwise
      */
-    validate() {
+    validate(): boolean {
         return true;
     }
 
@@ -98,7 +98,7 @@ export class BasicNote {
     }
 
     /*** UI ***/
-    setTopPanel(panel: HTMLElement) {
+    async setTopPanel(panel: HTMLElement) {
     }
 
     getNoteIcon(): string {
@@ -111,9 +111,14 @@ export class BasicNote {
 
     setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {
         titleDecoratorEl.innerHTML = this.getTitlePrefixDecoratorString();
+        titleDecoratorEl.style.color = this.getTitlePrefixDecoratorColor();
+    }
 
+    getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
-            titleDecoratorEl.style.color = 'var(--text-error)';
+            return 'var(--text-error)';
+        } else {
+            return '';
         }
     }
 
@@ -127,6 +132,21 @@ export class BasicNote {
 
     getDecoratedTitle(): string {
         return `${this.getTitlePrefixDecoratorString()} ${this.name} ${this.getTitleSuffixDecoratorString()}`;
+    }
+
+    getLinkElement(): HTMLElement {
+        const linkEl = createEl("a", { href: this.file.path });
+        linkEl.classList.add("internal-link");
+        const prefixDecoratorEl = createEl("span");
+        const titleEl = createEl("span");
+        titleEl.innerHTML = ` ${this.name}`;
+        const suffixDecoratorEl = createEl("span");
+        linkEl.appendChild(prefixDecoratorEl);
+        linkEl.appendChild(titleEl);
+        linkEl.appendChild(suffixDecoratorEl);
+        this.setTitlePrefixDecorator(prefixDecoratorEl);
+        this.setTitleSuffixDecorator(suffixDecoratorEl);
+        return linkEl;
     }
 
     async getContent(): Promise<string> {

@@ -1,5 +1,5 @@
 import { App, MarkdownView, Modal, Setting } from 'obsidian';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getTasks } from 'src/task-utils';
 import { getSelectionPositions } from 'src/utils';
 

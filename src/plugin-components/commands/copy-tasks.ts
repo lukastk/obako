@@ -1,7 +1,7 @@
 import { App, Editor, MarkdownView, Modal, Notice, Setting } from 'obsidian';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
-import { getDateFromText, getSelectionPositions, isDateValid, trimBlockIdsFromText } from 'src/utils';
+import { getDateFromText, trimBlockIdsFromText } from 'src/utils';
 
 export class Command_CopyTasks extends CommandPluginComponent {
     componentName = 'Cmd: Copy tasks';

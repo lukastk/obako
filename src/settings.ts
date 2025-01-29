@@ -1,11 +1,12 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import type ObakoPlugin from './plugin';
-import SimpleCollapsible from 'src/svelte-components/SimpleCollapsible.svelte'
+import SimpleCollapsible from 'src/ui-components/svelte-lib/SimpleCollapsible.svelte'
 import { CommandPluginComponent } from './plugin-components/command-plugin-component';
 
 export interface ObakoSettings {
 	zettelFolder: string;
 	plannerFolder: string;
+	moduleFolder: string;
 	globalCommandPrefix: string;
 	pluginComponentSettings: any;
 }
@@ -13,6 +14,7 @@ export interface ObakoSettings {
 export const DEFAULT_SETTINGS: ObakoSettings = {
 	zettelFolder: 'zettels',
 	plannerFolder: 'planners',
+	moduleFolder: 'modules',
 	globalCommandPrefix: '',
 	pluginComponentSettings: {},
 }
@@ -41,6 +43,12 @@ export class ObakoSettingsTab extends PluginSettingTab {
 			/* desc */ 'Folder where planner notes are stored.',
 			/* placeholder */ 'Set the folder name',
 			/* setting */ 'plannerFolder');
+
+		this.addTextSetting(
+				/* name */ 'Module folder',
+				/* desc */ 'Folder where module notes are stored.',
+				/* placeholder */ 'Set the folder name',
+				/* setting */ 'moduleFolder');
 
 		this.addTextSetting(
 			/* name */ 'Global command prefix',

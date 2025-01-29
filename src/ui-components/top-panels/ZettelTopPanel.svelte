@@ -1,8 +1,8 @@
 <script lang="ts">
-	import CollapsibleZettelHierarchyDisplay from "src/svelte-components/CollapsibleZettelHierarchyDisplay.svelte";
-	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
-	import Collapsible from "src/svelte-components/Collapsible.svelte";
-	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
+	import CollapsibleZettelHierarchyDisplay from "src/ui-components/svelte-lib/CollapsibleZettelHierarchyDisplay.svelte";
+	import CollapsibleNoteList from "src/ui-components/svelte-lib/CollapsibleNoteList.svelte";
+	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
+	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
 
 	export let note;
@@ -17,7 +17,7 @@
 
 <CollapsibleZettelHierarchyDisplay
 	displayTitle="Zettel hierarchy"
-	noteHierarchy={note.getDescendantZettels()}
+	noteHierarchy={note.getDescendantNotes()}
 	isCollapsed={collapsibleZettelHierarchyDisplay}
 	displayTitleDecorator={true}
 	sortByNoteType={true}

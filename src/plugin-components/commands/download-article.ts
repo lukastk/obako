@@ -1,5 +1,5 @@
 import { Modal, App, requestUrl, Setting } from 'obsidian';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 //import Parser from '@postlight/parser';
 import TurndownService from 'turndown';
 

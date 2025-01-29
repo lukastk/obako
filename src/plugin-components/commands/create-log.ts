@@ -1,12 +1,11 @@
-import { Modal, App, requestUrl, Setting, FuzzySuggestModal, Notice } from 'obsidian';
-import { createNote, getAllNotes, noteTypeToNoteClass } from 'src/note-loader';
+import { Modal, App, Setting, FuzzySuggestModal } from 'obsidian';
+import { createNote, getAllNotes } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
-import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
 import type { BasicNote } from 'src/notes/basic-note';
 import { ObakoNote } from 'src/notes/obako-note';
 import { Log } from 'src/notes/zettel-types/log';
 import { getDateStringFromDate } from 'src/utils';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 
 export class Command_CreateLog extends CommandPluginComponent {
     componentName = 'Cmd: Create log';

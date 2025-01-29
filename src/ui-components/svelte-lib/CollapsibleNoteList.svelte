@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Collapsible from "./Collapsible.svelte";
-	import { BasicNote } from "../notes/basic-note";
+	import { BasicNote } from "src/notes/basic-note";
 	
 	import NoteList from "./NoteList.svelte";
 
@@ -8,6 +8,7 @@
 	export let notes: BasicNote[];
 	export let isCollapsed = true;
 	export let groupByNoteType = true;
+	export let displayTitleDecorator = false;
 
 	const notesByType: Record<string, BasicNote[]> = {};
 	for (const note of notes) {
@@ -20,5 +21,5 @@
 </script>
 
 <Collapsible title={displayTitle} disabled={hasNoItems} {isCollapsed}>
-	<NoteList notes={notes} groupByNoteType={groupByNoteType}/>
+	<NoteList notes={notes} groupByNoteType={groupByNoteType} displayTitleDecorator={displayTitleDecorator}/>
 </Collapsible>

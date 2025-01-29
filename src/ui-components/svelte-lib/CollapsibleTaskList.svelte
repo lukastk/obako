@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getTasks } from "src/task-utils";
+	import type { ObakoTask } from "src/task-utils";
 	import TaskList from "./TaskList.svelte";
 	import Collapsible from "./Collapsible.svelte";
-	import type { ObakoTask } from "src/task-utils";
 
 	export let title: string;
 	export let filter_func: (task: any) => boolean = () => true;

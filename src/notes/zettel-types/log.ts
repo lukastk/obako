@@ -1,6 +1,5 @@
 import type { TFile } from 'obsidian';
-import { getDateStringFromDate, getDateStringFromNaturalLanguage, getWeekNumber, isDateValid } from 'src/utils';
-import { Setting } from 'obsidian';
+import { getDateStringFromNaturalLanguage, getWeekNumber, isDateValid } from 'src/utils';
 import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
 import type { NoteCreationData } from 'src/note-loader';
 import { Zettel } from '../zettel';

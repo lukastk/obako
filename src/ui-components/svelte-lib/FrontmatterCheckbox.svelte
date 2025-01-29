@@ -1,6 +1,6 @@
 <script lang="ts">
     import InternalLink from "./InternalLink.svelte";
-    import { BasicNote } from "../notes/basic-note";
+    import { BasicNote } from "src/notes/basic-note";
 
     export let note: BasicNote;
     export let frontmatterKey: string | null = null;

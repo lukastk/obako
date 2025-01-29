@@ -1,7 +1,6 @@
-import { Modal, App, requestUrl, Setting, TFile } from 'obsidian';
-import PluginComponent from '../plugin-component';
+import { TFile } from 'obsidian';
 import type { ObakoSettingsTab } from 'src/settings';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 
 export class Command_MoveUnlinkedFiles extends CommandPluginComponent {
     componentName = 'Cmd: Move unlinked files to the non-sync folder';

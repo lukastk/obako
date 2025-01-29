@@ -1,4 +1,4 @@
-import { Modal, App, requestUrl, Setting } from 'obsidian';
+import { Modal, App, Setting } from 'obsidian';
 import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
@@ -10,7 +10,7 @@ import { Log } from 'src/notes/zettel-types/log';
 import { Planner } from 'src/notes/planner';
 import { Project } from 'src/notes/zettel-types/project';
 import { Module } from 'src/notes/zettel-types/module';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import type { BasicNote } from 'src/notes/basic-note';
 
 export class Command_CreateObakoNote extends CommandPluginComponent {

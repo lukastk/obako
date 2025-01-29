@@ -1,6 +1,6 @@
 import type ObakoPlugin from 'src/plugin';
-import { OpenViewCommandPluginComponent } from '../views/svelte-view';
-import { View_PlannerDashboard } from '../views/planner-dashboard/planner-dashboard-view';
+import { OpenViewCommandPluginComponent } from 'src/plugin-components/views/svelte-view';
+import { View_PlannerDashboard } from 'src/plugin-components/views/planner-dashboard/planner-dashboard-view';
 
 export class Command_OpenPlannerDashboard extends OpenViewCommandPluginComponent {
     componentName = 'Cmd: Open planner dashboard';

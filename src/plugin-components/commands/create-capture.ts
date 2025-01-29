@@ -2,7 +2,7 @@ import { Modal, App, Setting } from 'obsidian';
 import { createNote } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import { Capture } from 'src/notes/zettel-types/capture';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 
 export class Command_CreateCapture extends CommandPluginComponent {
     componentName = 'Cmd: Create capture';

@@ -1,12 +1,11 @@
 import type { TFile } from 'obsidian';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { ObakoNote } from './obako-note';
-import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, parseDateRangeStr, getWeekNumberStr } from 'src/utils';
+import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, getWeekNumberStr } from 'src/utils';
 import { getTasks } from 'src/task-utils';
 import type { Task } from 'src/task-utils';
 import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
 import type { NoteCreationData } from 'src/note-loader';
-import PlannerTopPanel from 'src/top-panels/planner/PlannerTopPanel.svelte';
 
 export class Planner extends ObakoNote {
     static noteTypeStr = "planner";
@@ -97,9 +96,10 @@ export class Planner extends ObakoNote {
         return res;
     }
 
-    setTopPanel(panel: HTMLElement) {
+    async setTopPanel(panel: HTMLElement) {
         super.setTopPanel(panel);
 
+        const { default: PlannerTopPanel } = await import('src/ui-components/top-panels/planner/PlannerTopPanel.svelte');
         new PlannerTopPanel({
             target: panel,
             props: {

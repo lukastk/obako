@@ -8,7 +8,6 @@ export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
 export const SCHEDULED_DATE_MARKER = '⏳';
 export const DUE_DATE_MARKER = '📅';
 
-
 export interface Task {
     blockLink: string;
     cancelledDate: Date | null;
@@ -207,8 +206,8 @@ export class ObakoTask {
 
             // Get scheduled date from Planner note
             if (noteType.noteTypeStr === 'planner') {
-                const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(fname);
-                scheduledDate = date;
+                const { endDate } = parseDatesInDateRangeTitle(fname);
+                scheduledDate = endDate;
                 // Get scheduled date from a preceding header in a Planner note
                 // Example:
                 // ### 2024-12-29 some heading title

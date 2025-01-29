@@ -1,30 +1,26 @@
 <script lang="ts">
-	import CollapsibleZettelHierarchyDisplay from "src/svelte-components/CollapsibleZettelHierarchyDisplay.svelte";
-	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
-	import Collapsible from "src/svelte-components/Collapsible.svelte";
-	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
+	import CollapsibleZettelHierarchyDisplay from "src/ui-components/svelte-lib/CollapsibleZettelHierarchyDisplay.svelte";
+	import CollapsibleNoteList from "src/ui-components/svelte-lib/CollapsibleNoteList.svelte";
+	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
+	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
 
-    import type { Project } from 'src/notes/zettel-types/project';
-    export let note: Project;
+    import type { Module } from 'src/notes/zettel-types/module';
+    export let note: Module;
 
 	const incomingLinkedLogs = note
 		.getIncomingLinkedNotes()
 		.filter((note) => note.noteType === Log.noteTypeStr);
 </script>
-    
+
 <CollapsibleZettelHierarchyDisplay
-    displayTitle="Child projects"
-    noteHierarchy={note.getDescendantProjects()}
-    isCollapsed={false}
-/>
-<CollapsibleZettelHierarchyDisplay
-    displayTitle="Zettel hierarchy"
-    noteHierarchy={note.getDescendantZettels()}
+    displayTitle="Note hierarchy"
+    noteHierarchy={note.getDescendantNotes()}
     isCollapsed={true}
     sortByNoteType={true}
     displayTitleDecorator={true}
 />
+
 <CollapsibleNoteList
     title="Linked"
     notes={note.getIncomingLinkedNotes()}

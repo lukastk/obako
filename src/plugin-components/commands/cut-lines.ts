@@ -1,6 +1,5 @@
-import { App, Editor, MarkdownView, Modal, Setting } from 'obsidian';
-import { CommandPluginComponent } from '../command-plugin-component';
-import { getTasks } from 'src/task-utils';
+import { Editor, MarkdownView } from 'obsidian';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getSelectionPositions } from 'src/utils';
 
 export class Command_CutLines extends CommandPluginComponent {

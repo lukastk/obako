@@ -1,5 +1,5 @@
 import { createNote, getAllNotesOfType, type NoteCreationData } from 'src/note-loader';
-import { CommandPluginComponent } from '../command-plugin-component';
+import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getDateStringFromDate, getWeekNumberStr } from 'src/utils';
 import { Planner } from 'src/notes/planner';
 import { Notice } from 'obsidian';

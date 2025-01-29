@@ -3,6 +3,7 @@
 	import { Timeline, DataSet } from "vis-timeline/standalone";
 	import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 	import { getAllNotesOfType } from "src/note-loader";
+	import { BasicNote } from "src/notes/basic-note";
 	import { Planner } from "src/notes/planner";
 	import { Project } from "src/notes/zettel-types/project";
 	import { Module } from "src/notes/zettel-types/module";
@@ -10,8 +11,8 @@
 
 	export let initialStart: Date | null = null;
 	export let initialEnd: Date | null = null;
-	export let highlightPlanners: Planner[] = [];
-	const highlightPlannersFilePaths = highlightPlanners.map((planner) => planner.filepath);
+	export let highlightNotes: BasicNote[] = [];
+	const highlightNotesFilePaths = highlightNotes.map((n) => n.filepath);
 
 	if (!initialStart) {
 		initialStart = new Date();
@@ -65,7 +66,7 @@
 		{ id: PLANNER_QUARTERLY_GROUP_ID, content: "Quarterly" },
 		{ id: PLANNER_YEARLY_GROUP_ID, content: "Yearly" },
 
-		{ id: PROJECTS_GROUP_ID, content: "Projects" },
+		{ id: PROJECTS_GROUP_ID, content: "Projects", nestedGroups: [MODULES_GROUP_ID] },
 		{ id: MODULES_GROUP_ID, content: "Modules" },
 
 		//{ id: 4, content: "Group 4", nestedGroups: [1, 2] },
@@ -194,9 +195,12 @@
 				content: itemContent,
 				start: startDate.toISOString(),
 				end: endDate.toISOString(),
-				group:
-					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
-				className: `planner-${planner.rangeType} ${planner.frontmatter["planner-active"] ? "active-planner" : "inactive-planner"} ${highlightPlannersFilePaths.includes(planner.filepath) ? "highlighted-item" : ""}`,
+				group: rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
+				className: [
+					`planner-${planner.rangeType}`,
+					planner.frontmatter["planner-active"] ? "active-note" : "inactive-note",
+					highlightNotesFilePaths.includes(planner.filepath) ? "highlighted-item" : ""
+				].filter(Boolean).join(" "),
 				note: planner,
 			};
 
@@ -205,21 +209,49 @@
 
 		/* Projects */
 
-		// const projects = getAllNotesOfType(Project.noteTypeStr)
-		// 	.filter((proj) => proj.validate())
-		// 	.filter((proj) => proj.startDate && proj.endDate) as Project[];
+		const projects = (getAllNotesOfType(Project.noteTypeStr) as Project[])
+			.filter((proj) => proj.validate())
+			.filter((proj) => proj.startDate && proj.endDate);
 
-		// projects.forEach((proj) => {
-		// 	const item = {
-		// 		id: proj.file.basename,
-		// 		content: proj.file.basename,
-		// 		start: proj.startDate.toISOString(),
-		// 		end: proj.endDate.toISOString(),
-		// 		group: PROJECTS_GROUP_ID,
-		// 	};
+		projects.forEach((proj) => {
+			const item = {
+				id: proj.file.basename,
+				content: proj.file.basename,
+				start: proj.startDate.toISOString(),
+				end: proj.endDate.toISOString(),
+				group: PROJECTS_GROUP_ID,
+				className: [
+					'module',
+					proj.status === Project.statuses.active ? "active-note" : "inactive-note",
+					highlightNotesFilePaths.includes(proj.filepath) ? "highlighted-item" : ""
+				].filter(Boolean).join(" "),
+				note: proj,
+			};
+			items.add(item);
+		});
 
-		// 	items.add(item);
-		// });
+		/* Modules */
+
+		const modules = (getAllNotesOfType(Module.noteTypeStr) as Module[])
+			.filter((mod) => mod.validate())
+			.filter((mod) => mod.startDate && mod.endDate);
+
+		modules.forEach((mod) => {
+			const item = {
+				id: mod.file.basename,
+				content: `<i>${mod.parent.file.basename}:</i> ${mod.file.basename}`,
+				start: mod.startDate.toISOString(),
+				end: mod.endDate.toISOString(),
+				group: MODULES_GROUP_ID,
+				className: [
+					'module',
+					mod.status === Module.statuses.active ? "active-note" : "inactive-note",
+					highlightNotesFilePaths.includes(mod.filepath) ? "highlighted-item" : ""
+				].filter(Boolean).join(" "),
+				note: mod,
+			};
+			items.add(item);
+		});
 	}
 
 	let timelineContainer: HTMLElement | null = null;
@@ -283,10 +315,6 @@
 		border: 3px solid var(--color-red);
 	}
 
-	:global(.inactive-planner) {
-		opacity: 0.4;
-	}
-
 	:global(.vis-saturday),
 	:global(.vis-sunday) {
 		background: #666;
@@ -334,5 +362,18 @@
 
 	:global(.planner-year) {
 		background: var(--color-green);
+	}
+
+	:global(.project) {
+		background: #fff;
+	}
+
+	:global(.module) {
+		background: var(--color-orange);
+	}
+
+	/*:global(.active-note) { } */
+	:global(.inactive-note) {
+		opacity: 0.4;
 	}
 </style>

@@ -1,4 +1,3 @@
-import { TFile } from "obsidian";
 import { writable, type Writable } from "svelte/store";
 
 export function registerVaultOn(events: string[] | string, callback: (...args: any[]) => void) {

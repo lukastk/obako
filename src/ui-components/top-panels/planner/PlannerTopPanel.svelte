@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { ObakoNote } from "src/notes/obako-note";
 	import type { Planner } from "src/notes/planner";
-	import CollapsibleNoteList from "src/svelte-components/CollapsibleNoteList.svelte";
+	import CollapsibleNoteList from "src/ui-components/svelte-lib/CollapsibleNoteList.svelte";
 	import { getTasks } from "src/task-utils";
-	import Collapsible from "src/svelte-components/Collapsible.svelte";
-	import CollapsibleTaskList from "src/svelte-components/CollapsibleTaskList.svelte";
+	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
+	import CollapsibleTaskList from "src/ui-components/svelte-lib/CollapsibleTaskList.svelte";
 	import PlannerHierarchy from "./PlannerHierarchy.svelte";
-	import PlannerTimeline from "src/plugin-components/views/planner-dashboard/PlannerTimeline.svelte";
+	import PlannerTimeline from "src/ui-components/dashboards/planner/PlannerTimeline.svelte";
 	import { addDays } from "src/utils";
 	import { getAllNotes } from "src/note-loader";
 	import type { ObakoTask } from "src/task-utils";
-	import LogDashboard from "src/plugin-components/views/log-dashboard/LogDashboard.svelte";
+	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
 
 	export let note: Planner;
@@ -124,7 +124,7 @@
 	<PlannerTimeline
 		initialStart={addDays(note.date, -3)}
 		initialEnd={addDays(note.endDate, 4)}
-		highlightPlanners={[note]}
+		highlightNotes={[note]}
 	/>
 </Collapsible>
 

@@ -20,13 +20,10 @@ Todo:
 */
 
 import { TFile } from 'obsidian';
-import { ObakoNote } from './obako-note';
 import type { FrontmatterSpec } from './note-frontmatter';
+import { ParentableNote } from './parentable-note';
 
-import ZettelTopPanel from 'src/top-panels/ZettelTopPanel.svelte';
-import { parseObsidianLink } from 'src/utils';
-
-export abstract class Zettel extends ObakoNote {
+export abstract class Zettel extends ParentableNote {
     static noteTypeStr = "zettel";
     static noteTypeDisplayName = "Zettel";
     static noteIcon = "?zettel";
@@ -34,7 +31,6 @@ export abstract class Zettel extends ObakoNote {
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
-            parent: { default: null, type: "note:zettel", hideInCreationModal: true, description: "The parent zettel of this zettel." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -44,14 +40,10 @@ export abstract class Zettel extends ObakoNote {
         super(file);
     }
 
-    get parent(): Zettel | null {
-        if (!this.frontmatter.parent) return null;
-        return obako.noteLoader.loadNote(parseObsidianLink(this.frontmatter.parent)) as Zettel;
-    }
-
-    setTopPanel(panel: HTMLElement) {
+    async setTopPanel(panel: HTMLElement) {
         super.setTopPanel(panel);
 
+        const { default: ZettelTopPanel } = await import('src/ui-components/top-panels/ZettelTopPanel.svelte');
         new ZettelTopPanel({
             target: panel,
             props: {
@@ -59,44 +51,4 @@ export abstract class Zettel extends ObakoNote {
             }
         });
     }
-
-    getChildZettels(): Zettel[] {
-        const linkedNotes = this.getIncomingLinkedNotes().filter(note => note instanceof Zettel);
-        // Find subset of linkedNotes that are children of this note
-        const childNotes = linkedNotes.filter(note => this.equals(note.parent));
-        return childNotes;
-    }
-    
-    getDescendantZettels(includedNoteTypes: (string|typeof Zettel)[] = []): NoteHierarchy {
-        includedNoteTypes = includedNoteTypes.map(noteType => 
-            typeof noteType !== 'string' ? noteType.noteTypeStr : noteType
-        );
-        const visited = new Set<Zettel>();
-        return this.__getDescendantZettel_helper(visited, includedNoteTypes);
-    }
-
-    __getDescendantZettel_helper(visited: Set<Zettel>, includedNoteTypes: string[]): NoteHierarchy {
-        const noteHierarchy: NoteHierarchy = {
-            note: this,
-            children: []
-        };
-        for (const childNote of this.getChildZettels()) {
-            if (!includedNoteTypes.includes(childNote.noteType) && includedNoteTypes.length != 0) {
-                continue;
-            }
-            if (visited.has(childNote)) {
-                throw new Error("Zettel.getDescendantZettels: Circular reference detected in zettel hierarchy. Note: '" + childNote.file.path + "'");
-            }
-            visited.add(childNote);
-            if (childNote instanceof Zettel) {
-                noteHierarchy.children.push(childNote.__getDescendantZettel_helper(visited, includedNoteTypes));
-            }
-        }
-        return noteHierarchy;
-    }
-}
-
-export interface NoteHierarchy {
-    note: Zettel;
-    children: NoteHierarchy[];
 }

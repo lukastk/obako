@@ -1,8 +1,7 @@
 import { WorkspaceLeaf } from "obsidian";
 import { SvelteView, SvelteViewPluginComponent, type SvelteViewPluginComponentSettings, type SvelteViewSettings } from "../svelte-view";
 
-import LogDashboard from "./LogDashboard.svelte";
-import PluginComponent from "../../plugin-component";
+import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 import type ObakoPlugin from "src/plugin";
 
 const viewSettings: SvelteViewSettings = {

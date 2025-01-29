@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { BasicNote } from "../notes/basic-note";
+	import { BasicNote } from "src/notes/basic-note";
 	import InternalLink from "./InternalLink.svelte";
 
-	import { noteTypeToNoteClass } from "../note-loader";
+	import { noteTypeToNoteClass } from "src/note-loader";
 
 	export let notes: BasicNote[];
 	export let groupByNoteType = true;
 	export let includeNoteTypes: string[] = [];
+	export let displayTitleDecorator = false;
 
 	const notesByType: Record<string, BasicNote[]> = {};
 	for (const note of notes) {
@@ -28,6 +29,7 @@
 						<InternalLink
 							text={note.file.basename}
 							note={note.file.path}
+							displayTitleDecorator={displayTitleDecorator}
 						/>
 					</li>
 				{/each}
@@ -42,6 +44,7 @@
 					<InternalLink
 						text={note.file.basename}
 						note={note.file.path}
+						displayTitleDecorator={displayTitleDecorator}
 					/>
 				</li>
 			{/if}

@@ -42,7 +42,8 @@ import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboa
 import { View_LogDashboard } from "./plugin-components/views/log-dashboard/log-dashboard-view";
 
 /**** Svelte Components ****/
-import TaskList from './svelte-components/TaskList.svelte';
+import TaskList from './ui-components/svelte-lib/TaskList.svelte';
+import ZettelHierarchyDisplay from './ui-components/svelte-lib/ZettelHierarchyDisplay.svelte';
 
 export default class ObakoPlugin extends Plugin {
 	settings!: ObakoSettings;
@@ -67,6 +68,7 @@ export default class ObakoPlugin extends Plugin {
 			noteLoader: noteLoader,
 			svelteComponents: {
 				TaskList: TaskList,
+				ZettelHierarchyDisplay: ZettelHierarchyDisplay,
 			},
 			noteClasses: noteLoader.noteTypeToNoteClass,
 		}

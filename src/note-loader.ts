@@ -147,6 +147,8 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
         noteFolder = _obako_plugin.settings.zettelFolder;
     } else if (noteClass == Planner || noteClass.prototype instanceof Planner) {
         noteFolder = _obako_plugin.settings.plannerFolder;
+    } else if (noteClass == Module || noteClass.prototype instanceof Module) {
+        noteFolder = _obako_plugin.settings.moduleFolder;
     } else {
         throw new Error(`Note type ${noteData.noteType} not supported`);
     }
