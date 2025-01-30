@@ -27,17 +27,17 @@
 
 	const items = new DataSet();
 
-	const PLANNER_GROUP_ID = 'planner';
-	const PLANNER_DAILY_GROUP_ID = 'planner-daily';
-	const PLANNER_WEEKLY_GROUP_ID = 'planner-weekly';
-	const PLANNER_MONTHLY_GROUP_ID = 'planner-monthly';
-	const PLANNER_QUARTERLY_GROUP_ID = 'planner-quarterly';
-	const PLANNER_YEARLY_GROUP_ID = 'planner-yearly';
+	const PLANNER_GROUP_ID = "planner";
+	const PLANNER_DAILY_GROUP_ID = "planner-daily";
+	const PLANNER_WEEKLY_GROUP_ID = "planner-weekly";
+	const PLANNER_MONTHLY_GROUP_ID = "planner-monthly";
+	const PLANNER_QUARTERLY_GROUP_ID = "planner-quarterly";
+	const PLANNER_YEARLY_GROUP_ID = "planner-yearly";
 
-	const PROJECTS_GROUP_ID = 'projects';
-	const PROJECTS_SUBGROUPS_GROUP_ID = 'projects-subgroups';
-	const MODULES_GROUP_ID = 'modules';
-	const MODULES_SUBGROUPS_GROUP_ID = 'modules-subgroups';
+	const PROJECTS_GROUP_ID = "projects";
+	const PROJECTS_SUBGROUPS_GROUP_ID = "projects-subgroups";
+	const MODULES_GROUP_ID = "modules";
+	const MODULES_SUBGROUPS_GROUP_ID = "modules-subgroups";
 
 	const itemMargin = 60 * 60 * 1000;
 	const oneDay = 24 * 60 * 60 * 1000;
@@ -49,7 +49,6 @@
 		quarter: PLANNER_QUARTERLY_GROUP_ID,
 		year: PLANNER_YEARLY_GROUP_ID,
 	};
-
 
 	const projectSubGroups = [];
 	const moduleSubGroups = [];
@@ -72,10 +71,26 @@
 		{ id: PLANNER_QUARTERLY_GROUP_ID, content: "Quarterly" },
 		{ id: PLANNER_YEARLY_GROUP_ID, content: "Yearly" },
 
-		{ id: PROJECTS_GROUP_ID, content: "Projects", nestedGroups: [PROJECTS_SUBGROUPS_GROUP_ID, MODULES_GROUP_ID] },
-		{ id: PROJECTS_SUBGROUPS_GROUP_ID, content: "Project subgroups", nestedGroups: projectSubGroups },
-		{ id: MODULES_GROUP_ID, content: "Modules", nestedGroups: [MODULES_SUBGROUPS_GROUP_ID] },
-		{ id: MODULES_SUBGROUPS_GROUP_ID, content: "Module subgroups", nestedGroups: moduleSubGroups },
+		{
+			id: PROJECTS_GROUP_ID,
+			content: "Projects",
+			nestedGroups: [PROJECTS_SUBGROUPS_GROUP_ID, MODULES_GROUP_ID],
+		},
+		{
+			id: PROJECTS_SUBGROUPS_GROUP_ID,
+			content: "Project subgroups",
+			nestedGroups: projectSubGroups,
+		},
+		{
+			id: MODULES_GROUP_ID,
+			content: "Modules",
+			nestedGroups: [MODULES_SUBGROUPS_GROUP_ID],
+		},
+		{
+			id: MODULES_SUBGROUPS_GROUP_ID,
+			content: "Module subgroups",
+			nestedGroups: moduleSubGroups,
+		},
 
 		//{ id: 4, content: "Group 4", nestedGroups: [1, 2] },
 	]);
@@ -95,6 +110,8 @@
 		zoomMax: 1000 * 60 * 60 * 24 * 365 * 14,
 		horizontalScroll: true, // Enable horizontal scrolling
 		showWeekScale: true,
+		showTooltips: true,
+		verticalScroll: true,
 
 		margin: {
 			// Prevents non-overlapping items from stacking on top of each other
@@ -149,7 +166,7 @@
 		items.clear();
 
 		/* Planners */
-		
+
 		const planners = getAllNotesOfType(Planner.noteTypeStr).filter((note) =>
 			note.validate(),
 		) as Planner[];
@@ -203,12 +220,19 @@
 				content: itemContent,
 				start: startDate.toISOString(),
 				end: endDate.toISOString(),
-				group: rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
+				group:
+					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
 				className: [
 					`planner-${planner.rangeType}`,
-					planner.frontmatter["planner-active"] ? "active-note" : "inactive-note",
-					highlightNotesFilePaths.includes(planner.filepath) ? "highlighted-item" : ""
-				].filter(Boolean).join(" "),
+					planner.frontmatter["planner-active"]
+						? "active-note"
+						: "inactive-note",
+					highlightNotesFilePaths.includes(planner.filepath)
+						? "highlighted-item"
+						: "",
+				]
+					.filter(Boolean)
+					.join(" "),
 				note: planner,
 			};
 
@@ -226,8 +250,15 @@
 
 			let groupId = PROJECTS_GROUP_ID;
 			if (proj.plannerDashboardGroup) {
-				if (!groups.map((group) => group.id).includes(proj.plannerDashboardGroup)) {
-					groups.add({ id: proj.plannerDashboardGroup, content: proj.plannerDashboardGroup });
+				if (
+					!groups
+						.map((group) => group.id)
+						.includes(proj.plannerDashboardGroup)
+				) {
+					groups.add({
+						id: proj.plannerDashboardGroup,
+						content: proj.plannerDashboardGroup,
+					});
 					projectSubGroups.push(proj.plannerDashboardGroup);
 				}
 				groupId = proj.plannerDashboardGroup;
@@ -240,12 +271,19 @@
 				end: proj.endDate.toISOString(),
 				group: groupId,
 				className: [
-					'project',
-					proj.status === Project.statuses.active ? "active-note" : "inactive-note",
-					highlightNotesFilePaths.includes(proj.filepath) ? "highlighted-item" : ""
-				].filter(Boolean).join(" "),
+					"project",
+					proj.status === Project.statuses.active
+						? "active-note"
+						: "inactive-note",
+					highlightNotesFilePaths.includes(proj.filepath)
+						? "highlighted-item"
+						: "",
+				]
+					.filter(Boolean)
+					.join(" "),
 				note: proj,
 			};
+			//class="tooltip" data-tooltip="This appears instantly!"
 			items.add(item);
 		});
 
@@ -260,8 +298,15 @@
 
 			let groupId = MODULES_GROUP_ID;
 			if (mod.plannerDashboardGroup) {
-				if (!groups.map((group) => group.id).includes(mod.plannerDashboardGroup)) {
-					groups.add({ id: mod.plannerDashboardGroup, content: mod.plannerDashboardGroup });
+				if (
+					!groups
+						.map((group) => group.id)
+						.includes(mod.plannerDashboardGroup)
+				) {
+					groups.add({
+						id: mod.plannerDashboardGroup,
+						content: mod.plannerDashboardGroup,
+					});
 					moduleSubGroups.push(mod.plannerDashboardGroup);
 				}
 				groupId = mod.plannerDashboardGroup;
@@ -274,10 +319,16 @@
 				end: mod.endDate.toISOString(),
 				group: groupId,
 				className: [
-					'module',
-					mod.status === Module.statuses.active ? "active-note" : "inactive-note",
-					highlightNotesFilePaths.includes(mod.filepath) ? "highlighted-item" : ""
-				].filter(Boolean).join(" "),
+					"module",
+					mod.status === Module.statuses.active
+						? "active-note"
+						: "inactive-note",
+					highlightNotesFilePaths.includes(mod.filepath)
+						? "highlighted-item"
+						: "",
+				]
+					.filter(Boolean)
+					.join(" "),
 				note: mod,
 			};
 			items.add(item);
@@ -337,9 +388,9 @@
 		/* opacity: 0.75;*/
 		border: 2px solid var(--interactive-hover);
 	}
-	:global(.vis-item-content) {
+	/*:global(.vis-item-content) {
 		white-space: unset !important;
-	}
+	}*/
 
 	:global(.highlighted-item) {
 		border: 3px solid var(--color-red);
