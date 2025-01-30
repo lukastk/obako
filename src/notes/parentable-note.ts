@@ -54,7 +54,7 @@ export abstract class ParentableNote extends ObakoNote {
         return childNotes;
     }
 
-    getDescendantNotes(includedNoteTypes: (string | typeof ParentableNote)[] = []): NoteHierarchy {
+    getDescendantNotes(includedNoteTypes: (string | typeof ParentableNote)[] = []): NoteTree {
         includedNoteTypes = includedNoteTypes.map(noteType =>
             typeof noteType !== 'string' ? noteType.noteTypeStr : noteType
         );
@@ -62,8 +62,8 @@ export abstract class ParentableNote extends ObakoNote {
         return this.__getDescendantNote_helper(visited, includedNoteTypes);
     }
 
-    __getDescendantNote_helper(visited: Set<ParentableNote>, includedNoteTypes: string[]): NoteHierarchy {
-        const noteHierarchy: NoteHierarchy = {
+    __getDescendantNote_helper(visited: Set<ParentableNote>, includedNoteTypes: string[]): NoteTree {
+        const noteTree: NoteTree = {
             note: this,
             children: []
         };
@@ -76,14 +76,14 @@ export abstract class ParentableNote extends ObakoNote {
             }
             visited.add(childNote);
             if (childNote instanceof ParentableNote) {
-                noteHierarchy.children.push(childNote.__getDescendantNote_helper(visited, includedNoteTypes));
+                noteTree.children.push(childNote.__getDescendantNote_helper(visited, includedNoteTypes));
             }
         }
-        return noteHierarchy;
+        return noteTree;
     }
 }
 
-export interface NoteHierarchy {
+export interface NoteTree {
     note: ParentableNote;
-    children: NoteHierarchy[];
+    children: NoteTree[];
 }

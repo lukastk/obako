@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import { Zettel } from '../zettel';
-import type { NoteHierarchy } from '../parentable-note';
+import type { NoteTree } from '../parentable-note';
 import type { FrontmatterSpec } from 'src/notes/note-frontmatter';
 import { getDateFromDateString } from 'src/utils';
 import { Module } from './module';
@@ -109,7 +109,7 @@ export class Project extends Zettel {
         return super.validate() && dateValid && statusValid && parentValid;
     }
 
-    getDescendantProjects(): NoteHierarchy {
+    getDescendantProjects(): NoteTree {
         return this.getDescendantNotes([Project]);
     }
 

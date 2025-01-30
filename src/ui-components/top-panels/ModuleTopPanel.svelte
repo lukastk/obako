@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CollapsibleZettelHierarchyDisplay from "src/ui-components/svelte-lib/CollapsibleZettelHierarchyDisplay.svelte";
+	import CollapsibleNoteTreeDisplay from "src/ui-components/svelte-lib/CollapsibleNoteTreeDisplay.svelte";
 	import CollapsibleNoteList from "src/ui-components/svelte-lib/CollapsibleNoteList.svelte";
 	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
@@ -13,9 +13,9 @@
 		.filter((note) => note.noteType === Log.noteTypeStr);
 </script>
 
-<CollapsibleZettelHierarchyDisplay
+<CollapsibleNoteTreeDisplay
     displayTitle="Note hierarchy"
-    noteHierarchy={note.getDescendantNotes()}
+    noteTree={note.getDescendantNotes()}
     isCollapsed={true}
     sortByNoteType={true}
     displayTitleDecorator={true}
