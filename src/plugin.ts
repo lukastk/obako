@@ -43,6 +43,7 @@ import { View_LogDashboard } from "./plugin-components/views/log-dashboard/log-d
 
 /**** Svelte Components ****/
 import TaskList from './ui-components/svelte-lib/TaskList.svelte';
+import CollapsibleZettelHierarchyDisplay from './ui-components/svelte-lib/CollapsibleZettelHierarchyDisplay.svelte';
 import ZettelHierarchyDisplay from './ui-components/svelte-lib/ZettelHierarchyDisplay.svelte';
 
 export default class ObakoPlugin extends Plugin {
@@ -68,6 +69,7 @@ export default class ObakoPlugin extends Plugin {
 			noteLoader: noteLoader,
 			svelteComponents: {
 				TaskList: TaskList,
+				CollapsibleZettelHierarchyDisplay: CollapsibleZettelHierarchyDisplay,
 				ZettelHierarchyDisplay: ZettelHierarchyDisplay,
 			},
 			noteClasses: noteLoader.noteTypeToNoteClass,

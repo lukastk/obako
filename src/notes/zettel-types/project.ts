@@ -15,6 +15,7 @@ export class Project extends Zettel {
     static statuses = {
         stream: "stream",
         idea: "idea",
+        unconfirmed: "unconfirmed",
         unplanned: "unplanned",
         active: "active",
         paused: "paused",
@@ -25,6 +26,7 @@ export class Project extends Zettel {
     static statusDecorators = {
         [Project.statuses.stream]: "",
         [Project.statuses.idea]: "",
+        [Project.statuses.unconfirmed]: "🤔",
         [Project.statuses.unplanned]: "❔",
         [Project.statuses.active]: "",
         [Project.statuses.paused]: "",
@@ -41,6 +43,8 @@ export class Project extends Zettel {
                     return 'var(--color-purple)';
                 case Project.statuses.idea:
                     return 'var(--color-yellow)';
+                case Project.statuses.unconfirmed:
+                    return 'var(--color-orange)';
                 case Project.statuses.active:
                     return 'var(--color-blue)';
                 case Project.statuses.paused:
@@ -71,6 +75,8 @@ export class Project extends Zettel {
             "proj-status": { default: "unplanned", type: "string", description: "The status of the project." },
             "proj-start-date": { default: "", type: "string", description: "The start date of the project." },
             "proj-end-date": { default: "", type: "string", description: "The end date of the project." },
+            "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the project in the planner dashboard. If empty, the project will be displayed in the default group." },
+            "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -82,6 +88,14 @@ export class Project extends Zettel {
 
     get modules(): Module[] {
         return this.getIncomingLinkedNotes().filter((note) => note.noteType === Module.noteTypeStr) as Module[];
+    }
+
+    get plannerDashboardGroup(): string {
+        return this.frontmatter['planner-dashboard-group'];
+    }
+
+    get hideInPlannerDashboard(): boolean {
+        return this.frontmatter['hide-in-planner-dashboard'];
     }
 
     validate(): boolean {

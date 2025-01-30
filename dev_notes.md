@@ -24,5 +24,6 @@ settings --> ui-components
 task-utils --> note-loader
 
 notes -.->|"dynamic imports"| ui-components
+notes -->|planner| task-utils
 ```
 

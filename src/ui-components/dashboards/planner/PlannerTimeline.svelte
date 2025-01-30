@@ -27,15 +27,17 @@
 
 	const items = new DataSet();
 
-	const PLANNER_GROUP_ID = 1;
-	const PLANNER_DAILY_GROUP_ID = 2;
-	const PLANNER_WEEKLY_GROUP_ID = 3;
-	const PLANNER_MONTHLY_GROUP_ID = 4;
-	const PLANNER_QUARTERLY_GROUP_ID = 5;
-	const PLANNER_YEARLY_GROUP_ID = 6;
+	const PLANNER_GROUP_ID = 'planner';
+	const PLANNER_DAILY_GROUP_ID = 'planner-daily';
+	const PLANNER_WEEKLY_GROUP_ID = 'planner-weekly';
+	const PLANNER_MONTHLY_GROUP_ID = 'planner-monthly';
+	const PLANNER_QUARTERLY_GROUP_ID = 'planner-quarterly';
+	const PLANNER_YEARLY_GROUP_ID = 'planner-yearly';
 
-	const PROJECTS_GROUP_ID = 7;
-	const MODULES_GROUP_ID = 8;
+	const PROJECTS_GROUP_ID = 'projects';
+	const PROJECTS_SUBGROUPS_GROUP_ID = 'projects-subgroups';
+	const MODULES_GROUP_ID = 'modules';
+	const MODULES_SUBGROUPS_GROUP_ID = 'modules-subgroups';
 
 	const itemMargin = 60 * 60 * 1000;
 	const oneDay = 24 * 60 * 60 * 1000;
@@ -47,6 +49,10 @@
 		quarter: PLANNER_QUARTERLY_GROUP_ID,
 		year: PLANNER_YEARLY_GROUP_ID,
 	};
+
+
+	const projectSubGroups = [];
+	const moduleSubGroups = [];
 
 	const groups = new DataSet([
 		{
@@ -66,8 +72,10 @@
 		{ id: PLANNER_QUARTERLY_GROUP_ID, content: "Quarterly" },
 		{ id: PLANNER_YEARLY_GROUP_ID, content: "Yearly" },
 
-		{ id: PROJECTS_GROUP_ID, content: "Projects", nestedGroups: [MODULES_GROUP_ID] },
-		{ id: MODULES_GROUP_ID, content: "Modules" },
+		{ id: PROJECTS_GROUP_ID, content: "Projects", nestedGroups: [PROJECTS_SUBGROUPS_GROUP_ID, MODULES_GROUP_ID] },
+		{ id: PROJECTS_SUBGROUPS_GROUP_ID, content: "Project subgroups", nestedGroups: projectSubGroups },
+		{ id: MODULES_GROUP_ID, content: "Modules", nestedGroups: [MODULES_SUBGROUPS_GROUP_ID] },
+		{ id: MODULES_SUBGROUPS_GROUP_ID, content: "Module subgroups", nestedGroups: moduleSubGroups },
 
 		//{ id: 4, content: "Group 4", nestedGroups: [1, 2] },
 	]);
@@ -191,7 +199,7 @@
 			}
 
 			const item = {
-				id: planner.file.basename,
+				id: planner.file.path,
 				content: itemContent,
 				start: startDate.toISOString(),
 				end: endDate.toISOString(),
@@ -214,14 +222,25 @@
 			.filter((proj) => proj.startDate && proj.endDate);
 
 		projects.forEach((proj) => {
+			if (proj.hideInPlannerDashboard) return;
+
+			let groupId = PROJECTS_GROUP_ID;
+			if (proj.plannerDashboardGroup) {
+				if (!groups.map((group) => group.id).includes(proj.plannerDashboardGroup)) {
+					groups.add({ id: proj.plannerDashboardGroup, content: proj.plannerDashboardGroup });
+					projectSubGroups.push(proj.plannerDashboardGroup);
+				}
+				groupId = proj.plannerDashboardGroup;
+			}
+
 			const item = {
-				id: proj.file.basename,
+				id: proj.file.path,
 				content: proj.file.basename,
 				start: proj.startDate.toISOString(),
 				end: proj.endDate.toISOString(),
-				group: PROJECTS_GROUP_ID,
+				group: groupId,
 				className: [
-					'module',
+					'project',
 					proj.status === Project.statuses.active ? "active-note" : "inactive-note",
 					highlightNotesFilePaths.includes(proj.filepath) ? "highlighted-item" : ""
 				].filter(Boolean).join(" "),
@@ -237,12 +256,23 @@
 			.filter((mod) => mod.startDate && mod.endDate);
 
 		modules.forEach((mod) => {
+			if (mod.hideInPlannerDashboard) return;
+
+			let groupId = MODULES_GROUP_ID;
+			if (mod.plannerDashboardGroup) {
+				if (!groups.map((group) => group.id).includes(mod.plannerDashboardGroup)) {
+					groups.add({ id: mod.plannerDashboardGroup, content: mod.plannerDashboardGroup });
+					moduleSubGroups.push(mod.plannerDashboardGroup);
+				}
+				groupId = mod.plannerDashboardGroup;
+			}
+
 			const item = {
-				id: mod.file.basename,
+				id: mod.file.path,
 				content: `<i>${mod.parent.file.basename}:</i> ${mod.file.basename}`,
 				start: mod.startDate.toISOString(),
 				end: mod.endDate.toISOString(),
-				group: MODULES_GROUP_ID,
+				group: groupId,
 				className: [
 					'module',
 					mod.status === Module.statuses.active ? "active-note" : "inactive-note",
@@ -365,7 +395,7 @@
 	}
 
 	:global(.project) {
-		background: #fff;
+		background: #ddd;
 	}
 
 	:global(.module) {

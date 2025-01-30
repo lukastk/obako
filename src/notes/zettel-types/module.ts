@@ -58,6 +58,8 @@ export class Module extends ParentableNote {
             "mod-status": { default: Module.statuses.unplanned, type: "string", description: "The status of the module." }, 
             "mod-start-date": { default: "", type: "string", description: "The start date of the module." },
             "mod-end-date": { default: "", type: "string", description: "The end date of the module." },
+            "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the module in the planner dashboard. If empty, the module will be displayed in the default group." },
+            "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -65,6 +67,14 @@ export class Module extends ParentableNote {
 
     get status(): string {
         return this.frontmatter["mod-status"];
+    }
+
+    get plannerDashboardGroup(): string {
+        return this.frontmatter['planner-dashboard-group'];
+    }
+
+    get hideInPlannerDashboard(): boolean {
+        return this.frontmatter['hide-in-planner-dashboard'];
     }
 
     validate(): boolean {
