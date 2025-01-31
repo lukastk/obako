@@ -2,19 +2,28 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import type ObakoPlugin from './plugin';
 import SimpleCollapsible from 'src/ui-components/svelte-lib/SimpleCollapsible.svelte'
 import { CommandPluginComponent } from './plugin-components/command-plugin-component';
+import { concreteNoteTypes, noteTypeToNoteClass } from './note-loader';
+
+const defaultNoteTypeFolders = concreteNoteTypes
+	.filter(noteType => noteType !== noteTypeToNoteClass.BasicNote)
+	.reduce((acc, noteType) => {
+		acc[`${noteType.noteTypeStr}`] = noteType.noteTypeStr;
+		return acc;
+	}, {});
+
+export interface NoteTypeFolderSettings {
+	[key: string]: string;
+}
 
 export interface ObakoSettings {
-	zettelFolder: string;
-	plannerFolder: string;
+	noteTypeFolders: NoteTypeFolderSettings;
 	moduleFolder: string;
 	globalCommandPrefix: string;
 	pluginComponentSettings: any;
 }
 
 export const DEFAULT_SETTINGS: ObakoSettings = {
-	zettelFolder: 'zettels',
-	plannerFolder: 'planners',
-	moduleFolder: 'modules',
+	noteTypeFolders: defaultNoteTypeFolders,
 	globalCommandPrefix: '',
 	pluginComponentSettings: {},
 }
@@ -32,29 +41,21 @@ export class ObakoSettingsTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		this.addTextSetting(
-			/* name */ 'Zettel folder',
-			/* desc */ 'Folder where zettel notes are stored.',
-			/* placeholder */ 'Set the folder name',
-			/* setting */ 'zettelFolder');
+		/*** Note type folders ***/
 
-		this.addTextSetting(
-			/* name */ 'Planner folder',
-			/* desc */ 'Folder where planner notes are stored.',
-			/* placeholder */ 'Set the folder name',
-			/* setting */ 'plannerFolder');
+		this.addHeading('Note type folders', 3);
 
-		this.addTextSetting(
-				/* name */ 'Module folder',
-				/* desc */ 'Folder where module notes are stored.',
+		concreteNoteTypes.forEach((noteType) => {
+			if (noteType.noteTypeStr === 'basic-note') return;
+			this.addTextSetting(
+				/* name */ `${noteType.noteTypeDisplayName} folder`,
+				/* desc */ `Folder where ${noteType.noteTypeDisplayName} notes are stored.`,
 				/* placeholder */ 'Set the folder name',
-				/* setting */ 'moduleFolder');
-
-		this.addTextSetting(
-			/* name */ 'Global command prefix',
-			/* desc */ 'Prefix added to the search terms for all commands.',
-			/* placeholder */ 'Set the prefix',
-			/* setting */ 'globalCommandPrefix');
+				/* setting */ `${noteType.noteTypeStr}`,
+				/* settingsDict */ this.plugin.settings.noteTypeFolders,
+				/* containerEl */ containerEl
+			);
+		});
 
 		// Initialize settings for all components
 		for (const comp of this.plugin.pluginComponents) {
@@ -63,13 +64,15 @@ export class ObakoSettingsTab extends PluginSettingTab {
 				this.plugin.settings.pluginComponentSettings[compName] = comp.constructor.getDefaultSettings();
 		}
 
-		/* Command shortcodes */
+
+		/*** Command shortcodes ***/
+
+		this.addHeading('Command shortcodes', 3);
 
 		const { titleElement, contentElement } = this.addCollapsible(true);
 		const cmdShortcodesTitleEl = titleElement;
 		const cmdShortcodesContentEl = contentElement;
-
-		cmdShortcodesTitleEl.textContent = "Command shortcodes";
+		cmdShortcodesTitleEl.textContent = "Collapsible";
 
 		this.addTextDescription("Create shortcode prefixes for commands. Reload the app to see changes.", cmdShortcodesContentEl);
 		for (const comp of this.plugin.pluginComponents) {
@@ -84,6 +87,9 @@ export class ObakoSettingsTab extends PluginSettingTab {
 				);
 			}
 		}
+
+
+		/*** Commands, views, and UI components ***/
 
 		this.addHeading('Commands, views, and UI components', 3);
 

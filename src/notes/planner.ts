@@ -9,7 +9,7 @@ import type { NoteCreationData } from 'src/note-loader';
 
 export class Planner extends ObakoNote {
     static isAbstract = false;
-    static noteTypeStr = "planner";
+    static noteTypeStr = "plan";
     static noteTypeDisplayName = "Planner";
     static noteIcon = "𝝣";
 

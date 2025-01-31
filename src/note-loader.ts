@@ -51,35 +51,29 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
     return acc;
 }, {});
 
-export function getNoteType(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
+export function getNoteClass(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
     file = getFile(file) as TFile;
     if (!file) return null;
-
     if (!frontmatter) frontmatter = getFrontmatter(file);
 
-    const isInZettelFolder = file.path.startsWith(_obako_plugin.settings.zettelFolder);
-    const isInPlannerFolder = file.path.startsWith(_obako_plugin.settings.plannerFolder);
-
-    let noteType = frontmatter?.notetype;
-
-    if (!noteType) {
-        if (isInZettelFolder) {
-            noteType = Capture.noteTypeStr;
-        } else if (isInPlannerFolder) {
-            noteType = Planner.noteTypeStr;
+    let noteClass = noteTypeToNoteClass[frontmatter?.notetype];
+    
+    if (!noteClass) {
+        for (const [noteTypeStr, noteTypeFolder] of Object.entries(_obako_plugin.settings.noteTypeFolders)) {
+            if (file.path.startsWith(noteTypeFolder)) {
+                noteClass = noteTypeToNoteClass[noteTypeStr];
+                break;
+            }
         }
     }
-
-    if (noteType && noteType in noteTypeToNoteClass) {
-        return noteTypeToNoteClass[noteType]
-    }
-
+    
+    if (noteClass && concreteNoteTypes.includes(noteClass)) return noteClass;
     return BasicNote;
 }
 
 export function loadNote(file: TFile | string | null, frontmatter: Record<string, any> | null = null) {
     file = getFile(file) as TFile;
-    const NoteClass = getNoteType(file, frontmatter);
+    const NoteClass = getNoteClass(file, frontmatter);
     if (!NoteClass) return null;
     return new NoteClass(file);
 }
@@ -117,7 +111,7 @@ export interface NoteCreationData {
     extraData?: any;
 }
 
-export async function createNote(noteData: NoteCreationData): Promise<TFile|null> {
+export async function createNote(noteData: NoteCreationData, noteFolder: string): Promise<TFile|null> {
     // Make a deep copy of the noteData object
     noteData = {...noteData}
     noteData.frontmatterData = noteData.frontmatterData ? {...noteData.frontmatterData} : {};
@@ -158,15 +152,12 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
     const yaml = yamlEntries.join("\n");
     const noteFullContent = "---\n" + yaml + "\n---\n\n" + noteData.content;
 
-    let noteFolder: string;
-    if (noteClass.prototype instanceof Zettel) { 
-        noteFolder = _obako_plugin.settings.zettelFolder;
-    } else if (noteClass == Planner || noteClass.prototype instanceof Planner) {
-        noteFolder = _obako_plugin.settings.plannerFolder;
-    } else if (noteClass == Module || noteClass.prototype instanceof Module) {
-        noteFolder = _obako_plugin.settings.moduleFolder;
-    } else {
-        throw new Error(`Note type ${noteData.noteType} not supported`);
+    if (!noteFolder) {
+        noteFolder = _obako_plugin.settings.noteTypeFolders[noteClass.noteTypeStr];
+        if (!noteFolder) {
+            new Notice(`Invalid note type ${noteClass.noteTypeStr}.`);
+            throw new Error(`Invalid note type ${noteClass.noteTypeStr}.`);
+        };
     }
 
     const noteFilepath = noteFolder + "/" + noteData.title + ".md";
@@ -176,6 +167,8 @@ export async function createNote(noteData: NoteCreationData): Promise<TFile|null
         new Notice(`Note already exists: ${noteFilepath}`);
         return existingFile;
     } else {
+        if (!app.vault.getFolderByPath(noteFolder))
+            await app.vault.createFolder(noteFolder)
         const file = await app.vault.create(noteFilepath, noteFullContent);
         return file;
     }

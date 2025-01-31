@@ -2,6 +2,7 @@ import { Modal, App, Setting } from 'obsidian';
 import { createNote } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
+import { Planner } from 'src/notes/planner';
 
 export class Command_CreatePlanner extends CommandPluginComponent {
     componentName = 'Cmd: Create planner';
@@ -17,7 +18,7 @@ export class Command_CreatePlanner extends CommandPluginComponent {
                     new SetDateRangeModal(this.app, async (dateRangeStr) => {
                         const noteData: NoteCreationData = {
                             title: title,
-                            noteType: 'planner',
+                            noteType: Planner.noteTypeStr,
                             extraData: {
                                 dateRangeStr: dateRangeStr,
                             },

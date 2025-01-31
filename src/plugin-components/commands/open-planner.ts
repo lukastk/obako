@@ -30,7 +30,7 @@ export class Command_OpenPlanner extends CommandPluginComponent {
                     if (!selPlanner) {
                         const noteData: NoteCreationData = {
                             title: "",
-                            noteType: 'planner',
+                            noteType: Planner.noteTypeStr,
                             extraData: {
                                 dateRangeStr: plannerDateStr,
                             },
