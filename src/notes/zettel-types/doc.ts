@@ -2,6 +2,7 @@ import type { FrontmatterSpec } from '../note-frontmatter';
 import { Zettel } from '../zettel';
 
 export class Doc extends Zettel {
+    static isAbstract = false;
     static noteTypeStr = "doc";
     static noteTypeDisplayName = "Doc";
     static noteIcon = "❐";

@@ -5,6 +5,7 @@ import type { CreateObakoNoteModal } from '../plugin-components/commands/create-
 import type { NoteCreationData } from 'src/note-loader';
 
 export abstract class ObakoNote extends BasicNote {
+    static isAbstract = true;
     static noteTypeStr = "obako-note";
     static noteTypeDisplayName = "Obako Note";
     static noteIcon = "?obako-note";

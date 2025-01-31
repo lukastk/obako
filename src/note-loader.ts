@@ -18,22 +18,38 @@ import { processFrontmatter } from './notes/note-frontmatter';
 import { Zettel } from './notes/zettel';
 import { ObakoNote } from './notes/obako-note';
 import { Transient } from './notes/zettel-types/transient';
+import { ParentableNote } from './notes/parentable-note';
+import { Reproduction } from './notes/zettel-types/reproduction';
+import { Source } from './notes/zettel-types/source';
+import { Reference } from './notes/zettel-types/reference';
 
-export const noteTypeToNoteClass: Record<string, any> = {
-    [Memo.noteTypeStr]: Memo, 
-    [Doc.noteTypeStr]: Doc,
-    [Pad.noteTypeStr]: Pad,
-    [Capture.noteTypeStr]: Capture,
-    [Log.noteTypeStr]: Log,
-    [Planner.noteTypeStr]: Planner,
-    [Project.noteTypeStr]: Project,
-    [Module.noteTypeStr]: Module,
+export const noteTypes = [
+    Zettel,
+    ParentableNote,
+    ObakoNote,
+    Transient,
+    BasicNote,
+    Planner,
+    Capture,
+    Doc,
+    Log,
+    Memo,
+    Module,
+    Pad,
+    Project,
+    Reference,
+    Reproduction,
+    Source,
+    Transient,
+];
 
-    [ObakoNote.noteTypeStr]: ObakoNote,
-    [Transient.noteTypeStr]: Transient,
-    [BasicNote.noteTypeStr]: BasicNote,
-    [Zettel.noteTypeStr]: Zettel,
-};
+export const concreteNoteTypes = noteTypes.filter(noteType => !noteType.isAbstract);
+export const abstractNoteTypes = noteTypes.filter(noteType => noteType.isAbstract);
+
+export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, noteType) => {
+    acc[noteType.noteTypeStr] = noteType;
+    return acc;
+}, {});
 
 export function getNoteType(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
     file = getFile(file) as TFile;

@@ -2,16 +2,8 @@ import { Modal, App, Setting } from 'obsidian';
 import { createNote, noteTypeToNoteClass } from 'src/note-loader';
 import type { NoteCreationData } from 'src/note-loader';
 import type { FrontmatterFieldSpec } from 'src/notes/note-frontmatter';
-import { Memo } from 'src/notes/zettel-types/memo';
-import { Doc } from 'src/notes/zettel-types/doc';
-import { Pad } from 'src/notes/zettel-types/pad';
-import { Capture } from 'src/notes/zettel-types/capture';
-import { Log } from 'src/notes/zettel-types/log';
-import { Planner } from 'src/notes/planner';
-import { Project } from 'src/notes/zettel-types/project';
-import { Module } from 'src/notes/zettel-types/module';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
-import type { BasicNote } from 'src/notes/basic-note';
+import { concreteNoteTypes } from 'src/note-loader';
 
 export class Command_CreateObakoNote extends CommandPluginComponent {
     componentName = 'Cmd: Create Obako note';
@@ -27,7 +19,7 @@ export class Command_CreateObakoNote extends CommandPluginComponent {
                     createNote(noteData).then((file) => {
                         setTimeout(() => { // Wait a bit to allow the frontmatter cache to be loaded.
                             if (file)
-                                app.workspace.openLinkText(file.path, "", true);
+                                this.app.workspace.openLinkText(file.path, "", true);
                         }, 10);
                     });
                 }).open();
@@ -51,16 +43,6 @@ export class CreateObakoNoteModal extends Modal {
     noteSettingsContainerEl: HTMLElement;
 
     noteData: NoteCreationData;
-    noteTypes: (typeof BasicNote)[] = [
-        Memo,
-        Doc,
-        Pad,
-        Capture,
-        Log,
-        Planner,
-        Project,
-        Module,
-    ];
 
     constructor(app: App, onSubmit: (result: NoteCreationData) => void, options: CreateObakoNoteModalOptions = {}) {
         super(app);
@@ -78,19 +60,19 @@ export class CreateObakoNoteModal extends Modal {
 
         this.noteData = options.noteData || {};
         if (!('title' in this.noteData)) this.noteData.title = '';
-        if (!('noteType' in this.noteData)) this.noteData.noteType = this.noteTypes[0].noteTypeStr;
+        if (!('noteType' in this.noteData)) this.noteData.noteType = concreteNoteTypes[0].noteTypeStr;
         if (!('frontmatterData' in this.noteData)) this.noteData.frontmatterData = {};
         if (!('content' in this.noteData)) this.noteData.content = '';
         if (!('extraData' in this.noteData)) this.noteData.extraData = {};
 
         /* note type */
         if (!options.disableNoteTypeSelection) {
-            let selectedNoteType = this.noteTypes[0];
+            let selectedNoteType = concreteNoteTypes[0];
             this.addDropdownSetting(
                 'Note type',
                 'Select the Obako note type.',
-                this.noteTypes.map(noteType => noteType.noteTypeStr),
-                this.noteTypes.map(noteType => noteType.noteTypeDisplayName),
+                concreteNoteTypes.map(noteType => noteType.noteTypeStr),
+                concreteNoteTypes.map(noteType => noteType.noteTypeDisplayName),
                 (value) => {
                     this.noteData.noteType = value;
                     this.noteData.frontmatterData = {};

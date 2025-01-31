@@ -24,6 +24,7 @@ import type { FrontmatterSpec } from './note-frontmatter';
 import { ParentableNote } from './parentable-note';
 
 export abstract class Zettel extends ParentableNote {
+    static isAbstract = true;
     static noteTypeStr = "zettel";
     static noteTypeDisplayName = "Zettel";
     static noteIcon = "?zettel";

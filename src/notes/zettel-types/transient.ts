@@ -2,6 +2,7 @@ import type { FrontmatterSpec } from '../note-frontmatter';
 import { Zettel } from '../zettel';
 
 export abstract class Transient extends Zettel {
+    static isAbstract = true;
     static noteTypeStr = "transient";
     static noteTypeDisplayName = "Transient";
 

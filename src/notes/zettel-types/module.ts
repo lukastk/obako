@@ -5,6 +5,7 @@ import { Project } from './project';
 import { ParentableNote } from '../parentable-note';
 
 export class Module extends ParentableNote {
+    static isAbstract = false;
     static noteTypeStr = "mod";
     static noteTypeDisplayName = "Module";
     static noteIcon = "●";

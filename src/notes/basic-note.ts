@@ -8,6 +8,7 @@ import { loadNote, type NoteCreationData } from '../note-loader';
 import type { CreateObakoNoteModal } from '../plugin-components/commands/create-obako-note';
 
 export class BasicNote {
+    static isAbstract = false;
     private _name: string; // For debugging in the DevTools console.
 
     static noteTypeStr = "basic-note";

@@ -25,6 +25,7 @@ import type { FrontmatterSpec } from './note-frontmatter';
 import { parseObsidianLink } from 'src/utils';
 
 export abstract class ParentableNote extends ObakoNote {
+    static isAbstract = true;
     static noteTypeStr = "parentable-note";
     static noteTypeDisplayName = "Parentable Note";
     static noteIcon = "?parentable-note";

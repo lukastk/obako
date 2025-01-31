@@ -6,6 +6,7 @@ import { Zettel } from '../zettel';
 import type { FrontmatterSpec } from '../note-frontmatter';
 
 export class Log extends Zettel {
+    static isAbstract = false;
     static noteTypeStr = "log";
     static noteTypeDisplayName = "Log";
     static noteIcon = "⁍";

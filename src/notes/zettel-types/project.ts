@@ -6,8 +6,8 @@ import { getDateFromDateString } from 'src/utils';
 import { Module } from './module';
 
 
-
 export class Project extends Zettel {
+    static isAbstract = false;
     static noteTypeStr = "proj";
     static noteTypeDisplayName = "Project";
     static noteIcon = "❖";

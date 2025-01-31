@@ -2,6 +2,7 @@ import type { NoteCreationData } from 'src/note-loader';
 import { Transient } from './transient';
 
 export class Capture extends Transient {
+    static isAbstract = false;
     static noteTypeStr = "cap";
     static noteTypeDisplayName = "Capture";
     static noteIcon = "﹅";

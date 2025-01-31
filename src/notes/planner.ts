@@ -8,6 +8,7 @@ import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create
 import type { NoteCreationData } from 'src/note-loader';
 
 export class Planner extends ObakoNote {
+    static isAbstract = false;
     static noteTypeStr = "planner";
     static noteTypeDisplayName = "Planner";
     static noteIcon = "𝝣";
