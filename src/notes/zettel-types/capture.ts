@@ -9,7 +9,7 @@ export class Capture extends Transient {
 
     static processNoteData(noteData: NoteCreationData): boolean {
         const dateTimeStr = (new Date()).toISOString().split('.')[0].replace('T', '_').replaceAll(':','');
-        noteData.title = `${dateTimeStr} ${noteData.title}`;
+        noteData.title = `${dateTimeStr} ${noteData.title}`.trim();
 
         return true;
     }

@@ -67,7 +67,7 @@ export class Log extends Zettel {
         if (!('logDate' in noteData.extraData)) return false;
         noteData.extraData.logDate = getDateStringFromNaturalLanguage(noteData.extraData.logDate.trim());
         if (!isDateValid(new Date(noteData.extraData.logDate))) return false;
-        noteData.title = `${noteData.extraData.logDate} ${noteData.title}`;
+        noteData.title = `${noteData.extraData.logDate} ${noteData.title}`.trim();
         return true;
     }
 }
