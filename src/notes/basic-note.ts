@@ -135,7 +135,7 @@ export class BasicNote {
         return `${this.getTitlePrefixDecoratorString()} ${this.name} ${this.getTitleSuffixDecoratorString()}`;
     }
 
-    getLinkElement(): HTMLElement {
+    getLinkElement(includePrefixDecorator: boolean = true, includeSuffixDecorator: boolean = true): HTMLElement {
         const linkEl = createEl("a", { href: this.file.path });
         linkEl.classList.add("internal-link");
         const prefixDecoratorEl = createEl("span");
@@ -145,9 +145,16 @@ export class BasicNote {
         linkEl.appendChild(prefixDecoratorEl);
         linkEl.appendChild(titleEl);
         linkEl.appendChild(suffixDecoratorEl);
-        this.setTitlePrefixDecorator(prefixDecoratorEl);
-        this.setTitleSuffixDecorator(suffixDecoratorEl);
+        if (includePrefixDecorator) this.setTitlePrefixDecorator(prefixDecoratorEl);
+        if (includeSuffixDecorator) this.setTitleSuffixDecorator(suffixDecoratorEl);
         return linkEl;
+    }
+
+    getInternalLink(includePrefixDecorator: boolean = true, includeSuffixDecorator: boolean = true): string {
+        const prefixDecorator = includePrefixDecorator ? this.getTitlePrefixDecoratorString() + ' ' : '';
+        const suffixDecorator = includeSuffixDecorator ? ' ' + this.getTitleSuffixDecoratorString() : '';
+        const dispStr = `${prefixDecorator}${this.name}${suffixDecorator}`.trim();
+        return `[[${this.file.path}|${dispStr}]]`;
     }
 
     async getContent(): Promise<string> {

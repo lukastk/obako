@@ -1,4 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Setting } from 'obsidian';
+import { loadNote } from 'src/note-loader';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
 import { getDateFromText, trimBlockIdsFromText } from 'src/utils';
@@ -14,7 +15,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -61,14 +62,30 @@ export class Command_CopyTasks extends CommandPluginComponent {
 
                         const indentedTaskList = getIndentedHierarchicalTaskList(tasks);
 
+                        const groupedTasks: { [key: string]: any[] } = {};
+                        if (groupByFile) {
+                            for (const task of indentedTaskList) {
+                                groupedTasks[task.task.filePath] = groupedTasks[task.task.filePath] || [];
+                                groupedTasks[task.task.filePath].push(task);
+                            }
+                        } else {
+                            groupedTasks[""] = indentedTaskList;
+                        }
+
                         let mdElems: string[] = [];
-                        for (const task of indentedTaskList) {
-                            const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('d'))).trim();
-                            const taskBlockLink = await task.task.getBlockLink();
-                            const indents = '\t'.repeat(task.indents);
-                            mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);
-                            const subtext = task.task.getSubtext(indents + "\t");
-                            if (subtext.trim()) mdElems.push(subtext);
+                        for (const filePath in groupedTasks) {
+                            if (filePath) {
+                                const file = loadNote(filePath);
+                                mdElems.push(`#### ${file.getInternalLink()}`);
+                            }
+                            for (const task of groupedTasks[filePath]) {
+                                const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('d'))).trim();
+                                const taskBlockLink = await task.task.getBlockLink();
+                                const indents = '\t'.repeat(task.indents);
+                                mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);
+                                const subtext = task.task.getSubtext(indents + "\t");
+                                if (subtext.trim()) mdElems.push(subtext);
+                            }
                         }
                         const md = mdElems.join('\n');
 
@@ -91,6 +108,7 @@ interface CopyTaskOptions {
     copyDueTasks: boolean;
     notesToInclude: string;
     priorityRangeStr: string;
+    groupByFile: boolean;
 }
 
 class CopyTaskModal extends Modal {
@@ -157,8 +175,19 @@ class CopyTaskModal extends Modal {
                     .onChange((value) => {
                         notesToInclude = value;
                     });
-                }
+            }
             );
+
+        let groupByFile = true;
+        new Setting(this.contentEl)
+            .setName('Group by file')
+            .setDesc('Whether to group tasks by file.')
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(groupByFile)
+                    .onChange((value) => {
+                        groupByFile = value;
+                    }));
 
         let priorityRangeStr = '0-5';
         new Setting(this.contentEl)
@@ -180,6 +209,7 @@ class CopyTaskModal extends Modal {
                 copyDueTasks: copyDueTasks,
                 notesToInclude: notesToInclude,
                 priorityRangeStr: priorityRangeStr,
+                groupByFile: groupByFile,
             });
         }
 
