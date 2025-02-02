@@ -82,6 +82,16 @@ export abstract class ParentableNote extends ObakoNote {
         }
         return noteTree;
     }
+
+    getLineage(): ParentableNote[] {
+        const lineage: ParentableNote[] = [];
+        let currentNote: ParentableNote | null = this;
+        while (currentNote) {
+            lineage.unshift(currentNote);
+            currentNote = currentNote.parent;
+        }
+        return lineage;
+    }
 }
 
 export interface NoteTree {

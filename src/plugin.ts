@@ -13,6 +13,8 @@ import { Command_DownloadArticle } from './plugin-components/commands/download-a
 import { Command_MoveUnlinkedFiles } from './plugin-components/commands/move-unlinked-files';
 import { Command_GetDateString } from './plugin-components/commands/get-date-string';
 import { Command_FindNote } from './plugin-components/commands/find-note';
+import { Command_FindProject } from './plugin-components/commands/find-project';
+import { Command_FindTree } from './plugin-components/commands/find-tree';
 import { Command_CopyLines } from './plugin-components/commands/copy-lines';
 import { Command_CutLines } from './plugin-components/commands/cut-lines';
 import { Command_TransformTaskStatus } from './plugin-components/commands/transform-task-status';
@@ -82,6 +84,8 @@ export default class ObakoPlugin extends Plugin {
 			new Command_MoveUnlinkedFiles(this),
 			new Command_GetDateString(this),
 			new Command_FindNote(this),
+			new Command_FindProject(this),
+			new Command_FindTree(this),
 			new Command_CopyLines(this),
 			new Command_CutLines(this),
 			new Command_TransformTaskStatus(this),
