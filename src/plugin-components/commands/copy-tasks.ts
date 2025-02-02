@@ -79,7 +79,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
                                 mdElems.push(`#### ${file.getInternalLink()}`);
                             }
                             for (const task of groupedTasks[filePath]) {
-                                const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('d'))).trim();
+                                const taskMarkdown = (await trimBlockIdsFromText(task.task.getMarkdownWithStatus('+'))).trim();
                                 const taskBlockLink = await task.task.getBlockLink();
                                 const indents = '\t'.repeat(task.indents);
                                 mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);

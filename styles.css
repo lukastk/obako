@@ -79,6 +79,10 @@ div[data-task=">"] {
     text-decoration: line-through !important;
     color: var(--text-muted);
 }
+.markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="P"] {
+    text-decoration: line-through !important;
+    color: var(--text-muted);
+}
 /* For reader mode 
 .markdown-preview-view ul > li.task-list-item.is-checked {
     text-decoration: line-through;
