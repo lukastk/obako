@@ -64,8 +64,8 @@ export default class ObakoPlugin extends Plugin {
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		global._obako_plugin = this;
-		global.obako = {
+		globalThis._obako_plugin = this;
+		globalThis.obako = {
 			utils: utils,
 			tasks: tasks,
 			noteLoader: noteLoader,
