@@ -28,10 +28,14 @@ export class Log extends Zettel {
             ...super.getFrontmatterSpec(),
         };
         spec.notetype.default = this.noteTypeStr;
-        spec.cons.default = false;
-        spec.cons.skipCreationIfAbsent = false;
+        spec['cons'].default = false;
+        spec['cons'].skipCreationIfAbsent = false;
         spec['is-hp-cons'].default = true;
         spec['is-hp-cons'].skipCreationIfAbsent = false;
+        spec['is-hp-cons'].hideInCreationModal = false;
+        spec['is-link-cons'].default = false;
+        spec['is-link-cons'].skipCreationIfAbsent = false;
+        spec['is-link-cons'].hideInCreationModal = false;
         return spec;
     }
 
