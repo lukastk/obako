@@ -3,17 +3,17 @@
 
 	export let rsvpElements: string[] = [];
 	export let elemIndex: number = 0;
-    export let wordsPerMinute: number = 600;
+	export let wordsPerMinute: number = 600;
 	export let playing: boolean = true;
-    
+
 	export let isInFocus: () => boolean = () => true;
-    
+
 	let intervalTimer: NodeJS.Timer | null = null;
 
 	$: currElem = rsvpElements[elemIndex];
 	$: elemInterval = 60000 / wordsPerMinute;
-    $: totalDuration = rsvpElements.length * elemInterval / 1000;
-    $: currTime = elemInterval * elemIndex / 1000;
+	$: totalDuration = (rsvpElements.length * elemInterval) / 1000;
+	$: currTime = (elemInterval * elemIndex) / 1000;
 
 	export function play() {
 		if (intervalTimer) return;
@@ -30,6 +30,14 @@
 		}, elemInterval);
 	}
 
+	function run() {
+		const delay = getIntervalTime();
+		timerId = setTimeout(() => {
+			callback();
+			run(); // Schedule the next execution
+		}, delay);
+	}
+
 	export function pause() {
 		if (!intervalTimer) return;
 		clearInterval(intervalTimer);
@@ -43,19 +51,30 @@
 		currElem = rsvpElements[elemIndex];
 	}
 
-    export function nextElem() {
-        pause();
-        elemIndex = elemIndex + 1;
-        currElem = rsvpElements[elemIndex];
-    }
+	export function nextElem() {
+		pause();
+		elemIndex = elemIndex + 1;
+		currElem = rsvpElements[elemIndex];
+	}
 
-    export function prevElem() {
-        pause();
-        elemIndex = elemIndex - 1;
-        currElem = rsvpElements[elemIndex];
-    }
+	export function prevElem() {
+		pause();
+		elemIndex = elemIndex - 1;
+		currElem = rsvpElements[elemIndex];
+	}
 
 	if (playing) play();
+
+	function formatTime(seconds: number) {
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = Math.floor(seconds % 60);
+
+		// Pad with leading zeros if needed
+		const formattedMinutes = String(minutes).padStart(2, "0");
+		const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+
+		return `${formattedMinutes}:${formattedSeconds}`;
+	}
 
 	onMount(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -65,10 +84,10 @@
 				if (playing) pause();
 				else play();
 			} else if (event.key == "ArrowRight") {
-                nextElem();
-            } else if (event.key == "ArrowLeft") {
-                prevElem();
-            }
+				nextElem();
+			} else if (event.key == "ArrowLeft") {
+				prevElem();
+			}
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
@@ -89,12 +108,14 @@
 		<button on:click={pause} class:btn-active={!playing}>Pause</button>
 		<button on:click={stop}>Stop</button>
 
-        <button on:click={prevElem}>Prev</button>
-        <button on:click={nextElem}>Next</button>
+		<button on:click={prevElem}>Prev</button>
+		<button on:click={nextElem}>Next</button>
 
 		<div class="slider-container">
-            <b>Current time:</b> {currTime.toFixed(1)}s <br>
-            <b>Total duration:</b> {totalDuration.toFixed(1)}s
+			<b>Current time:</b>
+			{formatTime(currTime)} <br />
+			<b>Total duration:</b>
+			{formatTime(totalDuration)}
 			<input
 				type="range"
 				min="0"
@@ -113,9 +134,9 @@
 				max="1500"
 				bind:value={wordsPerMinute}
 				on:input={() => {
-                    pause();
-                    play();
-                }}
+					pause();
+					play();
+				}}
 				class="number-input"
 			/>
 
@@ -125,9 +146,9 @@
 				max="1500"
 				bind:value={wordsPerMinute}
 				on:input={() => {
-                    pause();
-                    play();
-                }}
+					pause();
+					play();
+				}}
 				class="horizontal-slider"
 			/>
 		</div>
@@ -164,16 +185,15 @@
 		display: block;
 		width: 100%;
 		margin-top: 20px;
-        margin-bottom: 20px;
+		margin-bottom: 20px;
 	}
 
 	.btn-active {
 		background-color: #007bff;
 	}
 
-    .slider-container {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
+	.slider-container {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 </style>
-

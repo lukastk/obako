@@ -18,7 +18,7 @@ export class Command_OpenRapidSerialVisualPresenter extends OpenViewCommandPlugi
 
             launchView({
                 wordsPerMinute: wordsPerMinute,
-                rsvpElements: rsvpText.split(/\s+/),
+                rsvpElements: processRSVPText(rsvpText),
             });
         }).open();
     }
@@ -51,4 +51,34 @@ class WordsPerMinuteModal extends Modal {
             }
         });
     }
+}
+
+
+const newLineDelay = 2;
+const punctuationToDelay: Record<string, number> = {
+    ".": 2,
+    ",": 1,
+    "!": 2,
+    "?": 2,
+    ";": 2,
+    ":": 2,
+}
+
+function sandwichList(lst: any[], separator: string, num: number) {
+    const sep = Array(num).fill(separator);
+    return lst.flatMap((item, index) => index < lst.length - 1 ? [item, sep] : [item]).flat();
+}
+
+function addEmptyStringsAfterPunctuation(str: string): string[] {
+    const lastChar = str[str.length - 1];
+    if (lastChar in punctuationToDelay) {
+        return [str, ...Array(punctuationToDelay[lastChar]).fill("")];
+    }
+    return [str];
+}
+
+function processRSVPText(rsvpText: string) {
+    let rsvpElems = sandwichList(rsvpText.split("\n"), "", newLineDelay);
+    rsvpElems = rsvpElems.map(substring => substring.split(/\s+/).map(word => addEmptyStringsAfterPunctuation(word)).flat().flat()).flat();
+    return rsvpElems;
 }
