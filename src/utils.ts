@@ -333,6 +333,19 @@ export function getSelectionPositions(editor: Editor | null) {
     }
 }
 
+export function isSelectionEmpty(editor: Editor | null) {
+    const selectionPositions = getSelectionPositions(editor);
+    return selectionPositions.start.line === selectionPositions.end.line && selectionPositions.start.ch === selectionPositions.end.ch;
+}
+
+export function getSelectionText(editor: Editor | null) {
+    const selectionPositions = getSelectionPositions(editor);
+    return editor.getRange(
+        { line: selectionPositions.start.line, ch: 0 },
+        { line: selectionPositions.end.line, ch: editor.getLine(selectionPositions.end.line).length }
+    );
+}
+
 const __onNoteChange__leafFiles = {};
 const __onNoteChange__leafCallbacks = {};
 let __onNoteChange__eventCreated = false;

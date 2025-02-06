@@ -13,6 +13,7 @@ export interface SvelteViewSettings {
 export class SvelteView extends ItemView {
     static viewSettings: SvelteViewSettings;
     viewComp!: SvelteComponent;
+    compArgs: any = {};
 
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
@@ -65,7 +66,7 @@ export class SvelteViewPluginComponent extends PluginComponent {
     constructor(plugin: ObakoPlugin) {
         super(plugin);
     }
-    
+
     get viewPluginSettings(): SvelteViewPluginComponentSettings {
         return this.constructor.viewPluginSettings;
     }
@@ -80,39 +81,40 @@ export class SvelteViewPluginComponent extends PluginComponent {
         }
     }
 
-	unload() {
-		this.app.workspace.detachLeavesOfType(this.viewPluginSettings.viewType);
-	}
+    unload() {
+        this.app.workspace.detachLeavesOfType(this.viewPluginSettings.viewType);
+    }
 
-	async activateView(openIn: string = 'current') {
-		let leaf: WorkspaceLeaf;
-		const leaves = this.app.workspace.getLeavesOfType(this.viewPluginSettings.viewType);
+    async activateView(openIn: string = 'current', viewState: any) {
+        let leaf: WorkspaceLeaf;
+        const leaves = this.app.workspace.getLeavesOfType(this.viewPluginSettings.viewType);
 
-		if (leaves.length > 0) {
-			leaf = leaves[0];
-		} else {
-			switch (openIn) {
-				case 'current':
-					leaf = this.app.workspace.getLeaf(false);
-					break;
-				case 'new':
-					leaf = this.app.workspace.getLeaf(true);
-					break;
-				case 'right':
-					leaf = this.app.workspace.getRightLeaf(false);
-					break;
-				default:
-					throw new Error(`Invalid openIn value: ${openIn}`);
-			}
-		}
+        if (leaves.length > 0) {
+            leaf = leaves[0];
+        } else {
+            switch (openIn) {
+                case 'current':
+                    leaf = this.app.workspace.getLeaf(false);
+                    break;
+                case 'new':
+                    leaf = this.app.workspace.getLeaf(true);
+                    break;
+                case 'right':
+                    leaf = this.app.workspace.getRightLeaf(false);
+                    break;
+                default:
+                    throw new Error(`Invalid openIn value: ${openIn}`);
+            }
+        }
 
-		await leaf.setViewState({
-			type: this.viewPluginSettings.viewType,
-			active: true,
-		});
+        await leaf.setViewState({
+            type: this.viewPluginSettings.viewType,
+            active: true,
+            state: viewState,
+        });
 
-		this.app.workspace.revealLeaf(leaf);
-	}
+        this.app.workspace.revealLeaf(leaf);
+    }
 }
 
 export abstract class OpenViewCommandPluginComponent extends CommandPluginComponent {
@@ -123,6 +125,11 @@ export abstract class OpenViewCommandPluginComponent extends CommandPluginCompon
         this.svelteViewPluginComponentName = svelteViewPluginComponentName;
     }
 
+    async openCommandModal(launchView: (viewStateToSet: any) => void): Promise<any> {
+        // No modal by default
+        launchView({});
+    }
+
     load() {
         const svelteViewPluginComponent: SvelteViewPluginComponent = this.plugin.pluginComponentLookup[this.svelteViewPluginComponentName] as SvelteViewPluginComponent;
 
@@ -130,19 +137,17 @@ export abstract class OpenViewCommandPluginComponent extends CommandPluginCompon
             id: this.commandId,
             name: this.getCommandName(),
             callback: async () => {
-                const openInNewTab = this.plugin.modifierKeyPressed.meta || this.plugin.modifierKeyPressed.ctrl;
-                const openInRightSidebar = openInNewTab && this.plugin.modifierKeyPressed.shift;
+                const viewStateToSet = await this.openCommandModal((viewStateToSet) => {
+                    const openInNewTab = this.plugin.modifierKeyPressed.meta || this.plugin.modifierKeyPressed.ctrl;
+                    const openInRightSidebar = openInNewTab && this.plugin.modifierKeyPressed.shift;
 
-                let openIn: string;
-                if (openInRightSidebar) {
-                    openIn = 'right';
-                } else if (openInNewTab) {
-                    openIn = 'new';
-                } else {
-                    openIn = 'current';
-                }
+                    let openIn: string;
+                    if (openInRightSidebar) openIn = 'right';
+                    else if (openInNewTab) openIn = 'new';
+                    else openIn = 'current';
 
-                svelteViewPluginComponent.activateView(openIn);
+                    svelteViewPluginComponent.activateView(openIn, viewStateToSet);
+                });
             }
         });
     }

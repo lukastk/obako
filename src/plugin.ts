@@ -22,6 +22,7 @@ import { Command_ToggleTaskCancel } from './plugin-components/commands/toggle-ta
 import { Command_ToggleTaskDeferred } from './plugin-components/commands/toggle-task-deferred';
 import { Command_OpenPlannerDashboard } from './plugin-components/commands/open-planner-dashboard';
 import { Command_OpenLogDashboard } from './plugin-components/commands/open-log-dashboard';
+import { Command_OpenRapidSerialVisualPresenter } from './plugin-components/commands/open-rapid-serial-visual-presentation';
 import { Command_CreateObakoNote } from './plugin-components/commands/create-obako-note';
 import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
@@ -42,6 +43,7 @@ import { UI_TopPanel } from './plugin-components/ui/top-panel';
 /**** Views ****/
 import { View_PlannerDashboard } from "./plugin-components/views/planner-dashboard/planner-dashboard-view";
 import { View_LogDashboard } from "./plugin-components/views/log-dashboard/log-dashboard-view";
+import { View_RapidSerialVisualPresentation } from './plugin-components/views/rapid-serial-visual-presentation';
 
 /**** Svelte Components ****/
 import TaskList from './ui-components/svelte-lib/TaskList.svelte';
@@ -64,8 +66,8 @@ export default class ObakoPlugin extends Plugin {
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		global._obako_plugin = this;
-		global.obako = {
+		globalThis._obako_plugin = this;
+		globalThis.obako = {
 			utils: utils,
 			tasks: tasks,
 			noteLoader: noteLoader,
@@ -93,6 +95,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_ToggleTaskDeferred(this),
 			new Command_OpenPlannerDashboard(this),
 			new Command_OpenLogDashboard(this),
+			new Command_OpenRapidSerialVisualPresenter(this),
 			new Command_CreateObakoNote(this),
 			new Command_CreateLog(this),
 			new Command_CreateCapture(this),
@@ -109,6 +112,7 @@ export default class ObakoPlugin extends Plugin {
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
 			new View_LogDashboard(this),
+			new View_RapidSerialVisualPresentation(this),
 		];
 
 		this.pluginComponentLookup = {};

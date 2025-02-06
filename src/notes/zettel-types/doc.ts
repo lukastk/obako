@@ -7,6 +7,12 @@ export class Doc extends Zettel {
     static noteTypeDisplayName = "Doc";
     static noteIcon = "❐";
 
+    static statuses = {
+        writing: "writing",
+        done: "done",
+        archived: "archived",
+    }
+
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
@@ -18,5 +24,9 @@ export class Doc extends Zettel {
 
     get status(): string {
         return this.frontmatter["doc-status"];
+    }
+
+    validate(): boolean {
+        return super.validate() && this.status in Doc.statuses;
     }
 }
