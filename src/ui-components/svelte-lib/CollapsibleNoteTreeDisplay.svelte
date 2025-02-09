@@ -8,6 +8,7 @@
 	export let isCollapsed = true;
 	export let displayTitleDecorator = false;
 	export let sortByNoteType = false;
+	export let disableOpenOnClick = false;
 	export let sortFunc: null|((a: NoteTree, b: NoteTree) => number) = null;
 	export let filterFunc: (noteTree: NoteTree) => boolean = () => true;
 
@@ -18,9 +19,10 @@
 	<NoteTreeDisplay
 		noteTree={noteTree}
 		topLevel={true}
-		{displayTitleDecorator}
-		{sortByNoteType}
+		displayTitleDecorator={displayTitleDecorator}
+		sortByNoteType={sortByNoteType}
 		sortFunc={sortFunc}
 		filterFunc={filterFunc}
+		disableOpenOnClick={disableOpenOnClick}
 	/>
 </Collapsible>

@@ -9,6 +9,7 @@
 	export let isCollapsed = true;
 	export let groupByNoteType = true;
 	export let displayTitleDecorator = false;
+	export let disableOpenOnClick = false;
 
 	const notesByType: Record<string, BasicNote[]> = {};
 	for (const note of notes) {
@@ -21,5 +22,5 @@
 </script>
 
 <Collapsible title={displayTitle} disabled={hasNoItems} {isCollapsed}>
-	<NoteList notes={notes} groupByNoteType={groupByNoteType} displayTitleDecorator={displayTitleDecorator}/>
+	<NoteList notes={notes} groupByNoteType={groupByNoteType} displayTitleDecorator={displayTitleDecorator} disableOpenOnClick={disableOpenOnClick}/>
 </Collapsible>

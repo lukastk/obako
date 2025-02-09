@@ -8,6 +8,7 @@
 	export let groupByNoteType = true;
 	export let includeNoteTypes: string[] = [];
 	export let displayTitleDecorator = false;
+	export let disableOpenOnClick = false;
 
 	const notesByType: Record<string, BasicNote[]> = {};
 	for (const note of notes) {
@@ -30,6 +31,7 @@
 							text={note.file.basename}
 							note={note.file.path}
 							displayTitleDecorator={displayTitleDecorator}
+							disableOpenOnClick={disableOpenOnClick}
 						/>
 					</li>
 				{/each}
@@ -45,6 +47,7 @@
 						text={note.file.basename}
 						note={note.file.path}
 						displayTitleDecorator={displayTitleDecorator}
+						disableOpenOnClick={disableOpenOnClick}
 					/>
 				</li>
 			{/if}
