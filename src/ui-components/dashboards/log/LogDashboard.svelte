@@ -6,6 +6,7 @@
 	import LogContent from "./LogContent.svelte";
 	import LogGroup from "./LogGroup.svelte";
 	import { format } from "date-fns";
+	import { getDateFromWeekNumber } from "src/utils";
 
 	export let noteFilter: (note: Log | Planner) => boolean = () => true;
 	export let initialLogGroupCollapse: boolean = false;
@@ -45,6 +46,22 @@
 		return acc;
 	}, {});
 	const logGroupDates = Object.keys(logsByDate).sort().reverse();
+
+	// Find where to put separators to separate logs of different weeks
+	const logGroupIsNewWeek = [];
+	let lastWeek = null;
+	for (const dateStr of logGroupDates) {
+		const yearStr = dateStr.slice(0,4);
+		const weekStr = dateStr.slice(12,14);
+		if (weekStr !== lastWeek) {
+			const [weekStartDate, weekEndDate] = getDateFromWeekNumber(parseInt(yearStr), parseInt(weekStr));
+			const weekMonthName = format(weekStartDate, "MMM");
+			logGroupIsNewWeek.push(`${yearStr} ${weekMonthName} w${weekStr}`);
+			lastWeek = weekStr;
+		} else {
+			logGroupIsNewWeek.push(null);
+		}
+	}
 
 	const selectHTMLElems: HTMLElement[] = [];
 	const selectStatus: Record<string, boolean> = {};
@@ -183,8 +200,16 @@
 </script>
 
 <div class:narrow-width={!fullWidth}>
-	{#each logGroupDates as dateStr}
-		<div bind:this={selectHTMLElems[`date-${dateStr}`]}>
+	{#each logGroupDates as dateStr, index}
+
+		{#if logGroupIsNewWeek[index]}
+			<div class="log-group-separator">
+				{logGroupIsNewWeek[index]}
+				<hr>
+			</div>
+		{/if}
+
+		<div class="log-group" bind:this={selectHTMLElems[`date-${dateStr}`]}>
 			<LogGroup
 				title={dateStr}
 				bind:selected={selectStatus[`date-${dateStr}`]}
@@ -193,7 +218,7 @@
 			>
 				<ul>
 					{#each logsByDate[dateStr] as log}
-						<li bind:this={selectHTMLElems[`log-${log.filepath}`]}>
+						<li class="log-item" bind:this={selectHTMLElems[`log-${log.filepath}`]}>
 							<LogContent
 								{log}
 								bind:selected={selectStatus[
@@ -235,5 +260,23 @@
 
 	li {
 		margin-bottom: 5px;
+	}
+
+	.log-group-separator {
+		margin-top: 20px;
+		font-weight: bold;
+		font-size: 2em;
+	}
+	.log-group-separator > hr {
+		margin: 0;
+		border-width: 3px; /* Change HR thickness */
+	}
+
+	.log-group {
+		margin-bottom: 10px;
+	}
+
+	.log-item {
+		margin-bottom: 20px;
 	}
 </style>
