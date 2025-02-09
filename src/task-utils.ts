@@ -219,8 +219,8 @@ export class ObakoTask {
 
             // Get scheduled date from Planner note
             if (noteClass.noteTypeStr === 'plan') {
-                const { endDate } = parseDatesInDateRangeTitle(fname);
-                scheduledDate = endDate;
+                const { date } = parseDatesInDateRangeTitle(fname);
+                scheduledDate = date;
                 // Get scheduled date from a preceding header in a Planner note
                 // Example:
                 // ### 2024-12-29 some heading title
