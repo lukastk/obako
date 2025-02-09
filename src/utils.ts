@@ -252,6 +252,16 @@ export function getWeekNumberStr(date: Date): string {
         return `${weekNumber}`;
 }
 
+export function getStartOfWeek(date: Date): Date {
+    const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const diff = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek; // Adjust to get to the previous Monday
+    
+    const previousMonday = new Date(date);
+    previousMonday.setDate(date.getDate() + diff);
+    
+    return previousMonday;
+}
+
 export function generateRandomId(length: number = 8): string {
     return Math.random().toString(36).substr(2, length);
 }
@@ -315,7 +325,11 @@ export function isDateValid(date: Date) {
 }
 
 export function getDateStringFromDate(date: Date) {
-    return date.toISOString().slice(0, 10);
+    //return date.toISOString().slice(0, 10);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; // Returns the date in 'YYYY-MM-DD' format
 }
 
 export function getDateFromDateString(dateStr: string) {
