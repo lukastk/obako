@@ -8,6 +8,7 @@
 	export let topLevel = true;
 	export let displayTitleDecorator = false;
 	export let sortByNoteType = false;
+	export let disableOpenOnClick = false;
 	export let sortFunc: null|((a: NoteTree, b: NoteTree) => number) = null;
 	export let filterFunc: (note: NoteTree) => boolean = () => true;
 
@@ -29,6 +30,7 @@
 				text={noteTree.note.parent.file.basename}
 				note={noteTree.note.parent.file.path}
 				displayTitleDecorator={displayTitleDecorator}
+				disableOpenOnClick={disableOpenOnClick}
 			/>
 			&gt;
 		{/if}
@@ -36,6 +38,7 @@
 			text={noteTree.note.file.basename}
 			note={noteTree.note.file.path}
 			displayTitleDecorator={displayTitleDecorator}
+			disableOpenOnClick={disableOpenOnClick}
 		/>
 	{:else}
 		<li>
@@ -43,6 +46,7 @@
 				text={noteTree.note.file.basename}
 				note={noteTree.note.file.path}
 				displayTitleDecorator={displayTitleDecorator}
+				disableOpenOnClick={disableOpenOnClick}
 			/>
 		</li>
 	{/if}
@@ -50,7 +54,7 @@
 	{#if noteTree.children.length > 0}
 		<ul>
 			{#each noteTree.children.filter(filterFunc) as child}
-				<svelte:self noteTree={child} topLevel={false} displayTitleDecorator={displayTitleDecorator} filterFunc={filterFunc} sortFunc={sortFunc}/>
+				<svelte:self noteTree={child} topLevel={false} displayTitleDecorator={displayTitleDecorator} filterFunc={filterFunc} sortFunc={sortFunc} disableOpenOnClick={disableOpenOnClick}/>
 			{/each}
 		</ul>
 	{/if}
