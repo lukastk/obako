@@ -16,6 +16,7 @@ export class Command_ToggleTaskDeferred extends Command_TransformTaskStatus {
                     '>': ' ',
                     ' ': '>',
                     'd': '>',
+                    '+': '>',
                 };
                 const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
                 const selectionPositions = getSelectionPositions(leaf?.leaf.view.editor);
