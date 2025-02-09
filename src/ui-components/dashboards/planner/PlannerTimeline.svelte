@@ -8,6 +8,7 @@
 	import { Project } from "src/notes/zettel-types/project";
 	import { Module } from "src/notes/zettel-types/module";
 	import { getWeekNumber } from "src/utils";
+	import { addDays } from "date-fns";
 
 	export let initialStart: Date | null = null;
 	export let initialEnd: Date | null = null;
@@ -219,7 +220,7 @@
 				id: planner.file.path,
 				content: itemContent,
 				start: startDate.toISOString(),
-				end: endDate.toISOString(),
+				end: addDays(endDate, 1).toISOString(),
 				group:
 					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
 				className: [
@@ -268,7 +269,7 @@
 				id: proj.file.path,
 				content: proj.file.basename,
 				start: proj.startDate.toISOString(),
-				end: proj.endDate.toISOString(),
+				end: addDays(proj.endDate, 1).toISOString(),
 				group: groupId,
 				className: [
 					"project",
@@ -316,7 +317,7 @@
 				id: mod.file.path,
 				content: `<i>${mod.parent.file.basename}:</i> ${mod.file.basename}`,
 				start: mod.startDate.toISOString(),
-				end: mod.endDate.toISOString(),
+				end: addDays(mod.endDate, 1).toISOString(),
 				group: groupId,
 				className: [
 					"module",
