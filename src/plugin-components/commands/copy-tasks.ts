@@ -22,10 +22,10 @@ export class Command_CopyTasks extends CommandPluginComponent {
                         let tasks = getTasks();
                         tasks = tasks.filter(task => !task.isDone());
 
-                        if (copyScheduledTasks)
-                            tasks = tasks.filter(task => task.isInDateRange('scheduled', earliest, latest));
-                        if (copyDueTasks)
-                            tasks = tasks.filter(task => task.isInDateRange('due', earliest, latest));
+                        tasks = tasks.filter(task => {
+                            return (task.isInDateRange('scheduled', earliest, latest) && copyScheduledTasks)
+                                || (task.isInDateRange('due', earliest, latest) && copyDueTasks);
+                        });
 
                         let minPriority: number;
                         let maxPriority: number;
@@ -151,7 +151,7 @@ class CopyTaskModal extends Modal {
                         copyScheduledTasks = value;
                     }));
 
-        let copyDueTasks = false;
+        let copyDueTasks = true;
         new Setting(this.contentEl)
             .setName('Due tasks')
             .setDesc('Whether to copy due tasks.')
