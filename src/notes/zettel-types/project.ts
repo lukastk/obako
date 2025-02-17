@@ -24,13 +24,13 @@ export class Project extends Zettel {
     };
 
     static statusDecorators = {
-        [Project.statuses.stream]: "",
-        [Project.statuses.idea]: "",
+        [Project.statuses.stream]: "🌀",
+        [Project.statuses.idea]: "💡",
         [Project.statuses.unconfirmed]: "🤔",
         [Project.statuses.unplanned]: "❔",
-        [Project.statuses.active]: "",
-        [Project.statuses.paused]: "",
-        [Project.statuses.done]: "",
+        [Project.statuses.active]: "🟢",
+        [Project.statuses.paused]: "⏸️",
+        [Project.statuses.done]: "✅",
         [Project.statuses.cancelled]: "❌",
     }
 
@@ -39,6 +39,7 @@ export class Project extends Zettel {
             return 'var(--text-error)';
         } else {
             switch (this.status) {
+                /*
                 case Project.statuses.stream:
                     return 'var(--color-purple)';
                 case Project.statuses.idea:
@@ -52,7 +53,7 @@ export class Project extends Zettel {
                 case Project.statuses.cancelled:
                     return 'var(--color-muted)';;
                 case Project.statuses.done:
-                    return 'var(--color-green)';
+                    return 'var(--color-green)';*/
                 default:
                     return '';
             }
