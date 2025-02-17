@@ -81,6 +81,7 @@
 			id: PROJECTS_SUBGROUPS_GROUP_ID,
 			content: "Project subgroups",
 			nestedGroups: projectSubGroups,
+			showNested: false,
 		},
 		{
 			id: MODULES_GROUP_ID,
@@ -91,6 +92,7 @@
 			id: MODULES_SUBGROUPS_GROUP_ID,
 			content: "Module subgroups",
 			nestedGroups: moduleSubGroups,
+			showNested: false,
 		},
 
 		//{ id: 4, content: "Group 4", nestedGroups: [1, 2] },
