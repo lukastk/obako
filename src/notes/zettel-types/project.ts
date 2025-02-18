@@ -2,8 +2,9 @@ import { TFile } from 'obsidian';
 import { Zettel } from '../zettel';
 import type { NoteTree } from '../parentable-note';
 import type { FrontmatterSpec } from 'src/notes/note-frontmatter';
-import { getDateFromDateString } from 'src/utils';
+import { getDateFromDateString, getFile, parseObsidianLink } from 'src/utils';
 import { Module } from './module';
+import { loadNote } from 'src/note-loader';
 
 
 export class Project extends Zettel {
@@ -34,6 +35,9 @@ export class Project extends Zettel {
         [Project.statuses.cancelled]: "❌",
     }
 
+    startDate: Date | null = null;
+    endDate: Date | null = null;
+
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
             return 'var(--text-error)';
@@ -60,14 +64,26 @@ export class Project extends Zettel {
         }
     }
 
-    startDate: Date | null = null;
-    endDate: Date | null = null;
-
     constructor(file: TFile | string) {
         super(file);
 
         this.startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
         this.endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
+
+        // If the date ranges are null, then we get them from its modules
+        if (this.startDate === null || this.endDate === null) {
+            let earliestStartDate: Date | null = null;
+            let latestEndDate: Date | null = null;
+            for (const module of this.getModules()) {
+                if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
+                if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
+            }
+
+            if (earliestStartDate !== null)
+                this.startDate = earliestStartDate;
+            if (latestEndDate !== null)
+                this.endDate = latestEndDate;
+        }
     }
 
     static getFrontmatterSpec(): FrontmatterSpec {
@@ -76,7 +92,7 @@ export class Project extends Zettel {
             "proj-status": { default: "unplanned", type: "string", description: "The status of the project." },
             "proj-start-date": { default: "", type: "string", description: "The start date of the project." },
             "proj-end-date": { default: "", type: "string", description: "The end date of the project." },
-            "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the project in the planner dashboard. If empty, the project will be displayed in the default group." },
+            "planner-dashboard-group": { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the project in the planner dashboard. If empty, the project will be displayed in the default group." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
         spec.notetype.default = this.noteTypeStr;
@@ -88,7 +104,7 @@ export class Project extends Zettel {
     }
 
     get modules(): Module[] {
-        return this.getIncomingLinkedNotes().filter((note) => note.noteType === Module.noteTypeStr) as Module[];
+        return this.getModules();
     }
 
     get plannerDashboardGroup(): string {
@@ -115,7 +131,20 @@ export class Project extends Zettel {
     }
 
     getModules(): Module[] {
-        return this.getChildNotes().filter((note) => note instanceof Module) as Module[];
+        // This is a major hack. Necessary because we have not yet cached the note loader.
+        const modules: Module[] = [];
+        const backlinks = app.metadataCache.getBacklinksForFile(this.file)?.data;
+        for (const [filePath, _] of backlinks) {
+            const file = getFile(filePath) as TFile;
+            const fileCache = app.metadataCache.getFileCache(file);
+            if (fileCache?.frontmatter['notetype'] !== Module.noteTypeStr) continue;
+            if (!fileCache?.frontmatter['parent']) continue;
+            const parentPath = parseObsidianLink(fileCache?.frontmatter['parent']);
+            const parentFile = getFile(parentPath) as TFile;
+            if (parentFile.path !== this.file.path) continue;
+            modules.push(loadNote(filePath) as Module);
+        }
+        return modules;
     }
 
     async setTopPanel(panel: HTMLElement) {
@@ -134,6 +163,6 @@ export class Project extends Zettel {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
         const statusDecorator = Project.statusDecorators[this.status];
-        titleDecoratorEl.innerHTML =  statusDecorator + titleDecoratorEl.innerHTML;
+        titleDecoratorEl.innerHTML = statusDecorator + titleDecoratorEl.innerHTML;
     }
 }

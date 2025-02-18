@@ -9,6 +9,9 @@ export class Module extends ParentableNote {
     static noteTypeStr = "mod";
     static noteTypeDisplayName = "Module";
     static noteIcon = "●";
+    
+    startDate: Date | null = null;
+    endDate: Date | null = null;
 
     static statuses = {
         unplanned: "unplanned",
