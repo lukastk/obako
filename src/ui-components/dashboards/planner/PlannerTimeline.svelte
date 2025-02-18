@@ -222,7 +222,7 @@
 				id: planner.file.path,
 				content: itemContent,
 				start: startDate.toISOString(),
-				end: addDays(endDate, 1).toISOString(),
+				end: addDays(endDate, 0).toISOString(),
 				group:
 					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
 				className: [
