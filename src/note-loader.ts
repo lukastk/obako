@@ -17,11 +17,12 @@ import { Module } from './notes/zettel-types/module';
 import { processFrontmatter } from './notes/note-frontmatter';
 import { Zettel } from './notes/zettel';
 import { ObakoNote } from './notes/obako-note';
-import { Transient } from './notes/zettel-types/transient';
 import { ParentableNote } from './notes/parentable-note';
-import { Reproduction } from './notes/zettel-types/reproduction';
-import { Source } from './notes/zettel-types/source';
 import { Reference } from './notes/zettel-types/reference';
+import { Source } from './notes/zettel-types/source';
+import { Entity } from './notes/zettel-types/entity';
+import { Concept } from './notes/zettel-types/concept';
+import { Transient } from './notes/zettel-types/transient';
 
 export const noteTypes = [
     Zettel,
@@ -38,8 +39,9 @@ export const noteTypes = [
     Pad,
     Project,
     Reference,
-    Reproduction,
     Source,
+    Entity,
+    Concept,
     Transient,
 ];
 
