@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import { Zettel } from '../zettel';
 import type { NoteTree } from '../parentable-note';
 import type { FrontmatterSpec } from 'src/notes/note-frontmatter';
-import { getDateFromDateString, getFile, parseObsidianLink } from 'src/utils';
+import { getDateFromDateString, getDateStringFromDate, getFile, parseObsidianLink } from 'src/utils';
 import { Module } from './module';
 import { loadNote } from 'src/note-loader';
 
@@ -120,7 +120,7 @@ export class Project extends Zettel {
         if (this.status === Project.statuses.active) // Active projects must have a start and end date
             dateValid = this.startDate && this.endDate;
         else if (this.status === Project.statuses.stream) // Streams are not time-bound
-            dateValid = !this.startDate && !this.endDate;
+            dateValid = !this.frontmatter["proj-start-date"] && !this.frontmatter["proj-end-date"];
         let statusValid = Object.values(Project.statuses).includes(this.status);
         let parentValid = (this.status === Project.statuses.stream) || (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
@@ -145,6 +145,22 @@ export class Project extends Zettel {
             modules.push(loadNote(filePath) as Module);
         }
         return modules;
+    }
+
+    getModuleDateBreakdown() {
+        const breakdown = [];
+        const modules = this.getModules().sort((a, b) => a.startDate?.getTime() - b.startDate?.getTime());
+
+        for (const module of modules) {
+            const startDate = module.startDate ? getDateStringFromDate(module.startDate) : "?";
+            const endDate = module.endDate ? getDateStringFromDate(module.endDate) : "?";
+            const status = module.status;
+            const name = module.name;
+
+            breakdown.push(`**${name}** (${module.status})\n${startDate} - ${endDate}`);
+        }
+
+        return breakdown.join("\n\n");
     }
 
     async setTopPanel(panel: HTMLElement) {
