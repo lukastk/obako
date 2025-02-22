@@ -42,6 +42,7 @@ export class SvelteView extends ItemView {
             target: container,
             props: {
                 isInFocus: () => this.isInFocus(),
+                currentView: this,
             },
         });
     }
