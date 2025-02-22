@@ -86,9 +86,10 @@
 			_note.createdAt >= note.date &&
 			_note.createdAt <= note.endDate,
 	);
+
 </script>
 
-<Collapsible title="Overlapping Planners" isCollapsed={false}>
+<Collapsible title="Overlapping Planners" isCollapsed={true}>
 	<PlannerHierarchy {note} />
 </Collapsible>
 
