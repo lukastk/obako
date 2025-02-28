@@ -139,11 +139,16 @@ export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid
     return notes;
 }
 
-export function searchNotes(query: string, noteType: string|null = null): BasicNote[] {
+export function searchNotes(query: string, noteType: string|(typeof BasicNote)|null = null, exactTitleMatch: boolean = false): BasicNote[] {
+    if (noteType && typeof noteType !== 'string')
+        noteType = noteType.noteTypeStr;
     const notes = getAllNotes();
     return notes.filter(note => {
         if (noteType && note.noteType !== noteType) return false;
-        return note.name.includes(query)
+        if (exactTitleMatch)
+            return note.name === query;
+        else
+            return note.name.includes(query);
     });
 }
 
