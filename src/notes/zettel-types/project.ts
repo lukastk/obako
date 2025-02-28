@@ -35,9 +35,6 @@ export class Project extends Zettel {
         [Project.statuses.cancelled]: "❌",
     }
 
-    startDate: Date | null = null;
-    endDate: Date | null = null;
-
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
             return 'var(--text-error)';
@@ -66,24 +63,6 @@ export class Project extends Zettel {
 
     constructor(file: TFile | string) {
         super(file);
-
-        this.startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
-        this.endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
-
-        // If the date ranges are null, then we get them from its modules
-        if (this.startDate === null || this.endDate === null) {
-            let earliestStartDate: Date | null = null;
-            let latestEndDate: Date | null = null;
-            for (const module of this.getModules()) {
-                if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
-                if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
-            }
-
-            if (earliestStartDate !== null)
-                this.startDate = earliestStartDate;
-            if (latestEndDate !== null)
-                this.endDate = latestEndDate;
-        }
     }
 
     static getFrontmatterSpec(): FrontmatterSpec {
@@ -98,6 +77,30 @@ export class Project extends Zettel {
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
+    }
+
+    get startDate(): Date | null {
+        let startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
+        if (startDate === null) {
+            let earliestStartDate: Date | null = null;
+            for (const module of this.getModules()) {
+                if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
+            }
+            startDate = earliestStartDate;
+        }
+        return startDate;
+    }
+
+    get endDate(): Date | null {
+        let endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
+        if (endDate === null) {
+            let latestEndDate: Date | null = null;
+            for (const module of this.getModules()) {
+                if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
+            }
+            endDate = latestEndDate;
+        }
+        return endDate;
     }
 
     get status(): string {
@@ -135,20 +138,7 @@ export class Project extends Zettel {
     }
 
     getModules(): Module[] {
-        // This is a major hack. Necessary because we have not yet cached the note loader.
-        const modules: Module[] = [];
-        const backlinks = app.metadataCache.getBacklinksForFile(this.file)?.data;
-        for (const [filePath, _] of backlinks) {
-            const file = getFile(filePath) as TFile;
-            const fileCache = app.metadataCache.getFileCache(file);
-            if (fileCache?.frontmatter['notetype'] !== Module.noteTypeStr) continue;
-            if (!fileCache?.frontmatter['parent']) continue;
-            const parentPath = parseObsidianLink(fileCache?.frontmatter['parent']);
-            const parentFile = getFile(parentPath) as TFile;
-            if (parentFile.path !== this.file.path) continue;
-            modules.push(loadNote(filePath) as Module);
-        }
-        return modules;
+        return this.getChildNotes().filter(note => note instanceof Module);
     }
 
     getModuleDateBreakdown() {
