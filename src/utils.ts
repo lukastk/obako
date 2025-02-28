@@ -429,3 +429,9 @@ export async function trimBlockIdsFromText(text: string): string {
 export function generateAlphaNumericId(length: number = 6): string {
     return Math.random().toString(36).slice(2, length + 2);
 }
+
+export function getPathParent(path: string) {
+    const lastSlashIndex = path.lastIndexOf('/');
+    if (lastSlashIndex === -1) return '';
+    return path.slice(0, lastSlashIndex);
+}
