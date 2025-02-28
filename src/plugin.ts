@@ -7,6 +7,7 @@ import PluginComponent from './plugin-components/plugin-component';
 import * as utils from './utils';
 import * as tasks from './task-utils';
 import * as noteLoader from './note-loader';
+import * as noteFrontmatter from './notes/note-frontmatter';
 
 /**** Commands ****/
 import { Command_DownloadArticle } from './plugin-components/commands/download-article';
@@ -71,6 +72,7 @@ export default class ObakoPlugin extends Plugin {
 			utils: utils,
 			tasks: tasks,
 			noteLoader: noteLoader,
+			noteFrontmatter: noteFrontmatter,
 			svelteComponents: {
 				TaskList: TaskList,
 				CollapsibleNoteTreeDisplay: CollapsibleNoteTreeDisplay,

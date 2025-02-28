@@ -18,11 +18,9 @@
 		note = loadNote(note);
 	}
 
-	if (!text) {
-		text = note.file.basename;
-	}
+	if (!text) text = note.name;
 
-	const filePath = note.file.path;
+	const filePath = note.filepath;
 
 	function handleClick(event: MouseEvent) {
 		if (!disableOpenOnClick) {

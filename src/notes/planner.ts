@@ -34,7 +34,7 @@ export class Planner extends ObakoNote {
     constructor(file: TFile | string) {
         super(file);
 
-        const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(this.file.basename);
+        const { plannerTitle, date, endDate, rangeType } = parseDatesInDateRangeTitle(this.basename);
         this.plannerTitle = plannerTitle;
         this.date = date;
         this.endDate = endDate;

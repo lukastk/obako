@@ -16,7 +16,7 @@ export interface FrontmatterSpec {
  * specify that they should be skipped if absent, are not added to the frontmatter.
  */
 export function processFrontmatter(frontmatter: any, frontmatterSpec: FrontmatterSpec, forNoteCreation: boolean = false) {
-    const _frontmatter = { ...frontmatter };
+    const _frontmatter = frontmatter ? { ...frontmatter } : {};
     for (const [fieldName, fieldSpec] of Object.entries(frontmatterSpec)) {
         if (fieldName in _frontmatter && !fieldSpec.fixedValue) continue;
         if (forNoteCreation && fieldSpec.skipCreationIfAbsent && !(fieldName in _frontmatter)) continue;

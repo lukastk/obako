@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import type { CachedMetadata } from 'obsidian';
-import { getFile, isDateValid } from '../utils';
+import { getFile, getPathBasename, isDateValid } from '../utils';
 
 import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
@@ -17,6 +17,8 @@ export class BasicNote {
     static titleSuffixDecoratorString = "";
     
     file: TFile;
+    filepath: string;
+    basename: string;
     fileCache!: CachedMetadata;
     frontmatter: any;
     createdAt: Date | null = null;
@@ -33,15 +35,21 @@ export class BasicNote {
 
     constructor(file: TFile | string) {
         this.file = getFile(file);
-        this._name = this.file.basename;
+        if (typeof file === 'string' && !this.file) {
+            this.filepath = file;
+            this.basename = getPathBasename(file);
+        } else {
+            this.filepath = this.file.path;
+            this.basename = this.file.basename;
+        }
+        this._name = this.file?.basename;
         this.reloadFrontmatterAndFileCache();
 
         this.createdAt = new Date(this.frontmatter?.createdat);
         this.createdAt = isDateValid(this.createdAt) ? this.createdAt : null;
     }
 
-    get name(): string { return this.file.basename; }
-    get filepath(): string { return this.file.path; }
+    get name(): string { return this.basename; }
     get noteType(): string { return this.frontmatter.notetype; }
 
     /**
@@ -54,7 +62,7 @@ export class BasicNote {
 
     equals(other: BasicNote | null): boolean {
         if (!other) return false;
-        return this.file.path === other.file.path;
+        return this.filepath === other.filepath;
     }
 
     linkedBy(other: BasicNote | null): boolean {
@@ -70,14 +78,14 @@ export class BasicNote {
     }
 
     reloadFrontmatterAndFileCache() {
-        this.fileCache = app.metadataCache.getFileCache(this.file);
+        this.fileCache = this.file ? app.metadataCache.getFileCache(this.file) : null;
         this.frontmatter = processFrontmatter(this?.fileCache?.frontmatter, this.constructor.getFrontmatterSpec());
     }
     
     getOutgoingLinkedNotes(): BasicNote[] {
         if (this.outgoingLinkedNotes != null) return this.outgoingLinkedNotes;
         const linkedNotes: BasicNote[] = [];
-        const linkedPaths = app.metadataCache.resolvedLinks[this.file.path];
+        const linkedPaths = app.metadataCache.resolvedLinks[this.filepath];
         if (linkedPaths) {
             for (const linkedPath in linkedPaths) {
                 if (linkedPath) linkedNotes.push(loadNote(linkedPath));
@@ -136,7 +144,7 @@ export class BasicNote {
     }
 
     getLinkElement(includePrefixDecorator: boolean = true, includeSuffixDecorator: boolean = true): HTMLElement {
-        const linkEl = createEl("a", { href: this.file.path });
+        const linkEl = createEl("a", { href: this.filepath });
         linkEl.classList.add("internal-link");
         const prefixDecoratorEl = createEl("span");
         const titleEl = createEl("span");
@@ -154,10 +162,12 @@ export class BasicNote {
         const prefixDecorator = includePrefixDecorator ? this.getTitlePrefixDecoratorString() + ' ' : '';
         const suffixDecorator = includeSuffixDecorator ? ' ' + this.getTitleSuffixDecoratorString() : '';
         const dispStr = `${prefixDecorator}${this.name}${suffixDecorator}`.trim();
-        return `[[${this.file.path}|${dispStr}]]`;
+        return `[[${this.filepath}|${dispStr}]]`;
     }
 
     async getContent(): Promise<string> {
+        if (!this.file) return '';
+        
         const noteContentWithFrontmatter = (await app.vault.cachedRead(this.file)).split("\n");
 
         if (this.fileCache.frontmatterPosition) {
@@ -184,7 +194,7 @@ export class BasicNote {
 
     /*** Actions ***/
     open(newTab: boolean = false) {
-        app.workspace.openLinkText(this.file.path, "", newTab);
+        app.workspace.openLinkText(this.filepath, "", newTab);
     }
 
     async modifyFrontmatter(key: string, value: any) {

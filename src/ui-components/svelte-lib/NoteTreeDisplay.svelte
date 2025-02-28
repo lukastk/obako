@@ -27,7 +27,7 @@
 	{#if topLevel}
 		{#if noteTree.note.parent}
 			<InternalLink
-				text={noteTree.note.parent.file.basename}
+				text={noteTree.note.parent.name}
 				note={noteTree.note.parent.file.path}
 				displayTitleDecorator={displayTitleDecorator}
 				disableOpenOnClick={disableOpenOnClick}
@@ -35,16 +35,16 @@
 			&gt;
 		{/if}
 		<InternalLink
-			text={noteTree.note.file.basename}
-			note={noteTree.note.file.path}
+			text={noteTree.note.name}
+			note={noteTree.note.filepath}
 			displayTitleDecorator={displayTitleDecorator}
 			disableOpenOnClick={disableOpenOnClick}
 		/>
 	{:else}
 		<li>
 			<InternalLink
-				text={noteTree.note.file.basename}
-				note={noteTree.note.file.path}
+				text={noteTree.note.name}
+				note={noteTree.note.filepath}
 				displayTitleDecorator={displayTitleDecorator}
 				disableOpenOnClick={disableOpenOnClick}
 			/>

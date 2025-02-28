@@ -85,7 +85,7 @@
 
 	function getSelectedItem() {
 		if (selectedLogIndex != -1) {
-			return `log-${notes[selectedLogIndex].filepath}`;
+			return `log-${notes[selectedLogIndex]?.filepath}`;
 		} else {
 			return `date-${logGroupDates[selectedLogGroupIndex]}`;
 		}

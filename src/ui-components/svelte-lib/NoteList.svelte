@@ -28,8 +28,8 @@
 				{#each noteTypeNotes as note}
 					<li>
 						<InternalLink
-							text={note.file.basename}
-							note={note.file.path}
+							text={note.name}
+							note={note.filepath}
 							displayTitleDecorator={displayTitleDecorator}
 							disableOpenOnClick={disableOpenOnClick}
 						/>
@@ -44,8 +44,8 @@
 			{#if includeNoteTypes.includes(note.noteType) || includeNoteTypes.length == 0}
 				<li>
 					<InternalLink
-						text={note.file.basename}
-						note={note.file.path}
+						text={note.name}
+						note={note.filepath}
 						displayTitleDecorator={displayTitleDecorator}
 						disableOpenOnClick={disableOpenOnClick}
 					/>

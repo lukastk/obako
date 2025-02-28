@@ -12,7 +12,7 @@ export function getFile(file: TFile | string | null): TFile | null {
             try {
                 _file = app.metadataCache.getFirstLinkpathDest(file);
             } catch (e) {
-                throw new Error(`File not found: ${file}`);
+                return null;
             }
         }
         return _file;
@@ -21,8 +21,9 @@ export function getFile(file: TFile | string | null): TFile | null {
     }
 }
 
-export function getFrontmatter(file: TFile | string) {
-    const fileCache = app.metadataCache.getFileCache(getFile(file));
+export function getFrontmatter(_file: TFile | string | null) {
+    const file = getFile(_file);
+    const fileCache = file ? app.metadataCache.getFileCache(file) : null;
     return fileCache?.frontmatter;
 }
 
@@ -434,4 +435,12 @@ export function getPathParent(path: string) {
     const lastSlashIndex = path.lastIndexOf('/');
     if (lastSlashIndex === -1) return '';
     return path.slice(0, lastSlashIndex);
+}
+
+export function getPathBasename(path: string) {
+    const lastSlashIndex = path.lastIndexOf('/');
+    const lastDotIndex = path.lastIndexOf('.');
+    if (lastSlashIndex === -1) return path;
+    if (lastDotIndex === -1) return path.slice(lastSlashIndex + 1);
+    return path.slice(lastSlashIndex + 1, lastDotIndex);
 }

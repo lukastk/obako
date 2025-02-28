@@ -17,10 +17,10 @@ export class Log extends Zettel {
     constructor(file: TFile | string) {
         super(file);
 
-        const dateStr = this.file.basename.split(/\s+/)[0];
-        const date = new Date(this.file.basename.split(/\s+/)[0]);
+        const dateStr = this.basename.split(/\s+/)[0];
+        const date = new Date(this.basename.split(/\s+/)[0]);
         this.date = isDateValid(date) ? date : null;
-        this.logTitle = this.file.basename.slice(dateStr.length + 1) || "";
+        this.logTitle = this.basename.slice(dateStr.length + 1) || "";
     }
 
     static getFrontmatterSpec(): FrontmatterSpec {

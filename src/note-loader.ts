@@ -76,8 +76,6 @@ export function initialiseNoteCache() {
         noteCache[file.path] = noteCache[oldPath];
         delete noteCache[oldPath];
     });
-
-
 }
 
 /* Note: Should only be executed onLayoutReady, as Obsidian triggers 'create' for every file on startup. */
@@ -93,18 +91,25 @@ export function reloadNoteCache() {
     for (const file of allFiles) {
         loadNote(file.path);
     }
+
+    for (const filePath in app.metadataCache.unresolvedLinks) {
+        for (const fileStubPath in app.metadataCache.unresolvedLinks[filePath]) {
+            loadNote(fileStubPath);
+        }
+    }
 }
 
-export function getNoteClass(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
-    file = getFile(file) as TFile;
-    if (!file) return null;
+export function getNoteClass(_file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote {
+    const file = getFile(_file);
+    const filePath = file ? file.path : _file;
+
     if (!frontmatter) frontmatter = getFrontmatter(file);
 
     let noteClass = noteTypeToNoteClass[frontmatter?.notetype];
-    
+        
     if (!noteClass) {
         for (const [noteTypeStr, noteTypeFolder] of Object.entries(_obako_plugin.settings.noteTypeFolders)) {
-            if (file.path.startsWith(noteTypeFolder)) {
+            if (filePath.startsWith(noteTypeFolder)) {
                 noteClass = noteTypeToNoteClass[noteTypeStr];
                 break;
             }
@@ -115,19 +120,21 @@ export function getNoteClass(file: TFile | string | null, frontmatter: Record<st
     return BasicNote;
 }
 
-export function loadNote(file: TFile | string | null, forceReload: boolean = false) {
+export function loadNote(_file: TFile | string, forceReload: boolean = false) {
     if (!forceReload) {
-        if (typeof file === 'string' && file in noteCache) return noteCache[file];
-        else if (file instanceof TFile && file.path in noteCache) return noteCache[file.path];
+        if (typeof _file === 'string' && _file in noteCache) return noteCache[_file];
+        else if (_file instanceof TFile && _file.path in noteCache) return noteCache[_file.path];
     }
 
-    file = getFile(file) as TFile;
-    if (file.path in noteCache) return noteCache[file.path];
+    const file = getFile(_file);
+    const filePath = file ? file.path : _file;
 
-    const NoteClass = getNoteClass(file);
+    if (filePath in noteCache) return noteCache[filePath];
+
+    const NoteClass = file ? getNoteClass(file) : getNoteClass(filePath);
     if (!NoteClass) return null;
-    const note = new NoteClass(file);
-    noteCache[file.path] = note;
+    const note = file ? new NoteClass(file) : new NoteClass(filePath);
+    noteCache[filePath] = note;
     return note;
 }
 
@@ -175,10 +182,7 @@ function prepareNoteData(noteData: NoteCreationData, noteFolder: string) {
     noteData.extraData = noteData.extraData ? {...noteData.extraData} : {};
 
     if (!noteData.noteType) {
-        const folderToNoteTypeStr = Object.fromEntries(Object.entries(_obako_plugin.settings.noteTypeFolders).map(([key, value]) => [value, key]));
-        if (noteFolder in folderToNoteTypeStr) {
-            noteData.noteType = folderToNoteTypeStr[noteFolder];
-        }
+        noteData.noteType = getNoteClass(noteFolder).noteTypeStr;
     }
 
     if (!noteData.noteType) throw new Error('Note type is required');
