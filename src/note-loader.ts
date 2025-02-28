@@ -2,7 +2,7 @@
  * Loads a given note and categorises based on its frontmatter.
  */
 
-import { Notice, stringifyYaml, TFile } from 'obsidian';
+import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile } from 'obsidian';
 import { getFile, getFrontmatter, getMarkdownFiles } from './utils';
 
 import { Planner } from './notes/planner';
@@ -53,6 +53,39 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
     return acc;
 }, {});
 
+
+let noteCache: Record<string, BasicNote> = {};
+
+export function initialiseNoteCache() {
+
+    reloadNoteCache();
+    
+    app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
+        noteCache[file.path] = loadNote(file, true) as BasicNote;
+    });
+
+    app.metadataCache.on("deleted", (file: TFile, prevCache: CachedMetadata | null) => {
+        delete noteCache[file.path];
+    });
+
+    app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
+        noteCache[file.path] = loadNote(file, true) as BasicNote;
+    });
+
+    app.vault.on("rename", (file: TAbstractFile, oldPath: string) => {
+        noteCache[file.path] = noteCache[oldPath];
+        delete noteCache[oldPath];
+    });
+}
+
+export function reloadNoteCache() {
+    const allFiles = getMarkdownFiles() as TFile[];
+    noteCache = {};
+    for (const file of allFiles) {
+        loadNote(file.path);
+    }
+}
+
 export function getNoteClass(file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote | null {
     file = getFile(file) as TFile;
     if (!file) return null;
@@ -73,11 +106,20 @@ export function getNoteClass(file: TFile | string | null, frontmatter: Record<st
     return BasicNote;
 }
 
-export function loadNote(file: TFile | string | null, frontmatter: Record<string, any> | null = null) {
+export function loadNote(file: TFile | string | null, forceReload: boolean = false) {
+    if (!forceReload) {
+        if (typeof file === 'string' && file in noteCache) return noteCache[file];
+        else if (file instanceof TFile && file.path in noteCache) return noteCache[file.path];
+    }
+
     file = getFile(file) as TFile;
-    const NoteClass = getNoteClass(file, frontmatter);
+    if (file.path in noteCache) return noteCache[file.path];
+
+    const NoteClass = getNoteClass(file);
     if (!NoteClass) return null;
-    return new NoteClass(file);
+    const note = new NoteClass(file);
+    noteCache[file.path] = note;
+    return note;
 }
 
 export function getAllNotes(): BasicNote[] {
