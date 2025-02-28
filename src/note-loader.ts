@@ -258,6 +258,10 @@ export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreatio
     noteData.title = file.name;
     noteData = prepareNoteData(noteData, getPathParent(file.path));
 
+    if (noteData.noteType === BasicNote.noteTypeStr) {
+        return;
+    }
+
     let noteContent = (await app.vault.cachedRead(file)).split("\n");
     const fileCache = app.metadataCache.getFileCache(file);
 
