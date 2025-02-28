@@ -64,6 +64,9 @@ export class Planner extends ObakoNote {
                     const weekStart = `${this.date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' })}`;
                     const weekEnd = `${this.endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' })}`;
                     return `${weekStart}-${weekEnd}`;
+                case 'month':
+                    const monthName = this.date.toLocaleDateString('en-US', { month: 'long' });
+                    return `${monthName}`;
                 case 'quarter':
                     const monthStart = `${this.date.toLocaleDateString('en-US', { month: '2-digit' })}`;
                     const monthEnd = `${this.endDate.toLocaleDateString('en-US', { month: '2-digit' })}`;
