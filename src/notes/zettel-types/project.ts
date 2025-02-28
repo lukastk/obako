@@ -92,6 +92,7 @@ export class Project extends Zettel {
             "proj-status": { default: "unplanned", type: "string", description: "The status of the project." },
             "proj-start-date": { default: "", type: "string", description: "The start date of the project." },
             "proj-end-date": { default: "", type: "string", description: "The end date of the project." },
+            "proj-completion-date": { default: "", type: "string", description: "The completion date of the project." },
             "planner-dashboard-group": { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the project in the planner dashboard. If empty, the project will be displayed in the default group." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
@@ -117,13 +118,16 @@ export class Project extends Zettel {
 
     validate(): boolean {
         let dateValid = true;
+        let completionDateValid = true;
         if (this.status === Project.statuses.active) // Active projects must have a start and end date
             dateValid = this.startDate && this.endDate;
         else if (this.status === Project.statuses.stream) // Streams are not time-bound
             dateValid = !this.frontmatter["proj-start-date"] && !this.frontmatter["proj-end-date"];
+        if (this.status === Project.statuses.done)
+            completionDateValid = this.frontmatter["proj-completion-date"];
         let statusValid = Object.values(Project.statuses).includes(this.status);
         let parentValid = (this.status === Project.statuses.stream) || (this.parent instanceof Project);
-        return super.validate() && dateValid && statusValid && parentValid;
+        return super.validate() && dateValid && completionDateValid && statusValid && parentValid;
     }
 
     getDescendantProjects(): NoteTree {
