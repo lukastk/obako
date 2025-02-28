@@ -160,9 +160,8 @@ export interface NoteCreationData {
     extraData?: any;
 }
 
-export async function createNote(noteData: NoteCreationData, noteFolder: string): Promise<TFile|null> {
-    // Make a deep copy of the noteData object
-    noteData = {...noteData}
+function prepareNoteData(noteData: NoteCreationData, noteFolder: string) {
+    noteData = {...noteData};
     noteData.frontmatterData = noteData.frontmatterData ? {...noteData.frontmatterData} : {};
     noteData.extraData = noteData.extraData ? {...noteData.extraData} : {};
 
@@ -177,24 +176,17 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
     if (!noteData.content) noteData.content = '';
     if (!noteData.frontmatterData) noteData.frontmatterData = {};
     if (!noteData.frontmatterData.links) noteData.frontmatterData.links = [];
+    if (!noteData.title) throw new Error('Note title is required');
 
     noteData.frontmatterData.links = noteData.frontmatterData.links.map((filepath: string) => {
         return `[[${app.metadataCache.fileToLinktext(getFile(filepath), filepath)}]]`;
     });
 
-    const noteClass = noteTypeToNoteClass[noteData.noteType];
-    const isValid = noteClass.processNoteData(noteData);
-    if (!isValid) {
-        new Notice(`Note data is invalid for note type ${noteData.noteType}`);
-        return null;
-    }
-
-    if (!noteData.title) throw new Error('Note title is required');
-
-    const frontmatterSpec = noteClass.getFrontmatterSpec();
-    const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec, true)};
-    frontmatter.createdat = new Date();
-
+    return noteData;
+}
+    
+/* Formats the fronmatter into a string. If a frontmatter spec is given, then the spec fields will be at the top. */
+function formatFrontmatterString(frontmatter, frontmatterSpec) {
     let yamlEntries: string[] = [];
     for (const key in frontmatterSpec) {
         if (key in frontmatter) {
@@ -206,7 +198,25 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
         yamlEntries.push(stringifyYaml({[key]: frontmatter[key]}).trim());
     }
     const yaml = yamlEntries.join("\n");
-    const noteFullContent = "---\n" + yaml + "\n---\n\n" + noteData.content;
+    return "---\n" + yaml.trim() + "\n---";
+}
+
+export async function createNote(noteData: NoteCreationData, noteFolder: string): Promise<TFile|null> {
+    // Make a deep copy of the noteData object
+    noteData = prepareNoteData(noteData, noteFolder);
+
+    const noteClass = noteTypeToNoteClass[noteData.noteType];
+    const isValid = noteClass.processNoteData(noteData);
+    if (!isValid) {
+        new Notice(`Note data is invalid for note type ${noteData.noteType}`);
+        return null;
+    }
+
+    const frontmatterSpec = noteClass.getFrontmatterSpec();
+    const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec, true)};
+    frontmatter.createdat = new Date();
+
+    const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteData.content;
 
     if (!noteFolder) {
         noteFolder = _obako_plugin.settings.noteTypeFolders[noteClass.noteTypeStr];
