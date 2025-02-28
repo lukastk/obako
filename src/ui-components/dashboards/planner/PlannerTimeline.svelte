@@ -269,7 +269,7 @@
 
 			const item = {
 				id: proj.file.path,
-				content: proj.file.basename,
+				content: proj.name,
 				start: proj.startDate.toISOString(),
 				end: addDays(proj.endDate, 1).toISOString(),
 				group: groupId,
@@ -317,7 +317,7 @@
 
 			const item = {
 				id: mod.file.path,
-				content: `<i>${mod.parent.file.basename}:</i> ${mod.file.basename}`,
+				content: `<i>${mod.parent.name}:</i> ${mod.name}`,
 				start: mod.startDate.toISOString(),
 				end: addDays(mod.endDate, 1).toISOString(),
 				group: groupId,
