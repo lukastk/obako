@@ -5,7 +5,7 @@
 	export let note: Planner;
 
 	const allPlannerNotes: Planner[] = getAllNotes().filter(
-		(note) => (note.noteType === Planner.noteTypeStr) && note.validate(),
+		(note) => note.noteType === Planner.noteTypeStr && note.validate(),
 	) as Planner[];
 
 	const supersetPlanners: Planner[] = [];
@@ -69,60 +69,60 @@
 
 	<tbody>
 		<tr>
-		<td>
-			<ul>
-				{#each supersetPlanners as planner}
-					<li>
-						<InternalLink
-							note={planner}
-							displayTitleDecorator={true}
-						/>
-					</li>
-				{/each}
-			</ul>
-		</td>
+			<td>
+				<ul>
+					{#each supersetPlanners as planner}
+						<li>
+							<InternalLink
+								note={planner}
+								displayTitleDecorator={true}
+							/>
+						</li>
+					{/each}
+				</ul>
+			</td>
 
-		<td>
-			<ul>
-				{#each subsetPlanners as planner}
-					<li>
-						<InternalLink
-							note={planner}
-							displayTitleDecorator={true}
-						/>
-					</li>
-				{/each}
-			</ul>
-		</td>
+			<td>
+				<ul>
+					{#each subsetPlanners as planner}
+						<li>
+							<InternalLink
+								note={planner}
+								displayTitleDecorator={true}
+							/>
+						</li>
+					{/each}
+				</ul>
+			</td>
 
-		<td>
-			<ul>
-				{#each nearestBeforePlanners as planner}
-					<li>
-						<InternalLink
-							note={planner}
-							displayTitleDecorator={true}
-						/>
-					</li>
-				{/each}
-			</ul>
-		</td>
+			<td>
+				<ul>
+					{#each nearestBeforePlanners as planner}
+						<li>
+							<InternalLink
+								note={planner}
+								displayTitleDecorator={true}
+							/>
+						</li>
+					{/each}
+				</ul>
+			</td>
 
-		<td>
-			<ul>
-				{#each nearestAfterPlanners as planner}
-					<li>
-						<InternalLink
-							note={planner}
-							displayTitleDecorator={true}
-						/>
-					</li>
-				{/each}
-			</ul>
-		</td>
-	</tr>
+			<td>
+				<ul>
+					{#each nearestAfterPlanners as planner}
+						<li>
+							<InternalLink
+								note={planner}
+								displayTitleDecorator={true}
+							/>
+						</li>
+					{/each}
+				</ul>
+			</td>
+		</tr>
+	</tbody>
 </table>
-
 
 <style>
 	ul {
@@ -147,19 +147,19 @@
 		color: var(--color-orange);
 	}
 
-    th {
-        padding: 0;
-        text-align: left;
-    }
-
-	td {
-        font-size: var(--font-small);
-		padding: 0.5rem;
-        vertical-align: top;
-        width: 25%;
+	th {
+		padding: 0;
+		text-align: left;
 	}
 
-    li:hover {
-        background-color: var(--background-primary-alt);
-    }
+	td {
+		font-size: var(--font-small);
+		padding: 0.5rem;
+		vertical-align: top;
+		width: 25%;
+	}
+
+	li:hover {
+		background-color: var(--background-primary-alt);
+	}
 </style>
