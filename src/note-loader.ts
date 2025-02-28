@@ -123,7 +123,7 @@ export function loadNote(file: TFile | string | null, forceReload: boolean = fal
 }
 
 export function getAllNotes(): BasicNote[] {
-    return getMarkdownFiles().map(file => loadNote(file)) as BasicNote[];
+    return Object.values(noteCache);
 }
 
 export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid: boolean = true): BasicNote[] {
