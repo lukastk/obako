@@ -8,6 +8,7 @@
 	export let text: string | null = null;
 	export let note: string | TFile | BasicNote;
 	export let displayTitleDecorator = false;
+	export let extraStyle: string = '';
 
 	export let disableOpenOnClick = false;
 	export let onClick: (event: MouseEvent) => void = () => {};
@@ -46,7 +47,7 @@
 	});
 </script>
 
-<a class="internal-link" href={filePath} on:click={handleClick}>
+<a class="internal-link" style={extraStyle} href={filePath} on:click={handleClick}>
 	<div
 		class="inline-title-prefix-decorator"
 		bind:this={prefixDecorator}

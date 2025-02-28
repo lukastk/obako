@@ -12,6 +12,7 @@
 	import type { ObakoTask } from "src/task-utils";
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
+	import PlannerNavigator from "./PlannerNavigator.svelte";
 
 	export let note: Planner;
 
@@ -88,6 +89,12 @@
 	);
 
 </script>
+
+{#if ['day', 'week', 'month', 'quarter', 'year'].includes(note.rangeType)}
+	<Collapsible title="Navigator" isCollapsed={false}>
+		<PlannerNavigator {note} />
+	</Collapsible>
+{/if}
 
 <Collapsible title="Overlapping Planners" isCollapsed={true}>
 	<PlannerHierarchy {note} />
