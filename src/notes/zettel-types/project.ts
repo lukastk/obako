@@ -34,12 +34,6 @@ export class Project extends Zettel {
         [Project.statuses.done]: "✅",
         [Project.statuses.cancelled]: "❌",
     }
-
-    startDate: Date | null = null;
-    endDate: Date | null = null;
-
-    getTitlePrefixDecoratorColor(): string {
-        if (!this.validate()) {
             return 'var(--text-error)';
         } else {
             switch (this.status) {
@@ -66,24 +60,6 @@ export class Project extends Zettel {
 
     constructor(file: TFile | string) {
         super(file);
-
-        this.startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
-        this.endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
-
-        // If the date ranges are null, then we get them from its modules
-        if (this.startDate === null || this.endDate === null) {
-            let earliestStartDate: Date | null = null;
-            let latestEndDate: Date | null = null;
-            for (const module of this.getModules()) {
-                if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
-                if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
-            }
-
-            if (earliestStartDate !== null)
-                this.startDate = earliestStartDate;
-            if (latestEndDate !== null)
-                this.endDate = latestEndDate;
-        }
     }
 
     static getFrontmatterSpec(): FrontmatterSpec {
