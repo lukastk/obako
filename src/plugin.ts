@@ -38,6 +38,7 @@ import {
 } from './plugin-components/commands/open-planners-relative';
 import { Command_OpenPlanner } from './plugin-components/commands/open-planner';
 import { Command_CopyTasks } from './plugin-components/commands/copy-tasks';
+import { Command_GetPlannerBreakdown } from './plugin-components/commands/get-planner-breakdown';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -110,6 +111,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_OpenThisYearsPlanner(this), new Command_OpenLastYearsPlanner(this), new Command_OpenNextYearsPlanner(this),
 			new Command_OpenPlanner(this),
 			new Command_CopyTasks(this),
+			new Command_GetPlannerBreakdown(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
