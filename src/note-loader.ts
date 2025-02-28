@@ -2,8 +2,8 @@
  * Loads a given note and categorises based on its frontmatter.
  */
 
-import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile } from 'obsidian';
-import { getFile, getFrontmatter, getMarkdownFiles } from './utils';
+import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile, parseYaml } from 'obsidian';
+import { getFile, getFrontmatter, getMarkdownFiles, getPathParent } from './utils';
 
 import { Planner } from './notes/planner';
 import { Capture } from './notes/zettel-types/capture';
@@ -238,4 +238,38 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
         const file = await app.vault.create(noteFilepath, noteFullContent);
         return file;
     }
+}
+
+export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreationData | null = null) {
+    if (!noteData) noteData = { };
+    noteData = {...noteData};
+    noteData.title = file.name;
+    noteData = prepareNoteData(noteData, getPathParent(file.path));
+
+    let noteContent = (await app.vault.cachedRead(file)).split("\n");
+    const fileCache = app.metadataCache.getFileCache(file);
+
+    let frontmatterString = "";
+    if (fileCache?.frontmatterPosition) {
+        const fmStart = fileCache.frontmatterPosition.start.line;
+        const fmEnd = fileCache.frontmatterPosition.end.line;
+        frontmatterString = noteContent.splice(fmStart, fmEnd - fmStart + 1);
+        frontmatterString = frontmatterString.slice(1, -1);
+        frontmatterString = frontmatterString.join("\n");
+    }
+    noteContent = noteContent.join("\n");
+    const originalFrontmatter = parseYaml(frontmatterString);
+
+    const noteClass = noteTypeToNoteClass[noteData.noteType];
+    if (!noteClass) {
+        new Notice(`Invalid note type ${noteData.noteType}`);
+        return;
+    }
+
+    const frontmatterSpec = noteClass.getFrontmatterSpec();
+    const frontmatter = processFrontmatter({...originalFrontmatter, ...noteData.frontmatterData}, frontmatterSpec, true);
+    frontmatter.createdat = new Date();
+    const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
+
+    await app.vault.modify(file, noteFullContent);
 }
