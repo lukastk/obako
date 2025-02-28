@@ -76,6 +76,15 @@ export function initialiseNoteCache() {
         noteCache[file.path] = noteCache[oldPath];
         delete noteCache[oldPath];
     });
+
+
+}
+
+/* Note: Should only be executed onLayoutReady, as Obsidian triggers 'create' for every file on startup. */
+export function initialiseAutomaticNoteFrontmatterFillIn() {
+    app.vault.on("create", (file: TAbstractFile) => {
+        fillNoteWithFrontmatter(file);
+    });
 }
 
 export function reloadNoteCache() {

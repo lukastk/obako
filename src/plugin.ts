@@ -146,6 +146,7 @@ export default class ObakoPlugin extends Plugin {
 
 		this.app.workspace.onLayoutReady(() => {
 			noteLoader.initialiseNoteCache();
+			noteLoader.initialiseAutomaticNoteFrontmatterFillIn();
 		});
 	}
 
