@@ -143,6 +143,10 @@ export default class ObakoPlugin extends Plugin {
 			this.modifierKeyPressed.alt = event.altKey;
 			this.modifierKeyPressed.shift = event.shiftKey;
 		});
+
+		this.app.workspace.onLayoutReady(() => {
+			noteLoader.initialiseNoteCache();
+		});
 	}
 
 	onunload() {
