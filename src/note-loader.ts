@@ -57,7 +57,6 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
 let noteCache: Record<string, BasicNote> = {};
 
 export function initialiseNoteCache() {
-
     reloadNoteCache();
     
     app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
