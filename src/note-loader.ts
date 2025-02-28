@@ -161,6 +161,13 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
     noteData.frontmatterData = noteData.frontmatterData ? {...noteData.frontmatterData} : {};
     noteData.extraData = noteData.extraData ? {...noteData.extraData} : {};
 
+    if (!noteData.noteType) {
+        const folderToNoteTypeStr = Object.fromEntries(Object.entries(_obako_plugin.settings.noteTypeFolders).map(([key, value]) => [value, key]));
+        if (noteFolder in folderToNoteTypeStr) {
+            noteData.noteType = folderToNoteTypeStr[noteFolder];
+        }
+    }
+
     if (!noteData.noteType) throw new Error('Note type is required');
     if (!noteData.content) noteData.content = '';
     if (!noteData.frontmatterData) noteData.frontmatterData = {};
