@@ -69,6 +69,15 @@ export class ObakoSettingsTab extends PluginSettingTab {
 
 		this.addHeading('Command shortcodes', 3);
 
+		this.addTextSetting(
+			/* name */ "Global command prefix",
+			/* desc */ "Prefix for all commands. Reload the app to see changes.",
+			/* placeholder */ "Set the prefix",
+			/* setting */ "globalCommandPrefix",
+			/* settingsDict */ this.plugin.settings,
+			/* containerEl */ containerEl
+		);
+
 		const { titleElement, contentElement } = this.addCollapsible(true);
 		const cmdShortcodesTitleEl = titleElement;
 		const cmdShortcodesContentEl = contentElement;
@@ -87,7 +96,6 @@ export class ObakoSettingsTab extends PluginSettingTab {
 				);
 			}
 		}
-
 
 		/*** Commands, views, and UI components ***/
 
