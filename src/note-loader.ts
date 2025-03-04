@@ -58,6 +58,11 @@ let noteCache: Record<string, BasicNote> = {};
 
 export function initialiseNoteCache() {
     reloadNoteCache();
+
+    app.vault.on("create", (file: TAbstractFile) => {
+        noteCache[file.path] = loadNote(file.path, true) as BasicNote;
+        triggerNoteCacheUpdate("create", { note: noteCache[file.path] });
+    });
     
     app.metadataCache.on("deleted", (file: TFile, prevCache: CachedMetadata | null) => {
         const note = noteCache[file.path];
