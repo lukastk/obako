@@ -124,7 +124,7 @@ export function loadNote(_file: TFile | string, forceReload: boolean = false) {
     const file = getFile(_file);
     const filePath = file ? file.path : _file;
 
-    if (filePath in noteCache) return noteCache[filePath];
+    if (filePath in noteCache && !forceReload) return noteCache[filePath];
 
     const NoteClass = file ? getNoteClass(file) : getNoteClass(filePath);
     if (!NoteClass) return null;
