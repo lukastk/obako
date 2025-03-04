@@ -3,7 +3,7 @@
  */
 
 import { MarkdownView } from 'obsidian';
-import { loadNote } from 'src/note-loader';
+import { loadNote, onNoteCacheUpdate } from 'src/note-loader';
 import { BasicNote } from 'src/notes/basic-note';
 import PluginComponent from 'src/plugin-components/plugin-component';
 import { around } from 'monkey-around';
@@ -15,6 +15,8 @@ const DECORATOR_CONTAINER_ID = "obako-inline-title-decorator-container";
 
 export class UI_InlineTitleDecorator extends PluginComponent {
     componentName = 'UI: Inline title decorator';
+
+    private noteCacheUpdateDetach: (() => void) | null = null;
     
     load() {
         const self = this;
@@ -38,19 +40,18 @@ export class UI_InlineTitleDecorator extends PluginComponent {
             })
         );
 
-        // If the frontmatter changes
-        this.plugin.registerEvent(
-            this.app.metadataCache.on("changed", (file, data, cache) => {
-                //this.updateInlineTitleDecorator();
-                const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (leaf?.file?.path === file.path) {
-                    this.updateInlineTitleDecorator();
-                }
-            })
-        );
+        // If the note cache is updated
+        this.noteCacheUpdateDetach = onNoteCacheUpdate((event, eventData) => {
+            this.updateInlineTitleDecorator();
+        });
     }
 
-    unload() { }
+    unload() {
+        if (this.noteCacheUpdateDetach) {
+            this.noteCacheUpdateDetach();
+            this.noteCacheUpdateDetach = null;
+        }
+    }
 
     updateInlineTitleDecorator() {
         const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
