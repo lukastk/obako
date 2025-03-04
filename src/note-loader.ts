@@ -188,7 +188,6 @@ function prepareNoteData(noteData: NoteCreationData, noteFolder: string) {
     if (!noteData.content) noteData.content = '';
     if (!noteData.frontmatterData) noteData.frontmatterData = {};
     if (!noteData.frontmatterData.links) noteData.frontmatterData.links = [];
-    if (!noteData.title) throw new Error('Note title is required');
 
     noteData.frontmatterData.links = noteData.frontmatterData.links.map((filepath: string) => {
         return `[[${app.metadataCache.fileToLinktext(getFile(filepath), filepath)}]]`;
@@ -219,6 +218,7 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
 
     const noteClass = noteTypeToNoteClass[noteData.noteType];
     const isValid = noteClass.processNoteData(noteData);
+    if (!noteData.title) throw new Error('Note title is required');
     if (!isValid) {
         new Notice(`Note data is invalid for note type ${noteData.noteType}`);
         return null;
