@@ -60,16 +60,21 @@ export function initialiseNoteCache() {
     reloadNoteCache();
     
     app.metadataCache.on("deleted", (file: TFile, prevCache: CachedMetadata | null) => {
+        const note = noteCache[file.path];
         delete noteCache[file.path];
+        triggerNoteCacheUpdate("delete", { note: note });
     });
 
     app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
+        const oldNote = noteCache[file.path];
         noteCache[file.path] = loadNote(file, true) as BasicNote;
+        triggerNoteCacheUpdate("change", { oldNote: oldNote, note: noteCache[file.path] });
     });
 
     app.vault.on("rename", (file: TAbstractFile, oldPath: string) => {
         noteCache[file.path] = noteCache[oldPath];
         delete noteCache[oldPath];
+        triggerNoteCacheUpdate("rename", { note: noteCache[file.path], oldPath: oldPath });
     });
 }
 
@@ -78,6 +83,21 @@ export function initialiseAutomaticNoteFrontmatterFillIn() {
     app.vault.on("create", (file: TAbstractFile) => {
         fillNoteWithFrontmatter(file);
     });
+}
+
+const noteCacheUpdateCallbacks: Record<string, ((event: "create" | "delete" | "change" | "rename", eventData: any) => void)> = {};
+export function onNoteCacheUpdate(callback: (event: "create" | "delete" | "change" | "rename", eventData: any) => void) {
+    const uuid = crypto.randomUUID();
+    noteCacheUpdateCallbacks[uuid] = callback;
+    return () => {
+        delete noteCacheUpdateCallbacks[uuid];
+    }
+}
+
+function triggerNoteCacheUpdate(event: "create" | "delete" | "change" | "rename", eventData: any) {
+    for (const callback of Object.values(noteCacheUpdateCallbacks)) {
+        callback(event, eventData);
+    }
 }
 
 export function reloadNoteCache() {
