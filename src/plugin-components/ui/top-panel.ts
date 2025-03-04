@@ -3,7 +3,7 @@
  */
 
 import { MarkdownView } from 'obsidian';
-import { loadNote } from 'src/note-loader';
+import { loadNote, onNoteCacheUpdate } from 'src/note-loader';
 import PluginComponent from 'src/plugin-components/plugin-component';
 import { around } from 'monkey-around';
 import { getMarkdownViewMode, onMarkdownViewFileChange } from 'src/utils';
@@ -13,18 +13,18 @@ const PANEL_CLASS = "obako-note-top-panel";
 
 export class UI_TopPanel extends PluginComponent {
     componentName = 'UI: Top panel';
+
+    private noteCacheUpdateDetach: (() => void) | null = null;
     
     load() {
         this.app.workspace.onLayoutReady(() => {
             this.createTopPanel();
         });
 
-        // If the frontmatter changes
-        this.plugin.registerEvent(
-            this.app.metadataCache.on("changed", () => {
-                this.createTopPanel();
-            })
-        );
+        // If the note cache is updated
+        this.noteCacheUpdateDetach = onNoteCacheUpdate((event, eventData) => {
+            this.createTopPanel();
+        });
 
         const self = this;
 
@@ -56,6 +56,11 @@ export class UI_TopPanel extends PluginComponent {
         document
             .querySelectorAll(`.${PANEL_CLASS}`)
             .forEach((el) => el.parentElement?.removeChild(el));
+
+        if (this.noteCacheUpdateDetach) {
+            this.noteCacheUpdateDetach();
+            this.noteCacheUpdateDetach = null;
+        }
     }
 
     createTopPanel(leaf: MarkdownView | null = null) {
