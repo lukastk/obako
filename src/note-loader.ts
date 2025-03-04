@@ -59,10 +59,6 @@ let noteCache: Record<string, BasicNote> = {};
 export function initialiseNoteCache() {
     reloadNoteCache();
     
-    app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
-        noteCache[file.path] = loadNote(file, true) as BasicNote;
-    });
-
     app.metadataCache.on("deleted", (file: TFile, prevCache: CachedMetadata | null) => {
         delete noteCache[file.path];
     });
