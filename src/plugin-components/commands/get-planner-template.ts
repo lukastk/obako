@@ -5,10 +5,10 @@ import { Notice } from 'obsidian';
 import { addDays, getWeekNumberStr } from 'src/utils';
 import { getDateStringFromDate } from 'src/utils';
 
-export class Command_GetPlannerBreakdown extends CommandPluginComponent {
-    componentName = 'Cmd: Get Planner Breakdown';
-    commandId = 'get-planner-breakdown';
-    commandName = 'Get Planner Breakdown';
+export class Command_GetPlannerTemplate extends CommandPluginComponent {
+    componentName = 'Cmd: Get Planner Template';
+    commandId = 'get-planner-template';
+    commandName = 'Get Planner Template';
 
     load() {
         this.plugin.addCommand({
@@ -26,10 +26,7 @@ export class Command_GetPlannerBreakdown extends CommandPluginComponent {
                 const plannerFolder = this.plugin.settings.noteTypeFolders[Planner.noteTypeStr];
                 const breakdowns: any[] = [];
 
-                if (planner.rangeType === 'day') {
-                    new Notice('No breakdown for day planners.');
-                    return;
-                } else if (planner.rangeType === 'week') {
+                if (planner.rangeType === 'week') {
                     let currentDay = 0;
 
                     for (let i = 0; i < 7; i++) {
@@ -75,13 +72,11 @@ export class Command_GetPlannerBreakdown extends CommandPluginComponent {
                             title: `Q${i + 1}`,
                         });
                     }
-                } else {
-                    new Notice(`Range type '${planner.rangeType}' is not supported for breakdowns.`);
-                    return;
                 }
 
-                const md = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n![[${b.link}#Plan]]`).join('\n\n');
-                navigator.clipboard.writeText(`# Breakdown\n\n${md}`);
+                const md_breakdown = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n![[${b.link}#Plan]]`).join('\n\n');
+                const md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
+                navigator.clipboard.writeText(md);
             }
         });
     }
