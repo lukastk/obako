@@ -279,17 +279,15 @@ export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreatio
     noteData.title = file.name;
     noteData = prepareNoteData(noteData, getPathParent(file.path));
 
-    if (noteData.noteType === BasicNote.noteTypeStr) {
-        return;
-    }
+    if (noteData.noteType === BasicNote.noteTypeStr) return;
 
     let noteContent = (await app.vault.cachedRead(file)).split("\n");
     let frontmatterString = "";
 
     if (noteContent[0] === "---") {
         const fmEnd = noteContent.slice(1).indexOf("---");
-        frontmatterString = noteContent.splice(0, fmEnd).join("\n");
-        noteContent = noteContent.slice(fmEnd + 1);
+        frontmatterString = noteContent.slice(1, fmEnd + 1).join("\n");
+        noteContent = noteContent.slice(fmEnd + 2);
     }
     
     noteContent = noteContent.join("\n");
