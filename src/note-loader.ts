@@ -300,7 +300,7 @@ export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreatio
     }
 
     const frontmatterSpec = noteClass.getFrontmatterSpec();
-    const frontmatter = processFrontmatter({...originalFrontmatter, ...noteData.frontmatterData}, frontmatterSpec, true);
+    const frontmatter = processFrontmatter({...noteData.frontmatterData, ...originalFrontmatter}, frontmatterSpec, true);
     frontmatter.createdat = new Date();
     const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
