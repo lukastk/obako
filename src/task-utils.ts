@@ -36,6 +36,12 @@ export interface Task {
     priorityNumber: number;
 }
 
+/**
+ * The tasks plugin has four task types: DONE, TODO, NON_TASK, CANCELLED.
+ * Additional custom tasks can be added by the user. We call them 'subtypes' here. Each subtype must belong to a task type.
+ */
+
+
 export class ObakoTask {
     private task: Task;
     private _md: string; // Used for debugging in the developer console
@@ -101,20 +107,24 @@ export class ObakoTask {
     }
 
 
-    isStatus(status: string) {
-        return this.task.status?.configuration?.type === status;
+    isTaskType(taskType: string) {
+        return this.task.status?.configuration?.type === taskType;
     }
     isDone() {
-        return this.isStatus('DONE');
+        return this.isTaskType('DONE');
     }
     isCancelled() {
-        return this.isStatus('CANCELLED') || this.tags.includes('cancelled');
+        return this.isTaskType('CANCELLED');
     }
     isTodo() {
-        return this.isStatus('TODO');
+        return this.isTaskType('TODO');
     }
     isNonTask() {
-        return this.isStatus('NON_TASK');
+        return this.isTaskType('NON_TASK');
+    }
+
+    isTaskSubType(taskSubType: string) {
+        return this.task.status?.configuration?.name === taskSubType;
     }
 
     getSubtext(startingIndent="", indent="  ") {
@@ -263,7 +273,7 @@ export function getTasks(includeNonTasks: boolean = false, includeCancelled: boo
 }
 
 export function isTaskStatus(task: Task, status: string) {
-    return (new ObakoTask(task)).isStatus(status);
+    return (new ObakoTask(task)).isTaskType(status);
 }
 
 export async function toggleTaskStatus(task: Task) {
