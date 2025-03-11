@@ -33,23 +33,33 @@ export class UI_TopPanel extends PluginComponent {
             around(MarkdownView.prototype, {
                 onload(next) {
                     return function (...args) {
-                        const intervalId = setInterval(() => {
+                        const maxAttempts = 100; // 1 second total maximum wait time
+                        let attempts = 0;
+                        
+                        const checkFile = () => {
                             if (this.leaf.view?.file) {
-                                clearInterval(intervalId);
                                 // Register observer to detect mode switch, upon which the panel will be updated
                                 self.registerModeSwitchObserver(this.leaf.view);
                                 self.createTopPanel(this.leaf.view);
-
+                
                                 onMarkdownViewFileChange(this.leaf.view, (oldFile, newFile) => {
                                     self.createTopPanel(this.leaf.view);
                                 });
+                                return;
                             }
-                        }, 10);
-                        return next.call(this, ...args)
+                            
+                            attempts++;
+                            if (attempts < maxAttempts) {
+                                setTimeout(checkFile, 10);
+                            }
+                        };
+                        
+                        checkFile();
+                        return next.call(this, ...args);
                     }
                 }
             })
-        )
+        );
     }
 
     unload() {
