@@ -42,6 +42,6 @@ export class PickNoteLink extends FuzzySuggestModal<BasicNote> {
     }
 
     onChooseItem(note: BasicNote, event: MouseEvent | KeyboardEvent) {
-        note.open(true);
+        note.open(event.metaKey || event.ctrlKey);
     }
 }
