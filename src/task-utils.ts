@@ -37,7 +37,7 @@ export interface Task {
 }
 
 /**
- * The tasks plugin has four task types: DONE, TODO, NON_TASK, CANCELLED.
+ * The tasks plugin has four task types: DONE, TODO, IN_PROGRESS, NON_TASK, CANCELLED.
  * Additional custom tasks can be added by the user. We call them 'subtypes' here. Each subtype must belong to a task type.
  */
 
