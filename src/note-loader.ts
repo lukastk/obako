@@ -2,7 +2,7 @@
  * Loads a given note and categorises based on its frontmatter.
  */
 
-import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile, parseYaml } from 'obsidian';
+import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile, parseYaml, type DataWriteOptions } from 'obsidian';
 import { getFile, getFrontmatter, getMarkdownFiles, getPathParent } from './utils';
 
 import { Planner } from './notes/planner';
@@ -23,6 +23,7 @@ import { Source } from './notes/zettel-types/source';
 import { Entity } from './notes/zettel-types/entity';
 import { Concept } from './notes/zettel-types/concept';
 import { Transient } from './notes/zettel-types/transient';
+import { around } from 'monkey-around';
 
 export const noteTypes = [
     Zettel,
@@ -83,11 +84,17 @@ export function initialiseNoteCache() {
     });
 }
 
-/* Note: Should only be executed onLayoutReady, as Obsidian triggers 'create' for every file on startup. */
 export function initialiseAutomaticNoteFrontmatterFillIn() {
-    app.vault.on("create", (file: TAbstractFile) => {
-        fillNoteWithFrontmatter(file);
-    });
+    _obako_plugin.register(
+        around(app.vault, {
+            create(next) {
+                return async function(path: string, data: string, options?: DataWriteOptions) {
+                    const noteFullContent = fillNoteWithFrontmatter(path, data);
+                    return await next.apply(this, [path, noteFullContent, options]);
+                }
+            }
+        })
+    );
 }
 
 const noteCacheUpdateCallbacks: Record<string, ((event: "create" | "delete" | "change" | "rename", eventData: any) => void)> = {};
@@ -273,30 +280,29 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
     }
 }
 
-export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreationData | null = null) {
+export function fillNoteWithFrontmatter(filePath: string, noteContent: string, noteData: NoteCreationData | null = null) {
     if (!noteData) noteData = { };
     noteData = {...noteData};
-    noteData.title = file.name;
-    noteData = prepareNoteData(noteData, getPathParent(file.path));
+    noteData.title = filePath.split("/").pop()?.split(".")[0];
+    noteData = prepareNoteData(noteData, getPathParent(filePath));
 
-    if (noteData.noteType === BasicNote.noteTypeStr) return;
+    if (noteData.noteType === BasicNote.noteTypeStr) return noteContent;
 
-    let noteContent = (await app.vault.cachedRead(file)).split("\n");
     let frontmatterString = "";
 
-    if (noteContent[0] === "---") {
-        const fmEnd = noteContent.slice(1).indexOf("---");
-        frontmatterString = noteContent.slice(1, fmEnd + 1).join("\n");
-        noteContent = noteContent.slice(fmEnd + 2);
+    const noteLines = noteContent.split("\n");
+    if (noteLines[0] === "---") {
+        const fmEnd = noteLines.slice(1).indexOf("---");
+        frontmatterString = noteLines.slice(1, fmEnd + 1).join("\n");
+        noteContent = noteLines.slice(fmEnd + 2).join("\n");
     }
     
-    noteContent = noteContent.join("\n");
     const originalFrontmatter = parseYaml(frontmatterString);
 
     const noteClass = noteTypeToNoteClass[noteData.noteType];
     if (!noteClass) {
         new Notice(`Invalid note type ${noteData.noteType}`);
-        return;
+        return noteContent;
     }
 
     const frontmatterSpec = noteClass.getFrontmatterSpec();
@@ -304,5 +310,5 @@ export async function fillNoteWithFrontmatter(file: TFile, noteData: NoteCreatio
     frontmatter.createdat = new Date();
     const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
-    await app.vault.modify(file, noteFullContent);
+    return noteFullContent;
 }
