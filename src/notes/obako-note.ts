@@ -16,6 +16,7 @@ export abstract class ObakoNote extends BasicNote {
             "cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note has been consolidated." },
             "is-hp-cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note consolidation is high priority." },
             "is-link-cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the capture needs to be consolidated to the notes it links to ." },
+            "archived": { default: false, type: "boolean", skipCreationIfAbsent: true, description: "Whether the note is archived." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -35,6 +36,10 @@ export abstract class ObakoNote extends BasicNote {
 
     get isLinkConsolidate(): boolean {
         return this.frontmatter['is-link-cons'];
+    }
+
+    get isArchived(): boolean {
+        return this.frontmatter.archived;
     }
 
     async setTopPanel(panel: HTMLElement) {
