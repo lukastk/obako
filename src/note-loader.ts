@@ -17,6 +17,7 @@ import { Module } from './notes/zettel-types/module';
 import { processFrontmatter } from './notes/note-frontmatter';
 import { Zettel } from './notes/zettel';
 import { ObakoNote } from './notes/obako-note';
+import { ArchivedNote } from './notes/archived-note';
 import { ParentableNote } from './notes/parentable-note';
 import { Reference } from './notes/zettel-types/reference';
 import { Source } from './notes/zettel-types/source';
@@ -29,6 +30,7 @@ export const noteTypes = [
     Zettel,
     ParentableNote,
     ObakoNote,
+    ArchivedNote,
     Transient,
     BasicNote,
     Planner,
@@ -133,6 +135,10 @@ export function getNoteClass(_file: TFile | string | null, frontmatter: Record<s
     if (!frontmatter) frontmatter = getFrontmatter(file);
 
     let noteClass = noteTypeToNoteClass[frontmatter?.notetype];
+
+    if (frontmatter?.archived) {
+        noteClass = ArchivedNote;
+    }
         
     if (!noteClass) {
         for (const [noteTypeStr, noteTypeFolder] of Object.entries(_obako_plugin.settings.noteTypeFolders)) {
@@ -210,6 +216,10 @@ function prepareNoteData(noteData: NoteCreationData, noteFolder: string) {
 
     if (!noteData.noteType) {
         noteData.noteType = getNoteClass(noteFolder).noteTypeStr;
+    }
+
+    if (noteData.frontmatterData.archived) {
+        noteData.noteType = "arch";
     }
 
     if (!noteData.noteType) throw new Error('Note type is required');
