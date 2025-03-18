@@ -30,6 +30,10 @@ export abstract class ObakoNote extends BasicNote {
         return this.frontmatter.cons;
     }
 
+    get needsConsolidation(): boolean {
+        return !this.consolidated; // By default, if a note is not consolidated, it should be consolidated.
+    }
+
     get isHighPriorityConsolidate(): boolean {
         return this.frontmatter['is-hp-cons'];
     }
