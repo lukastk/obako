@@ -29,8 +29,8 @@ export class Project extends Zettel {
         [Project.statuses.idea]: "💡",
         [Project.statuses.unconfirmed]: "🤔",
         [Project.statuses.unplanned]: "❔",
-        [Project.statuses.active]: "🟢",
-        [Project.statuses.paused]: "⏸️",
+        [Project.statuses.active]: "⏩️",
+        [Project.statuses.paused]: "❄️",
         [Project.statuses.done]: "✅",
         [Project.statuses.cancelled]: "❌",
     }
