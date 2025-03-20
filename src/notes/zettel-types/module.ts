@@ -62,7 +62,6 @@ export class Module extends ParentableNote {
             "mod-status": { default: Module.statuses.unplanned, type: "string", description: "The status of the module." }, 
             "mod-start-date": { default: "", type: "string", description: "The start date of the module." },
             "mod-end-date": { default: "", type: "string", description: "The end date of the module." },
-            "mod-completion-date": { default: "", type: "string", description: "The completion date of the module." },
             "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the module in the planner dashboard. If empty, the module will be displayed in the default group." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
@@ -95,10 +94,7 @@ export class Module extends ParentableNote {
         let dateValid = (this.startDate && this.endDate) || (this.status === Module.statuses.unplanned);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
-        let completionDateValid = true;
-        if (this.status === Module.statuses.done)
-            completionDateValid = this.frontmatter["mod-completion-date"];
-        return super.validate() && dateValid && completionDateValid && statusValid && parentValid;
+        return super.validate() && dateValid && statusValid && parentValid;
     }
 
     async setTopPanel(panel: HTMLElement) {
