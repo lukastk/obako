@@ -23,8 +23,8 @@ export class Module extends ParentableNote {
 
     static statusDecorators = {
         [Module.statuses.unplanned]: "❔",
-        [Module.statuses.active]: "🟢",
-        [Module.statuses.paused]: "⏸️",
+        [Module.statuses.active]: "⏩️",
+        [Module.statuses.paused]: "❄️",
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
     }
@@ -34,16 +34,16 @@ export class Module extends ParentableNote {
             return 'var(--text-error)';
         } else {
             switch (this.status) {
-                case Module.statuses.unplanned:
-                    return 'var(--color-red)';
-                case Module.statuses.active:
-                    return 'var(--color-blue)';
-                case Module.statuses.paused:
-                    return 'var(--color-muted)';
-                case Module.statuses.done:
-                    return 'var(--color-green)';
-                case Module.statuses.cancelled:
-                    return 'var(--text-muted)';
+                // case Module.statuses.unplanned:
+                //     return 'var(--color-red)';
+                // case Module.statuses.active:
+                //     return 'var(--color-blue)';
+                // case Module.statuses.paused:
+                //     return 'var(--color-muted)';
+                // case Module.statuses.done:
+                //     return 'var(--color-green)';
+                // case Module.statuses.cancelled:
+                //     return 'var(--text-muted)';
                 default:
                     return '';
             }
@@ -80,6 +80,15 @@ export class Module extends ParentableNote {
 
     get hideInPlannerDashboard(): boolean {
         return this.frontmatter['hide-in-planner-dashboard'];
+    }
+
+    get needsAction(): boolean {
+        const conds = [
+            !this.validate(),
+            this.status === Module.statuses.unplanned,
+            this.status === Module.statuses.active && this.endDate && (this.endDate < new Date()),
+        ];
+        return conds.some(cond => cond);
     }
 
     validate(): boolean {
