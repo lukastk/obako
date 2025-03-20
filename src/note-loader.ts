@@ -57,7 +57,7 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
 }, {});
 
 
-let noteCache: Record<string, BasicNote> = {};
+export let noteCache: Record<string, BasicNote> = {};
 
 export function initialiseNoteCache() {
     reloadNoteCache();
