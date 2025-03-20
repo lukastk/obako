@@ -90,6 +90,10 @@ export class Module extends ParentableNote {
         return conds.some(cond => cond);
     }
 
+    get isRelevantToMe(): boolean {
+        return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];
+    }
+
     validate(): boolean {
         let dateValid = (this.startDate && this.endDate) || (this.status === Module.statuses.unplanned);
         let statusValid = Object.values(Module.statuses).includes(this.status);

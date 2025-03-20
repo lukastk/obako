@@ -119,6 +119,20 @@ export class Project extends Zettel {
         return this.frontmatter['hide-in-planner-dashboard'];
     }
 
+    get needsAction(): boolean {
+        const conds = [
+            !this.validate(),
+            this.status === Project.statuses.unplanned,
+            this.status === Project.statuses.active && this.endDate && (this.endDate < new Date()),
+            this.getModules().some(module => module.needsAction),
+        ];
+        return conds.some(cond => cond);
+    }
+
+    get isRelevantToMe(): boolean {
+        return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];
+    }
+
     validate(): boolean {
         let dateValid = true;
         let completionDateValid = true;
