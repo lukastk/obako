@@ -24,4 +24,12 @@ export class Pad extends Transient {
     get needsConsolidation(): boolean {
         return !this.consolidated && !this.inWriting;
     }
+
+    getTitlePrefixDecoratorColor(): string {
+        if (!this.validate()) {
+            return 'var(--text-error)';
+        } else {
+            return this.inWriting ? 'var(--color-blue)' : 'var(--text-faint)';
+        }
+    }
 }
