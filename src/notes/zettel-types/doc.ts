@@ -11,7 +11,13 @@ export class Doc extends Zettel {
         writing: "writing",
         done: "done",
         archived: "archived",
-    }
+    };
+
+    static statusOrder = {
+        [Doc.statuses.writing]: 0,
+        [Doc.statuses.done]: 1,
+        [Doc.statuses.archived]: 2,
+    };
 
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {

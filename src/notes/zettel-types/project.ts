@@ -24,6 +24,14 @@ export class Project extends Zettel {
         done: "done"
     };
 
+    static statusOrder = {
+        [Project.statuses.stream]: 0,
+        [Project.statuses.idea]: 1,
+        [Project.statuses.unconfirmed]: 2,
+        [Project.statuses.unplanned]: 3,
+        [Project.statuses.active]: 4,
+    }
+
     static statusDecorators = {
         [Project.statuses.stream]: "🌀",
         [Project.statuses.idea]: "💡",

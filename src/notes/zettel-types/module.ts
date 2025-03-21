@@ -21,6 +21,14 @@ export class Module extends ParentableNote {
         cancelled: "cancelled"
     };
 
+    static statusOrder = {
+        [Module.statuses.unplanned]: 0,
+        [Module.statuses.active]: 1,
+        [Module.statuses.paused]: 2,
+        [Module.statuses.done]: 3,
+        [Module.statuses.cancelled]: 4,
+    }
+
     static statusDecorators = {
         [Module.statuses.unplanned]: "❔",
         [Module.statuses.active]: "⏩️",
