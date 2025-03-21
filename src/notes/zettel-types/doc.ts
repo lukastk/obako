@@ -29,4 +29,21 @@ export class Doc extends Zettel {
     validate(): boolean {
         return super.validate() && this.status in Doc.statuses;
     }
+
+    getTitlePrefixDecoratorColor(): string {
+        if (!this.validate()) {
+            return 'var(--text-error)';
+        } else {
+            switch (this.status) {
+                case Doc.statuses.writing:
+                    return 'var(--color-blue)';
+                case Doc.statuses.done:
+                    return 'var(--color-green)';
+                case Doc.statuses.archived:
+                    return 'var(--text-faint)';
+                default:
+                    return '';
+            }
+        }
+    }
 }
