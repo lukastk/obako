@@ -82,6 +82,7 @@ export class Project extends Zettel {
             "proj-completion-date": { default: "", type: "string", description: "The completion date of the project." },
             "planner-dashboard-group": { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the project in the planner dashboard. If empty, the project will be displayed in the default group." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
+            "is-passive": { default: false, type: "boolean", skipCreationIfAbsent: false, hideInCreationModal: false, description: "Whether the project is passive. Passive projects can be active but still not have a start or end date." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
@@ -131,7 +132,7 @@ export class Project extends Zettel {
         const conds = [
             !this.validate(),
             this.status === Project.statuses.unplanned,
-            this.status === Project.statuses.active && this.endDate && (this.endDate < new Date()),
+            this.status === Project.statuses.active && !this.isPassive && this.endDate && (this.endDate < new Date()),
             this.getModules().some(module => module.needsAction),
         ];
         return conds.some(cond => cond);
@@ -139,6 +140,10 @@ export class Project extends Zettel {
 
     get isRelevantToMe(): boolean {
         return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];
+    }
+
+    get isPassive(): boolean {
+        return this.frontmatter['is-passive'];
     }
 
     validate(): boolean {
