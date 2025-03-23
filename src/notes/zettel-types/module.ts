@@ -42,16 +42,16 @@ export class Module extends ParentableNote {
             return 'var(--text-error)';
         } else {
             switch (this.status) {
-                // case Module.statuses.unplanned:
-                //     return 'var(--color-red)';
-                // case Module.statuses.active:
-                //     return 'var(--color-blue)';
-                // case Module.statuses.paused:
-                //     return 'var(--color-muted)';
-                // case Module.statuses.done:
-                //     return 'var(--color-green)';
-                // case Module.statuses.cancelled:
-                //     return 'var(--text-muted)';
+                case Module.statuses.unplanned:
+                    return 'var(--text-muted)';
+                case Module.statuses.active:
+                    return 'var(--color-blue)';
+                case Module.statuses.paused:
+                    return 'var(--text-faint)';
+                case Module.statuses.done:
+                    return 'var(--color-green)';
+                case Module.statuses.cancelled:
+                    return 'var(--text-faint)';
                 default:
                     return '';
             }
