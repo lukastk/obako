@@ -4,6 +4,7 @@
 	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
+	import { ObakoNote } from "src/notes/obako-note";
 
 	export let note;
 
@@ -26,6 +27,16 @@
 	title="Linked"
 	notes={note.getIncomingLinkedNotes()}
 	isCollapsed={collapsibleNoteList}
+	groupByNoteType={true}
+/>
+
+<CollapsibleNoteList
+	title="Linked captures"
+	notes={note
+		.getIncomingLinkedNotes()
+		.filter((note) => note instanceof ObakoNote)
+		.filter((note) => note.needsConsolidation)}
+	isCollapsed={true}
 	groupByNoteType={true}
 />
 
