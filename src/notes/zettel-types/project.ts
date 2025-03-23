@@ -150,7 +150,7 @@ export class Project extends Zettel {
     validate(): boolean {
         let dateValid = true;
         let completionDateValid = true;
-        if (this.status === Project.statuses.active) // Active projects must have a start and end date
+        if (this.status === Project.statuses.active && !this.isPassive) // Active non-passive projects must have a start and end date
             dateValid = this.startDate && this.endDate;
         else if (this.status === Project.statuses.stream) // Streams are not time-bound
             dateValid = !this.frontmatter["proj-start-date"] && !this.frontmatter["proj-end-date"];
