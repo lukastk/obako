@@ -30,8 +30,8 @@ export class Module extends ParentableNote {
     }
 
     static statusDecorators = {
-        [Module.statuses.unplanned]: "❔",
-        [Module.statuses.active]: "⏩️",
+        [Module.statuses.unplanned]: "❗️",
+        [Module.statuses.active]: "",
         [Module.statuses.paused]: "❄️",
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
