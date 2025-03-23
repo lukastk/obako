@@ -4,6 +4,9 @@
 	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
+	import { Doc } from "src/notes/zettel-types/doc";
+	import { Pad } from "src/notes/zettel-types/pad";
+	import { ObakoNote } from "src/notes/obako-note";
 
     import type { Module } from 'src/notes/zettel-types/module';
     export let note: Module;
@@ -12,6 +15,46 @@
 		.getIncomingLinkedNotes()
 		.filter((note) => note.noteType === Log.noteTypeStr);
 </script>
+
+<CollapsibleNoteList
+	title="Docs"
+	notes={note
+		.getIncomingLinkedNotes()
+		.filter((note) => note instanceof Doc)
+		.sort((a, b) => {
+			if (a.status && b.status)
+				return Doc.statusOrder[a.status] - Doc.statusOrder[b.status];
+			else return -1;
+		})}
+	isCollapsed={false}
+	groupByNoteType={false}
+	displayTitleDecorator={true}
+/>
+
+<CollapsibleNoteList
+	title="Pads"
+	notes={note
+		.getIncomingLinkedNotes()
+		.filter((note) => note instanceof Pad)
+		.sort((a, b) => {
+			if (a.inWriting && !b.inWriting) return -1;
+			else if (!a.inWriting && b.inWriting) return 1;
+			else return 0;
+		})}
+	isCollapsed={false}
+	groupByNoteType={false}
+	displayTitleDecorator={true}
+/>
+
+<CollapsibleNoteList
+	title="Linked captures"
+	notes={note
+		.getIncomingLinkedNotes()
+		.filter((note) => note instanceof ObakoNote)
+		.filter((note) => note.needsConsolidation)}
+	isCollapsed={false}
+	groupByNoteType={true}
+/>
 
 <CollapsibleNoteTreeDisplay
     displayTitle="Note hierarchy"
