@@ -58,6 +58,7 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
 
 
 export let noteCache: Record<string, BasicNote> = {};
+const deletedFiles: Set<TFile> = new Set(); // Used to prevent the note cache from being updated when a file is deleted
 
 export function initialiseNoteCache() {
     reloadNoteCache();
@@ -70,6 +71,7 @@ export function initialiseNoteCache() {
     app.metadataCache.on("deleted", (file: TFile, prevCache: CachedMetadata | null) => {
         const note = noteCache[file.path];
         delete noteCache[file.path];
+        deletedFiles.add(file);
         triggerNoteCacheUpdate("delete", { note: note });
     });
 
@@ -161,6 +163,11 @@ export function loadNote(_file: TFile | string, forceReload: boolean = false) {
 
     const file = getFile(_file);
     const filePath = file ? file.path : _file;
+
+    // This is necessary, as the TFile of deleted files will still remain in the Obsidian file cache for a while even after the file is deleted.
+    if (file && deletedFiles.has(file)) {
+        return null;
+    }
 
     if (filePath in noteCache && !forceReload) return noteCache[filePath];
 
