@@ -200,6 +200,6 @@ export class Project extends Zettel {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
         const statusDecorator = Project.statusDecorators[this.status];
-        titleDecoratorEl.innerHTML = statusDecorator + titleDecoratorEl.innerHTML;
+        titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
 }

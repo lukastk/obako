@@ -125,6 +125,6 @@ export class Module extends ParentableNote {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
         const statusDecorator = Module.statusDecorators[this.status];
-        titleDecoratorEl.innerHTML =  statusDecorator + titleDecoratorEl.innerHTML;
+        titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
 }
