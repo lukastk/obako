@@ -334,6 +334,7 @@ export function getDateStringFromDate(date: Date) {
 }
 
 export function getDateFromDateString(dateStr: string) {
+    if (!dateStr || dateStr.trim() === '') return null;
     const date = new Date(dateStr);
     return isDateValid(date) ? date : null;
 }
