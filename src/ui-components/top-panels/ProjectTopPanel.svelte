@@ -7,6 +7,7 @@
 	import { Project } from "src/notes/zettel-types/project";
 	import { Doc } from "src/notes/zettel-types/doc";
 	import { Pad } from "src/notes/zettel-types/pad";
+	import { ObakoNote } from "src/notes/obako-note";
 	export let note: Project;
 
 	const incomingLinkedLogs = note
@@ -69,6 +70,16 @@
 	isCollapsed={false}
 	groupByNoteType={false}
 	displayTitleDecorator={true}
+/>
+
+<CollapsibleNoteList
+	title="Linked captures"
+	notes={note
+		.getIncomingLinkedNotes()
+		.filter((note) => note instanceof ObakoNote)
+		.filter((note) => note.needsConsolidation)}
+	isCollapsed={false}
+	groupByNoteType={true}
 />
 
 <CollapsibleNoteTreeDisplay
