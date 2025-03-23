@@ -2,6 +2,9 @@ import { Notice } from 'obsidian';
 import path from 'path-browserify';
 import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace, getBlockEmbed } from 'src/utils';
 import { getNoteClass, loadNote } from './note-loader';
+import { Project } from './notes/zettel-types/project';
+import { Planner } from './notes/planner';
+import { Module } from './notes/zettel-types/module';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
 
@@ -228,7 +231,7 @@ export class ObakoTask {
             const noteClass = getNoteClass(this.filePath);
 
             // Get scheduled date from Planner note
-            if (noteClass.noteTypeStr === 'plan') {
+            if (noteClass.noteTypeStr === Planner.noteTypeStr) {
                 const { date } = parseDatesInDateRangeTitle(fname);
                 scheduledDate = date;
                 // Get scheduled date from a preceding header in a Planner note
@@ -240,6 +243,9 @@ export class ObakoTask {
                     if (isDateValid(date))
                         scheduledDate = date;
                 }
+            } else if (noteClass.noteTypeStr === Module.noteTypeStr) {
+                const parentNote = loadNote(this.filePath);
+                if (parentNote.startDate) scheduledDate = parentNote.startDate;
             }
         }
 
