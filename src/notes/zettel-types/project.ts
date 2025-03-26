@@ -90,6 +90,7 @@ export class Project extends Zettel {
     }
 
     get startDate(): Date | null {
+        if (this.status === Project.statuses.stream) return null;
         let startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
         if (startDate === null) {
             let earliestStartDate: Date | null = null;
@@ -102,6 +103,7 @@ export class Project extends Zettel {
     }
 
     get endDate(): Date | null {
+        if (this.status === Project.statuses.stream) return null;
         let endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
         if (endDate === null) {
             let latestEndDate: Date | null = null;
