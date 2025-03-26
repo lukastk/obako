@@ -3,7 +3,7 @@ import { loadNote } from 'src/note-loader';
 import { Planner } from 'src/notes/planner';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
-import { getDateFromText, getDateStringFromDate, trimBlockIdsFromText } from 'src/utils';
+import { getDateFromText, getDateStringFromDate } from 'src/utils';
 
 export class Command_CopyTasks extends CommandPluginComponent {
     componentName = 'Cmd: Copy tasks';
