@@ -382,8 +382,13 @@ function __helper__getIndentedHierarchicalTaskList(indentedTaskList, taskChildre
     }
 }
 
-export function getIndentedHierarchicalTaskList(tasks: ObakoTask[]) {
+export function getIndentedHierarchicalTaskList(tasks: ObakoTask[], orderByDuration: boolean = false) {
     const { taskChildren, topTasks } = getTaskHierarchy(tasks);
+
+    if (orderByDuration) {
+        topTasks.sort((a, b) => b.duration - a.duration);
+    }
+
     const indentedTaskList = [];
     for (const otask of topTasks) {
         indentedTaskList.push({
