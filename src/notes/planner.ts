@@ -1,7 +1,7 @@
 import type { TFile } from 'obsidian';
 import type { FrontmatterSpec } from './note-frontmatter';
 import { ObakoNote } from './obako-note';
-import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, getWeekNumberStr } from 'src/utils';
+import { getWeekNumber, parseDatesInDateRangeTitle, getDateStringFromNaturalLanguage, isDateValid, getWeekNumberStr, addDays, getDateStringFromDate } from 'src/utils';
 import { getTasks } from 'src/task-utils';
 import type { Task } from 'src/task-utils';
 import type { CreateObakoNoteModal } from 'src/plugin-components/commands/create-obako-note';
@@ -176,5 +176,111 @@ export class Planner extends ObakoNote {
         }
 
         return true;
+    }
+
+    static getDefaultContent(noteData: NoteCreationData, title: string): string {
+        const res = parseDatesInDateRangeTitle(title);
+        const plannerTitle = res.plannerTitle;
+        const plannerDate = res.date;
+        const plannerEndDate = res.endDate;
+        const plannerRangeType = res.rangeType;
+        
+        const plannerFolder = _obako_plugin.settings.noteTypeFolders[Planner.noteTypeStr];
+        const breakdowns: any[] = [];
+
+        if (plannerRangeType === 'week') {
+            for (let i = 0; i < 7; i++) {
+                const date = addDays(plannerDate, i);
+                const dateStr = getDateStringFromDate(date);
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                
+                const scheduledTasksMd = `
+\`\`\`tasks
+not done
+
+filter by function \
+    const otask = new obako.tasks.ObakoTask(task); \
+    const date = otask.scheduledDate; \
+    if (!date) return false; \
+    console.log(date.getFullYear(), date.getMonth(), date.getDate()); \
+    return date.getFullYear() === ${date.getFullYear()} \
+        && date.getMonth() === ${date.getMonth()} \
+        && date.getDate() === ${date.getDate()};
+        
+group by function \
+    const otask = new obako.tasks.ObakoTask(task); \
+    if (['proj', 'mod'].includes(otask.note.noteType)) { \
+        const href = otask.note.file.path; \
+        const name = otask.note.name; \
+        return \`<a href="\${href}" class="internal-link" style="color: var(--text-accent-hover);">\${name}</a>\`; \
+    }; \
+    return 'Misc';
+\`\`\`
+                `.trim();
+
+                const dueTaskIneq = i == 0 ? '<=' : '===';
+                const dueTaskMd = `
+\`\`\`tasks
+not done
+
+filter by function \
+    const otask = new obako.tasks.ObakoTask(task); \
+    const date = otask.dueDate; \
+    if (!date) return false; \
+    console.log(date.getFullYear(), date.getMonth(), date.getDate()); \
+    return date.getFullYear() === ${date.getFullYear()} \
+        && date.getMonth() === ${date.getMonth()} \
+        && date.getDate() === ${date.getDate()};
+\`\`\`
+                `.trim();
+
+                breakdowns.push({
+                    link: `${plannerFolder}/${dateStr}`,
+                    title: `${dayName}`,
+                    content: ''//`### 📋 Tasks\n${scheduledTasksMd}\n\n#### Due\n${dueTaskMd}`,
+                });
+            }
+        } else if (plannerRangeType === 'month') {
+            let currentDate = plannerDate;
+            while (currentDate <= plannerEndDate) {
+                const weekPlannerLink = `${plannerFolder}/${currentDate.getFullYear()} w${getWeekNumberStr(currentDate)}`;
+                const weeksInMonth = breakdowns.map(b => b.link);
+                if (!weeksInMonth.includes(weekPlannerLink)) {
+                    breakdowns.push({
+                        link: weekPlannerLink,
+                        title: `Week ${getWeekNumberStr(currentDate)}`,
+                        content: '',
+                    });
+                }
+                currentDate = addDays(currentDate, 1);
+            }
+        } else if (plannerRangeType === 'quarter') {
+            const currentDate = plannerDate;
+            for (let i = 0; i < 3; i++) {
+                const year = currentDate.getFullYear();
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                const monthName = currentDate.toLocaleDateString('en-US', { month: 'long' });
+                breakdowns.push({
+                    link: `${plannerFolder}/${year}-${month}`,
+                    title: `${monthName}`,
+                    content: '',
+                });
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+        } else if (plannerRangeType === 'year') {
+            const year = plannerDate.getFullYear();
+            for (let i = 0; i < 4; i++) {
+                breakdowns.push({
+                    link: `${plannerFolder}/${year} Q${i + 1}`,
+                    title: `Q${i + 1}`,
+                    content: '',
+                });
+            }
+        }
+
+        const md_breakdown = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n---\n![[${b.link}#Plan]]\n${b.content}`).join('\n\n');
+        const md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
+        
+        return md;
     }
 }
