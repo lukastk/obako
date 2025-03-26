@@ -412,7 +412,7 @@ export async function getBlockEmbed(lineNumber: number, file: TFile) {
     return `${file.path}#${blockRef}`;
 }
 
-export async function trimBlockIdsFromText(text: string): string {
+export function trimBlockIdsFromText(text: string): string {
     const mdLines = text.split('\n');
 
     const trimmedLines = mdLines.map(line => {
