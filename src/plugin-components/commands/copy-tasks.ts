@@ -1,8 +1,9 @@
 import { App, Editor, MarkdownView, Modal, Notice, Setting } from 'obsidian';
 import { loadNote } from 'src/note-loader';
+import { Planner } from 'src/notes/planner';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
-import { getDateFromText, trimBlockIdsFromText } from 'src/utils';
+import { getDateFromText, getDateStringFromDate, trimBlockIdsFromText } from 'src/utils';
 
 export class Command_CopyTasks extends CommandPluginComponent {
     componentName = 'Cmd: Copy tasks';
@@ -129,6 +130,10 @@ class CopyTaskModal extends Modal {
                     }));
 
         let latestDate = 'today';
+        const currentNote = loadNote(this.app.workspace.getActiveFile()?.path);
+        if (currentNote instanceof Planner && currentNote.rangeType === 'day') {
+            latestDate = getDateStringFromDate(currentNote.date);
+        }
         new Setting(this.contentEl)
             .setName('Latest date')
             .setDesc('The latest date for the tasks to copy.')
@@ -178,7 +183,7 @@ class CopyTaskModal extends Modal {
             }
             );
 
-        let groupByFile = true;
+        let groupByFile = false;
         new Setting(this.contentEl)
             .setName('Group by file')
             .setDesc('Whether to group tasks by file.')
