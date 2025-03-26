@@ -255,7 +255,7 @@ export class ObakoTask {
                     if (isDateValid(date))
                         scheduledDate = date;
                 }
-            } else if (noteClass.noteTypeStr === Module.noteTypeStr) {
+            } else if (noteClass.noteTypeStr === Module.noteTypeStr && this.note.status === Module.statuses.active) {
                 const parentNote = loadNote(this.filePath);
                 if (parentNote.startDate) scheduledDate = parentNote.startDate;
             }
