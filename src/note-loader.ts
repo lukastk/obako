@@ -93,7 +93,7 @@ export function initialiseAutomaticNoteFrontmatterFillIn() {
         around(app.vault, {
             create(next) {
                 return async function(path: string, data: string, options?: DataWriteOptions) {
-                    const noteFullContent = fillNoteWithFrontmatter(path, data);
+                    const noteFullContent = fillNoteWithDefaultContent(path, data);
                     return await next.apply(this, [path, noteFullContent, options]);
                 }
             }
@@ -273,7 +273,8 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
     const frontmatter = {...processFrontmatter(noteData.frontmatterData, frontmatterSpec, true)};
     frontmatter.createdat = new Date();
 
-    const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteData.content;
+    const noteContent = noteData.content || noteClass.getDefaultContent(noteData, noteData.title);
+    const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
     if (!noteFolder) {
         noteFolder = _obako_plugin.settings.noteTypeFolders[noteClass.noteTypeStr];
@@ -297,7 +298,7 @@ export async function createNote(noteData: NoteCreationData, noteFolder: string)
     }
 }
 
-export function fillNoteWithFrontmatter(filePath: string, noteContent: string, noteData: NoteCreationData | null = null) {
+export function fillNoteWithDefaultContent(filePath: string, noteContent: string, noteData: NoteCreationData | null = null) {
     if (!noteData) noteData = { };
     noteData = {...noteData};
     noteData.title = filePath.split("/").pop()?.split(".")[0];
@@ -308,7 +309,7 @@ export function fillNoteWithFrontmatter(filePath: string, noteContent: string, n
     let frontmatterString = "";
 
     const noteLines = noteContent.split("\n");
-    if (noteLines[0] === "---") {
+    if (noteLines[0] === "---") {ƒ
         const fmEnd = noteLines.slice(1).indexOf("---");
         frontmatterString = noteLines.slice(1, fmEnd + 1).join("\n");
         noteContent = noteLines.slice(fmEnd + 2).join("\n");
@@ -325,6 +326,8 @@ export function fillNoteWithFrontmatter(filePath: string, noteContent: string, n
     const frontmatterSpec = noteClass.getFrontmatterSpec();
     const frontmatter = processFrontmatter({...noteData.frontmatterData, ...originalFrontmatter}, frontmatterSpec, true);
     frontmatter.createdat = new Date();
+
+    noteContent = noteContent.trim() === "" ? noteClass.getDefaultContent(noteData, noteData.title) : noteContent;
     const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
     return noteFullContent;

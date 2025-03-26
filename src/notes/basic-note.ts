@@ -204,4 +204,8 @@ export class BasicNote {
         this.reloadFrontmatterAndFileCache(); // Not sure why this doesn't work.
         this.frontmatter[key] = value;
     }
+
+    static getDefaultContent(noteData: NoteCreationData, title: string): string {
+        return "";
+    }
 }
