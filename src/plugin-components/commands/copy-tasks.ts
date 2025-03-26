@@ -16,7 +16,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, orderByDuration } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -61,7 +61,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
                                 break;
                         }
 
-                        const indentedTaskList = getIndentedHierarchicalTaskList(tasks);
+                        const indentedTaskList = getIndentedHierarchicalTaskList(tasks, orderByDuration);
 
                         const groupedTasks: { [key: string]: any[] } = {};
                         if (groupByFile) {
@@ -110,6 +110,7 @@ interface CopyTaskOptions {
     notesToInclude: string;
     priorityRangeStr: string;
     groupByFile: boolean;
+    orderByDuration: boolean;
 }
 
 class CopyTaskModal extends Modal {
@@ -194,6 +195,17 @@ class CopyTaskModal extends Modal {
                         groupByFile = value;
                     }));
 
+        let orderByDuration = true;
+        new Setting(this.contentEl)
+            .setName('Order by duration')
+            .setDesc('Whether to order tasks by duration.')
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(orderByDuration)
+                    .onChange((value) => {
+                        orderByDuration = value;
+                    }));
+
         let priorityRangeStr = '0-5';
         new Setting(this.contentEl)
             .setName('Priority range')
@@ -215,6 +227,7 @@ class CopyTaskModal extends Modal {
                 notesToInclude: notesToInclude,
                 priorityRangeStr: priorityRangeStr,
                 groupByFile: groupByFile,
+                orderByDuration: orderByDuration,
             });
         }
 

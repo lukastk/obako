@@ -10,6 +10,7 @@ export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
 
 export const SCHEDULED_DATE_MARKER = '⏳';
 export const DUE_DATE_MARKER = '📅';
+export const DURATION_MARKER = '⏲️';
 
 export interface Task {
     blockLink: string;
@@ -76,6 +77,17 @@ export class ObakoTask {
         }
 
         return false;
+    }
+
+    get duration(): number {
+        if (this.originalMarkdown.includes(DURATION_MARKER)) {
+            const duration = this.originalMarkdown.split(DURATION_MARKER)[1].split(/\s+/).filter(s => s.trim())[0];
+            if (!duration) return 0;
+            if (duration.endsWith('h')) return isNaN(Number(duration.slice(0, -1))) ? 0 : parseFloat(duration.slice(0, -1));
+            if (duration.endsWith('m')) return isNaN(Number(duration.slice(0, -1))) ? 0 : parseFloat(duration.slice(0, -1)) / 60;
+            return isNaN(Number(duration)) ? 0 : parseFloat(duration);
+        }
+        return 0;
     }
 
     async toggle() {
