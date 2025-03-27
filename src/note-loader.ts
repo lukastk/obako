@@ -309,7 +309,7 @@ export function fillNoteWithDefaultContent(filePath: string, noteContent: string
     let frontmatterString = "";
 
     const noteLines = noteContent.split("\n");
-    if (noteLines[0] === "---") {ƒ
+    if (noteLines[0] === "---") {
         const fmEnd = noteLines.slice(1).indexOf("---");
         frontmatterString = noteLines.slice(1, fmEnd + 1).join("\n");
         noteContent = noteLines.slice(fmEnd + 2).join("\n");
