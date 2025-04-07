@@ -28,7 +28,7 @@
 		{#if noteTree.note.parent}
 			<InternalLink
 				text={noteTree.note.parent.name}
-				note={noteTree.note.parent.file.path}
+				note={noteTree.note.parent}
 				displayTitleDecorator={displayTitleDecorator}
 				disableOpenOnClick={disableOpenOnClick}
 			/>
@@ -36,7 +36,7 @@
 		{/if}
 		<InternalLink
 			text={noteTree.note.name}
-			note={noteTree.note.filepath}
+			note={noteTree.note}
 			displayTitleDecorator={displayTitleDecorator}
 			disableOpenOnClick={disableOpenOnClick}
 		/>
@@ -44,7 +44,7 @@
 		<li>
 			<InternalLink
 				text={noteTree.note.name}
-				note={noteTree.note.filepath}
+				note={noteTree.note}
 				displayTitleDecorator={displayTitleDecorator}
 				disableOpenOnClick={disableOpenOnClick}
 			/>
