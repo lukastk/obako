@@ -175,6 +175,7 @@ export function loadNote(_file: TFile | string, forceReload: boolean = false) {
     if (!NoteClass) return null;
     const note = file ? new NoteClass(file) : new NoteClass(filePath);
     noteCache[filePath] = note;
+    note.isStub = file ? false : true;
     return note;
 }
 

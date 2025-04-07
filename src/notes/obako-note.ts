@@ -10,6 +10,8 @@ export abstract class ObakoNote extends BasicNote {
     static noteTypeDisplayName = "Obako Note";
     static noteIcon = "?obako-note";
 
+    private isStub: boolean|undefined = undefined;
+
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
@@ -31,7 +33,7 @@ export abstract class ObakoNote extends BasicNote {
     }
 
     get needsConsolidation(): boolean {
-        return !this.consolidated; // By default, if a note is not consolidated, it should be consolidated.
+        return !this.consolidated && !this.isStub; // By default, if a note is not consolidated, it should be consolidated.
     }
 
     get isHighPriorityConsolidate(): boolean {

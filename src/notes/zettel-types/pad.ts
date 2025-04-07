@@ -22,7 +22,7 @@ export class Pad extends Transient {
     }
 
     get needsConsolidation(): boolean {
-        return !this.consolidated && !this.inWriting;
+        return super.needsConsolidation && !this.consolidated && !this.inWriting;
     }
 
     getTitlePrefixDecoratorColor(): string {
