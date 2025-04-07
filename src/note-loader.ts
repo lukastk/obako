@@ -183,7 +183,7 @@ export function getAllNotes(): BasicNote[] {
     return Object.values(noteCache);
 }
 
-export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid: boolean = true): BasicNote[] {
+export function getAllNotesOfType(noteType: string|(typeof BasicNote)): BasicNote[] {
     let noteClass: typeof BasicNote;
     if (typeof noteType === 'string')
         noteClass = noteTypeToNoteClass[noteType];
@@ -191,8 +191,6 @@ export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid
 
     let notes = getAllNotes();
     notes = notes.filter(note => note instanceof noteClass);
-    if (onlyValid)
-        notes = notes.filter(note => note?.validate());
     return notes;
 }
 
