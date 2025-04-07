@@ -188,7 +188,7 @@ export function getAllNotesOfType(noteType: string|(typeof BasicNote), onlyValid
         noteClass = noteTypeToNoteClass[noteType];
     else noteClass = noteType;
 
-    let notes = getMarkdownFiles().map(file =>loadNote(file));
+    let notes = getAllNotes();
     notes = notes.filter(note => note instanceof noteClass);
     if (onlyValid)
         notes = notes.filter(note => note?.validate());
