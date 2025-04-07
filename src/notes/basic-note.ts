@@ -17,7 +17,6 @@ export class BasicNote {
     static titleSuffixDecoratorString = "";
     
     file: TFile;
-    filepath: string;
     basename: string;
     fileCache!: CachedMetadata;
     frontmatter: any;
@@ -36,10 +35,8 @@ export class BasicNote {
     constructor(file: TFile | string) {
         this.file = getFile(file);
         if (typeof file === 'string' && !this.file) {
-            this.filepath = file;
             this.basename = getPathBasename(file);
         } else {
-            this.filepath = this.file.path;
             this.basename = this.file.basename;
         }
         this._name = this.file?.basename;
@@ -51,6 +48,7 @@ export class BasicNote {
 
     get name(): string { return this.basename; }
     get noteType(): string { return this.frontmatter.notetype; }
+    get filepath(): string { return this.file?.path; }
 
     /**
      * Validate the note.
