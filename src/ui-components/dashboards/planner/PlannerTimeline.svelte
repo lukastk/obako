@@ -219,7 +219,7 @@
 			}
 
 			const item = {
-				id: planner.file.path,
+				id: planner.filepath,
 				content: itemContent,
 				start: startDate.toISOString(),
 				end: addDays(endDate, 0).toISOString(),
@@ -227,7 +227,7 @@
 					rangeTypeToGroupId[planner.rangeType] || PLANNER_GROUP_ID,
 				className: [
 					`planner-${planner.rangeType}`,
-					planner.frontmatter["planner-active"]
+					planner.active
 						? "active-note"
 						: "inactive-note",
 					highlightNotesFilePaths.includes(planner.filepath)
@@ -268,7 +268,7 @@
 			}
 
 			const item = {
-				id: proj.file.path,
+				id: proj.filepath,
 				content: proj.name,
 				start: proj.startDate.toISOString(),
 				end: addDays(proj.endDate, 1).toISOString(),
