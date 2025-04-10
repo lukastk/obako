@@ -316,8 +316,8 @@
 			}
 
 			const item = {
-				id: mod.file.path,
-				content: `<i>${mod.parent.name}:</i> ${mod.name}`,
+				id: mod.filepath,
+				content: `<small><i>${mod.parent.name}:</i></small> <br> ${mod.name}`,
 				start: mod.startDate.toISOString(),
 				end: addDays(mod.endDate, 1).toISOString(),
 				group: groupId,
