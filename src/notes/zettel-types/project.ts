@@ -132,10 +132,11 @@ export class Project extends Zettel {
     }
 
     get needsAction(): boolean {
+        const today = new Date(new Date().setHours(0, 0, 0, 0));
         const conds = [
             !this.validate(),
             this.status === Project.statuses.unplanned,
-            this.status === Project.statuses.active && !this.isPassive && this.endDate && (this.endDate < new Date()),
+            this.status === Project.statuses.active && !this.isPassive && this.endDate && (this.endDate < today),
             this.getModules().some(module => module.needsAction),
         ];
         return conds.some(cond => cond);

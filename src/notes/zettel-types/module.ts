@@ -90,10 +90,11 @@ export class Module extends ParentableNote {
     }
 
     get needsAction(): boolean {
+        const today = new Date(new Date().setHours(0, 0, 0, 0));
         const conds = [
             !this.validate(),
             this.status === Module.statuses.unplanned,
-            this.status === Module.statuses.active && this.endDate && (this.endDate < new Date()),
+            this.status === Module.statuses.active && this.endDate && (this.endDate < today),
         ];
         return conds.some(cond => cond);
     }
