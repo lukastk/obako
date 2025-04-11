@@ -325,6 +325,17 @@ export function isDateValid(date: Date) {
     return !isNaN(date.getTime());
 }
 
+export function compareDates(date1: Date, date2: Date) {
+    // Create new dates with only the date part (time set to 00:00:00)
+    const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+    const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+    
+    // Compare the timestamps
+    if (d1 < d2) return -1;
+    if (d1 > d2) return 1;
+    return 0;
+}
+
 export function getDateStringFromDate(date: Date) {
     //return date.toISOString().slice(0, 10);
     const year = date.getFullYear();

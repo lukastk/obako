@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import { Zettel } from '../zettel';
 import type { NoteTree } from '../parentable-note';
 import type { FrontmatterSpec } from 'src/notes/note-frontmatter';
-import { getDateFromDateString, getDateStringFromDate, getFile, parseObsidianLink } from 'src/utils';
+import { compareDates, getDateFromDateString, getDateStringFromDate, getFile, parseObsidianLink } from 'src/utils';
 import { Module } from './module';
 import { loadNote } from 'src/note-loader';
 
@@ -132,11 +132,10 @@ export class Project extends Zettel {
     }
 
     get needsAction(): boolean {
-        const today = new Date(new Date().setHours(0, 0, 0, 0));
         const conds = [
             !this.validate(),
             this.status === Project.statuses.unplanned,
-            this.status === Project.statuses.active && !this.isPassive && this.endDate && (this.endDate < today),
+            this.status === Project.statuses.active && !this.isPassive && this.endDate && compareDates(this.endDate, new Date()) < 0,
             this.getModules().some(module => module.needsAction),
         ];
         return conds.some(cond => cond);
@@ -148,6 +147,11 @@ export class Project extends Zettel {
 
     get isPassive(): boolean {
         return this.frontmatter['is-passive'];
+    }
+
+    get isActiveNow(): boolean {
+        if (!this.startDate || !this.endDate) return false;
+        return this.status === Project.statuses.active && compareDates(this.startDate, new Date()) <= 0 && compareDates(this.endDate, new Date()) >= 0;
     }
 
     validate(): boolean {

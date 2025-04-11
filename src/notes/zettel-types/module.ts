@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import type { FrontmatterSpec } from 'src/notes/note-frontmatter';
-import { getDateFromDateString } from 'src/utils';
+import { compareDates, getDateFromDateString } from 'src/utils';
 import { Project } from './project';
 import { ParentableNote } from '../parentable-note';
 
@@ -71,6 +71,7 @@ export class Module extends ParentableNote {
             "mod-start-date": { default: "", type: "string", description: "The start date of the module." },
             "mod-end-date": { default: "", type: "string", description: "The end date of the module." },
             "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the module in the planner dashboard. If empty, the module will be displayed in the default group." },
+            "collapse-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the module should be collapsed in the planner dashboard." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
         spec.notetype.default = this.noteTypeStr;
@@ -84,23 +85,31 @@ export class Module extends ParentableNote {
     get plannerDashboardGroup(): string {
         return this.frontmatter['planner-dashboard-group'];
     }
+    
+    get collapseInPlannerDashboard(): boolean {
+        return this.frontmatter['collapse-in-planner-dashboard'];
+    }
 
     get hideInPlannerDashboard(): boolean {
         return this.frontmatter['hide-in-planner-dashboard'];
     }
 
     get needsAction(): boolean {
-        const today = new Date(new Date().setHours(0, 0, 0, 0));
         const conds = [
             !this.validate(),
             this.status === Module.statuses.unplanned,
-            this.status === Module.statuses.active && this.endDate && (this.endDate < today),
+            this.status === Module.statuses.active && this.endDate && compareDates(this.endDate, new Date()) < 0,
         ];
         return conds.some(cond => cond);
     }
 
     get isRelevantToMe(): boolean {
         return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];
+    }
+
+    get isActiveNow(): boolean {
+        if (!this.startDate || !this.endDate) return false;
+        return this.status === Module.statuses.active && compareDates(this.startDate, new Date()) <= 0 && compareDates(this.endDate, new Date()) >= 0;
     }
 
     validate(): boolean {

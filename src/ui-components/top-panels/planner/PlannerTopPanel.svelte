@@ -3,17 +3,21 @@
 	import type { Planner } from "src/notes/planner";
 	import CollapsibleNoteList from "src/ui-components/svelte-lib/CollapsibleNoteList.svelte";
 	import { getTasks } from "src/task-utils";
+	import { getAllNotesOfType } from "src/note-loader";
 	import Collapsible from "src/ui-components/svelte-lib/Collapsible.svelte";
 	import CollapsibleTaskList from "src/ui-components/svelte-lib/CollapsibleTaskList.svelte";
 	import PlannerHierarchy from "./PlannerHierarchy.svelte";
 	import PlannerTimeline from "src/ui-components/dashboards/planner/PlannerTimeline.svelte";
-	import { addDays } from "src/utils";
+	import { addDays, compareDates } from "src/utils";
 	import { getAllNotes } from "src/note-loader";
 	import type { ObakoTask } from "src/task-utils";
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
 	import PlannerNavigator from "./PlannerNavigator.svelte";
-
+	import { Project } from "src/notes/zettel-types/project";
+	import { Module } from "src/notes/zettel-types/module";
+	import NoteTreeDisplay from "src/ui-components/svelte-lib/NoteTreeDisplay.svelte";
+	import type { NoteTree } from "src/notes/parentable-note";
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -88,13 +92,40 @@
 			_note.createdAt <= note.endDate,
 	);
 
+	const topStreams = getAllNotesOfType("proj").filter(
+		(proj) => !proj.parent && proj.status === "stream",
+	) as Project[];
+	function datesOverlapWithPlannerRange(startDate: Date | null, endDate: Date | null) {
+		if (!startDate || !endDate || !note.date || !note.endDate) return false;
+		return (compareDates(startDate, note.endDate) <= 0 && compareDates(endDate, note.date) >= 0);
+	}
+	function noteHasActiveChildren(noteTree: NoteTree) {
+		if (noteTree.note instanceof Project && noteTree.note.status === Project.statuses.active && datesOverlapWithPlannerRange(noteTree.note.startDate, noteTree.note.endDate)) return true;
+		if (noteTree.note instanceof Module && noteTree.note.status === Module.statuses.active && datesOverlapWithPlannerRange(noteTree.note.startDate, noteTree.note.endDate)) return true;
+		return noteTree.children.some(noteHasActiveChildren);
+	}
+	function filterFunc(noteTree: NoteTree) {
+		if (noteTree.note instanceof Project && noteTree.note.status === Project.statuses.stream) return noteHasActiveChildren(noteTree);
+		return noteTree.note.isActiveNow && noteTree.note.isRelevantToMe;
+	}
 </script>
 
-{#if ['day', 'week', 'month', 'quarter', 'year'].includes(note.rangeType)}
+{#if ["day", "week", "month", "quarter", "year"].includes(note.rangeType)}
 	<Collapsible title="Navigator" isCollapsed={false}>
 		<PlannerNavigator {note} />
 	</Collapsible>
 {/if}
+
+<Collapsible title="Projects and work modules" isCollapsed={true}>
+	{#each topStreams as stream}
+		<NoteTreeDisplay
+			noteTree={stream.getDescendantNotes([Project, Module])}
+			displayTitleDecorator={true}
+			sortByNoteType={true}
+			filterFunc={filterFunc}
+		/>
+	{/each}
+</Collapsible>
 
 <Collapsible title="Overlapping Planners" isCollapsed={true}>
 	<PlannerHierarchy {note} />
