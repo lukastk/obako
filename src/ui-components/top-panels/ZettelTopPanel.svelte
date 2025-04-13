@@ -5,6 +5,7 @@
 	import LogDashboard from "src/ui-components/dashboards/log/LogDashboard.svelte";
 	import { Log } from "src/notes/zettel-types/log";
 	import { ObakoNote } from "src/notes/obako-note";
+	import NoteForegrounds from "../svelte-lib/NoteForegrounds.svelte";
 
 	export let note;
 
@@ -53,4 +54,8 @@
 		toggleCollapseOnOpen={false}
 		noteFilter={(log) => note.linkedBy(log)}
 	/>
+</Collapsible>
+
+<Collapsible title="Foregrounds" isCollapsed={false}>
+	<NoteForegrounds note={note} />
 </Collapsible>

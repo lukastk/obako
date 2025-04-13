@@ -5,6 +5,7 @@ import { getNoteClass, loadNote } from './note-loader';
 import { Project } from './notes/zettel-types/project';
 import { Planner } from './notes/planner';
 import { Module } from './notes/zettel-types/module';
+import type { BasicNote } from './notes/basic-note';
 
 export const taskTypes = ['DONE', 'TODO', 'NON_TASK', 'CANCELLED'] as const;
 
@@ -161,7 +162,7 @@ export class ObakoTask {
 
         const category = match?.[1]?.trim() ?? '';
         const categoryIsNote = parseObsidianLink(category) != null;
-        const categoryNote = categoryIsNote ? loadNote(category) : null;
+        const categoryNote = categoryIsNote ? loadNote(parseObsidianLink(category)) : null;
         const startDate = new Date(this.startDate);
         startDate.setHours(0, 0, 0, 0);
         const hasStarted = compareDates(startDate, new Date()) <= 0;
@@ -468,4 +469,14 @@ export async function getForegrounds(includeNoteCategories: boolean = true, incl
         return acc;
     }, {});
     return groupedByName;
+}
+
+export async function getNoteForegrounds(note: BasicNote|string, includeNonActive: boolean = false, includeChecked: boolean = false): Promise<any[]> {
+    if (typeof note === 'string') note = loadNote(note);
+    let fgs = await Promise.all(getTasks(true)
+        .filter(t => t.isTaskSubType('Foreground') || (includeChecked && t.isTaskSubType('Foreground_checked')))
+        .map(async t => await t.getForegroundData()));
+    if (!includeNonActive) fgs = fgs.filter(fg => fg.hasStarted);
+    fgs = fgs.filter(fg => fg.categoryNote?.filepath === note.filepath);
+    return fgs;
 }

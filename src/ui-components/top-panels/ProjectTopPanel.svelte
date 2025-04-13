@@ -8,6 +8,8 @@
 	import { Doc } from "src/notes/zettel-types/doc";
 	import { Pad } from "src/notes/zettel-types/pad";
 	import { ObakoNote } from "src/notes/obako-note";
+	import NoteForegrounds from "src/ui-components/svelte-lib/NoteForegrounds.svelte";
+	
 	export let note: Project;
 
 	const incomingLinkedLogs = note
@@ -122,4 +124,8 @@
 		toggleCollapseOnOpen={false}
 		noteFilter={(log) => note.linkedBy(log)}
 	/>
+</Collapsible>
+
+<Collapsible title="Foregrounds" isCollapsed={false}>
+	<NoteForegrounds note={note} />
 </Collapsible>

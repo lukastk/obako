@@ -18,6 +18,7 @@
 	import { Module } from "src/notes/zettel-types/module";
 	import NoteTreeDisplay from "src/ui-components/svelte-lib/NoteTreeDisplay.svelte";
 	import type { NoteTree } from "src/notes/parentable-note";
+	import NoteForegrounds from "src/ui-components/svelte-lib/NoteForegrounds.svelte";
 	export let note: Planner;
 
 	const tasks = getTasks();
@@ -207,4 +208,8 @@
 		toggleCollapseOnOpen={false}
 		noteFilter={(log) => note.linkedBy(log)}
 	/>
+</Collapsible>
+
+<Collapsible title="Foregrounds" isCollapsed={false}>
+	<NoteForegrounds note={note} />
 </Collapsible>
