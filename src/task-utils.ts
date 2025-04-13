@@ -1,6 +1,6 @@
 import { Notice } from 'obsidian';
 import path from 'path-browserify';
-import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace, getBlockEmbed } from 'src/utils';
+import { getFile, parseDatesInDateRangeTitle, isDateValid, getLeadingWhitespace, getBlockEmbed, parseObsidianLink, compareDates } from 'src/utils';
 import { getNoteClass, loadNote } from './note-loader';
 import { Project } from './notes/zettel-types/project';
 import { Planner } from './notes/planner';
@@ -153,6 +153,33 @@ export class ObakoTask {
             subtext.push(`${currIndent}${child.originalMarkdown.trim()}`);
             this.__getSubtext_helper(child, subtext, currIndent + indent, indent);
         }
+    }
+
+    async getForegroundData() {
+        if (!this.isTaskSubType('Foreground')) return null;
+        const match = this.description.match(/^\{(.*?)\}\s*(.*)$/);
+
+        const category = match?.[1]?.trim() ?? '';
+        const categoryIsNote = parseObsidianLink(category) != null;
+        const categoryNote = categoryIsNote ? loadNote(category) : null;
+        const startDate = new Date(this.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        const hasStarted = compareDates(startDate, new Date()) <= 0;
+
+        const description =  category ? match?.[2]?.trim() : this.description;
+        const blockLink = await this.getBlockLink();
+        const subtext = this.getSubtext();
+
+        return {
+            category,
+            categoryIsNote,
+            categoryNote,
+            description,
+            blockLink,
+            subtext,
+            startDate,
+            hasStarted
+        };
     }
 
     get hasDueDate() {
@@ -425,4 +452,20 @@ export function parseDatedTaskHeading(heading: string) {
     const date = new Date(dateStr);
     if (date && !isDateValid(date)) return null;
     return { dateMarker, date };
+}
+
+export async function getForegrounds(includeNoteCategories: boolean = true, includeNonActive: boolean = false, includeChecked: boolean = false) {
+    let fgs = await Promise.all(getTasks(true)
+        .filter(t => t.isTaskSubType('Foreground') || (includeChecked && t.isTaskSubType('Foreground_checked')))
+        .map(async t => await t.getForegroundData()));
+    if (!includeNoteCategories) fgs = fgs.filter(fg => !fg.categoryIsNote);
+    if (!includeNonActive) fgs = fgs.filter(fg => fg.hasStarted);
+    const groupedByName = fgs.reduce<Record<string, any[]>>((acc, item) => {
+        if (!acc[item.category]) {
+            acc[item.category] = [];
+        }
+        acc[item.category].push(item);
+        return acc;
+    }, {});
+    return groupedByName;
 }
