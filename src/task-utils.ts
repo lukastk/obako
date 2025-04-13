@@ -290,6 +290,15 @@ export function getTasks(includeNonTasks: boolean = false, includeCancelled: boo
     return tasks;
 }
 
+export function searchTasks(query: string, caseSensitive: boolean = false, includeNonTasks: boolean = true, includeCancelled: boolean = true) {
+    const tasks = getTasks(includeNonTasks, includeCancelled);
+    query = caseSensitive ? query : query.toLowerCase();
+    return tasks.filter(task => {
+        const description = caseSensitive ? task.description : task.description.toLowerCase();
+        return description.includes(query);
+    });
+}
+
 export function isTaskStatus(task: Task, status: string) {
     return (new ObakoTask(task)).isTaskType(status);
 }
