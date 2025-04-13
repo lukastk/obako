@@ -39,6 +39,7 @@
 	const PROJECTS_SUBGROUPS_GROUP_ID = "projects-subgroups";
 	const MODULES_GROUP_ID = "modules";
 	const MODULES_SUBGROUPS_GROUP_ID = "modules-subgroups";
+	const MODULES_COLLAPSED_SUBGROUPS_GROUP_ID = "modules-collapsed-subgroups";
 
 	const itemMargin = 60 * 60 * 1000;
 	const oneDay = 24 * 60 * 60 * 1000;
@@ -52,7 +53,8 @@
 	};
 
 	const projectSubGroups = [];
-	const moduleSubGroups = [];
+	const moduleSubGroups = [MODULES_COLLAPSED_SUBGROUPS_GROUP_ID];
+	const moduleCollapsedSubGroups = [];
 
 	const groups = new DataSet([
 		{
@@ -86,12 +88,12 @@
 		{
 			id: MODULES_GROUP_ID,
 			content: "Modules",
-			nestedGroups: [MODULES_SUBGROUPS_GROUP_ID],
+			nestedGroups: moduleSubGroups,
 		},
 		{
-			id: MODULES_SUBGROUPS_GROUP_ID,
+			id: MODULES_COLLAPSED_SUBGROUPS_GROUP_ID,
 			content: "Module subgroups",
-			nestedGroups: moduleSubGroups,
+			nestedGroups: moduleCollapsedSubGroups,
 			showNested: false,
 		},
 
@@ -310,7 +312,12 @@
 						id: mod.plannerDashboardGroup,
 						content: mod.plannerDashboardGroup,
 					});
-					moduleSubGroups.push(mod.plannerDashboardGroup);
+
+					if (mod.collapseInPlannerDashboard) {
+						moduleCollapsedSubGroups.push(mod.plannerDashboardGroup);
+					} else {
+						moduleSubGroups.push(mod.plannerDashboardGroup);
+					}
 				}
 				groupId = mod.plannerDashboardGroup;
 			}

@@ -17,10 +17,13 @@ export class BasicNote {
     static titleSuffixDecoratorString = "";
     
     file: TFile;
+    filepath: string;
     basename: string;
     fileCache!: CachedMetadata;
     frontmatter: any;
     createdAt: Date | null = null;
+
+    public isStub: boolean|undefined = undefined;
 
     private incomingLinkedNotes: BasicNote[] | null = null;
     private outgoingLinkedNotes: BasicNote[] | null = null;
@@ -36,8 +39,10 @@ export class BasicNote {
         this.file = getFile(file);
         if (typeof file === 'string' && !this.file) {
             this.basename = getPathBasename(file);
+            this.filepath = file;
         } else {
             this.basename = this.file.basename;
+            this.filepath = this.file.path;
         }
         this._name = this.file?.basename;
         this.reloadFrontmatterAndFileCache();
@@ -48,7 +53,6 @@ export class BasicNote {
 
     get name(): string { return this.basename; }
     get noteType(): string { return this.frontmatter.notetype; }
-    get filepath(): string { return this.file?.path; }
 
     /**
      * Validate the note.

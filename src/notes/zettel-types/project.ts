@@ -139,7 +139,7 @@ export class Project extends Zettel {
             this.getModules().some(module => module.needsAction),
         ];
         return conds.some(cond => cond);
-    }
+    }ƒ
 
     get isRelevantToMe(): boolean {
         return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];

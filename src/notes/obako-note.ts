@@ -10,8 +10,6 @@ export abstract class ObakoNote extends BasicNote {
     static noteTypeDisplayName = "Obako Note";
     static noteIcon = "?obako-note";
 
-    private isStub: boolean|undefined = undefined;
-
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),

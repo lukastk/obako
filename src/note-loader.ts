@@ -120,12 +120,12 @@ export function reloadNoteCache() {
     const allFiles = getMarkdownFiles() as TFile[];
     noteCache = {};
     for (const file of allFiles) {
-        loadNote(file.path);
+        loadNote(file.path, true, false);
     }
 
     for (const filePath in app.metadataCache.unresolvedLinks) {
         for (const fileStubPath in app.metadataCache.unresolvedLinks[filePath]) {
-            loadNote(fileStubPath);
+            loadNote(fileStubPath, true, true);
         }
     }
 }
@@ -155,7 +155,7 @@ export function getNoteClass(_file: TFile | string | null, frontmatter: Record<s
     return BasicNote;
 }
 
-export function loadNote(_file: TFile | string, forceReload: boolean = false) {
+export function loadNote(_file: TFile | string, forceReload: boolean = false, cacheStub: boolean = false) {
     if (!forceReload) {
         if (typeof _file === 'string' && _file in noteCache) return noteCache[_file];
         else if (_file instanceof TFile && _file.path in noteCache) return noteCache[_file.path];
@@ -174,7 +174,8 @@ export function loadNote(_file: TFile | string, forceReload: boolean = false) {
     const NoteClass = file ? getNoteClass(file) : getNoteClass(filePath);
     if (!NoteClass) return null;
     const note = file ? new NoteClass(file) : new NoteClass(filePath);
-    noteCache[filePath] = note;
+    if (file || cacheStub)
+        noteCache[filePath] = note;
     note.isStub = file ? false : true;
     return note;
 }

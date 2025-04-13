@@ -12,4 +12,4 @@ export class Command_OpenPlannerDashboard extends OpenViewCommandPluginComponent
     }
 
     unload() { }
-}
+} 
