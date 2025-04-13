@@ -42,7 +42,7 @@ export class Planner extends ObakoNote {
     }
 
     get active(): boolean {
-        return this.frontmatter['planner-active'];
+        return this.frontmatter['planner-active'] && !this.isStub;
     }
     async setActive(value: boolean) {
         await this.modifyFrontmatter('planner-active', value);
