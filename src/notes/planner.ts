@@ -279,7 +279,12 @@ filter by function \
         }
 
         const md_breakdown = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n---\n![[${b.link}#Plan]]\n${b.content}`).join('\n\n');
-        const md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
+        let md;
+        if (plannerRangeType === 'day') {
+            md = `# Plan\n\n# Breakdown\n\n${md_breakdown}\n\n# Working journal\n\n`.trim();
+        } else {
+            md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
+        }
         
         return md;
     }
