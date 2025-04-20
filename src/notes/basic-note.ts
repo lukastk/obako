@@ -6,6 +6,8 @@ import type { FrontmatterSpec } from './note-frontmatter';
 import { processFrontmatter } from './note-frontmatter';
 import { loadNote, type NoteCreationData } from '../note-loader';
 import type { CreateObakoNoteModal } from '../plugin-components/commands/create-obako-note';
+import type { RepoData } from 'src/plugin-components/commands/repos/add-repo';
+import { getCreateCmd, getOpenCmd, getRepoPath, openRepo } from 'src/repos';
 
 export class BasicNote {
     static isAbstract = false;
@@ -209,5 +211,37 @@ export class BasicNote {
 
     static getDefaultContent(noteData: NoteCreationData, title: string): string {
         return "";
+    }
+
+
+
+    /* Repo functions */
+
+    get repos(): RepoData[] {
+        return this.frontmatter.repos || [];
+    }
+
+    getCreateCmd(repoName: string): string {
+        const repoData = this.repos.find(r => r.name === repoName);
+        if (!repoData) throw new Error(`Repo '${repoName}' not found`);
+        return getCreateCmd(repoData);
+    }
+
+    getOpenCmd(repoName: string): string {
+        const repoData = this.repos.find(r => r.name === repoName);
+        if (!repoData) throw new Error(`Repo '${repoName}' not found`);
+        return getOpenCmd(repoData);
+    }
+
+    getRepoPath(repoName: string): string {
+        const repoData = this.repos.find(r => r.name === repoName);
+        if (!repoData) throw new Error(`Repo '${repoName}' not found`);
+        return getRepoPath(repoData);
+    }
+
+    openRepo(repoName: string) {
+        const repoData = this.repos.find(r => r.name === repoName);
+        if (!repoData) throw new Error(`Repo '${repoName}' not found`);
+        return openRepo(repoData);
     }
 }

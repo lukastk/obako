@@ -17,6 +17,7 @@ export abstract class ObakoNote extends BasicNote {
             "is-hp-cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the note consolidation is high priority." },
             "is-link-cons": { default: true, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: true, description: "Whether the capture needs to be consolidated to the notes it links to ." },
             "archived": { default: false, type: "boolean", skipCreationIfAbsent: true, description: "Whether the note is archived." },
+            "repos": { default: [], type: "array", skipCreationIfAbsent: true, description: "The repos the note is associated with." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
