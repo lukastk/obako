@@ -52,13 +52,22 @@ div[data-task=">"] {
     text-decoration: line-through;
 }
 
+div[data-task="b"] {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+div[data-task="E"] {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
 /* Headings in settings. Added using ObakoSettingsTab.addHeading(level=NUMBER) in settings.ts */
 .obako-settings-heading {
     text-decoration: underline;
     margin-top: 30px;
     margin-bottom: 5px;
 }
-
 
 
 
@@ -75,6 +84,10 @@ div[data-task=">"] {
     text-decoration: line-through !important;
     color: var(--text-muted);
 }
+.markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="E"] {
+    text-decoration: line-through !important;
+    color: var(--text-muted);
+}
 .markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="-"] {
     text-decoration: line-through !important;
     color: var(--text-muted);
@@ -83,6 +96,7 @@ div[data-task=">"] {
     text-decoration: line-through !important;
     color: var(--text-muted);
 }
+
 /* For reader mode 
 .markdown-preview-view ul > li.task-list-item.is-checked {
     text-decoration: line-through;
