@@ -456,3 +456,7 @@ export function getPathBasename(path: string) {
     if (lastDotIndex === -1) return path.slice(lastSlashIndex + 1);
     return path.slice(lastSlashIndex + 1, lastDotIndex);
 }
+
+export function formatString(template: string, variables: Record<string, string>): string {
+    return template.replace(/\{([^}]+)\}/g, (match, key) => variables[key] || match);
+}

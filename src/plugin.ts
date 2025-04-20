@@ -29,6 +29,11 @@ import { Command_CreateObakoNote } from './plugin-components/commands/create-oba
 import { Command_CreateLog } from './plugin-components/commands/create-log';
 import { Command_CreateCapture } from './plugin-components/commands/create-capture';
 import { Command_CreateHighPriorityCapture } from './plugin-components/commands/create-high-priority-capture';
+import { Command_CreateRepo } from './plugin-components/commands/create-repo';
+import { Command_OpenRepo } from './plugin-components/commands/open-repo';
+import { Command_GetRepoCdCmd } from './plugin-components/commands/get-cd-repo-cmd';
+import { Command_GetOpenRepoCmd } from './plugin-components/commands/get-open-repo-cmd';
+import { Command_GetCreateRepoCmd } from './plugin-components/commands/get-create-repo-cmd';
 import { Command_CreatePlanner } from './plugin-components/commands/create-planner';
 import {
 	Command_OpenTodayPlanner, Command_OpenYesterdaysPlanner, Command_OpenTomorrowsPlanner,
@@ -114,6 +119,11 @@ export default class ObakoPlugin extends Plugin {
 			new Command_OpenPlanner(this),
 			new Command_CopyTasks(this),
 			new Command_GetPlannerTemplate(this),
+			new Command_CreateRepo(this),
+			new Command_OpenRepo(this),
+			new Command_GetRepoCdCmd(this),
+			new Command_GetOpenRepoCmd(this),
+			new Command_GetCreateRepoCmd(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
