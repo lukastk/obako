@@ -11,6 +11,7 @@ import { Pad } from './notes/zettel-types/pad';
 import { BasicNote } from './notes/basic-note';
 import { Memo } from './notes/zettel-types/memo';
 import { Doc } from './notes/zettel-types/doc';
+import { Repo } from './notes/zettel-types/repo';
 import { Log } from './notes/zettel-types/log';
 import { Project } from './notes/zettel-types/project';
 import { Module } from './notes/zettel-types/module';
@@ -36,6 +37,7 @@ export const noteTypes = [
     Planner,
     Capture,
     Doc,
+    Repo,
     Log,
     Memo,
     Module,
