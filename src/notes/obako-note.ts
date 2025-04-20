@@ -52,6 +52,6 @@ export abstract class ObakoNote extends BasicNote {
     
     static setNoteCreationModalSettings(containerEl: HTMLElement, modal: CreateObakoNoteModal, noteData: NoteCreationData) {
         super.setNoteCreationModalSettings(containerEl, modal, noteData);
-        modal.addFrontmatterSettings(this.noteTypeStr, modal.noteData.frontmatterData);
+        modal.addFrontmatterSettings(this.noteTypeStr, modal.noteData.frontmatterData, containerEl);
     }
 }

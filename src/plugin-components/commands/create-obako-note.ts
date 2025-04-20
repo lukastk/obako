@@ -195,7 +195,10 @@ export class CreateObakoNoteModal extends Modal {
             case 'boolean':
                 this.addBooleanSetting(key, description, initialValue, (value) => this.noteData.frontmatterData[key] = value);
                 break;
-            case 'text':
+            case 'string':
+                this.addTextSetting(key, description, initialValue, (value) => this.noteData.frontmatterData[key] = value, containerEl);
+                break;
+            case 'number':
                 this.addTextSetting(key, description, initialValue, (value) => this.noteData.frontmatterData[key] = value, containerEl);
                 break;
         }
