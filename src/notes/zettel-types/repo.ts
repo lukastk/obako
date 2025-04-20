@@ -76,8 +76,12 @@ export class Repo extends Zettel {
     async openRepo() {
         if (!child_process) throw new Error('child_process module is not available');
         let openCmd = this.getOpenCmd();
-        const [command, ...args] = openCmd.split(' ');
-        child_process.spawn(command, args);
+        const args = openCmd.match(/(?:[^\s"]+|"[^"]*")+/g)?.map(arg => 
+            arg.startsWith('"') && arg.endsWith('"') ? arg.slice(1, -1) : arg
+        ) || [];
+        console.log(args);
+        const [command, ...commandArgs] = args;
+        child_process.spawn(command, commandArgs);
     }
 
     getRepoPath(): string {
