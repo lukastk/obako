@@ -29,7 +29,8 @@ export class Command_GetOpenRepoCmd extends CommandPluginComponent {
                 }
 
                 function copyCmd(repo: RepoDataWithNote) {
-                    navigator.clipboard.writeText(repo.note.getOpenCmd(repo.repoData.name));
+                    const cmd = `cd "${repo.note.getRepoPath(repo.repoData.name)}"; ${repo.note.getOpenCmd(repo.repoData.name)}`;
+                    navigator.clipboard.writeText(cmd);
                     new Notice('The command has been copied to the clipboard.');
                 }
 
