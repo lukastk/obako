@@ -113,7 +113,8 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || (this.status === Module.statuses.unplanned);
+        const dateValidExempt = [Module.statuses.unplanned, Module.statuses.cancelled, Module.statuses.paused].includes(this.status);
+        let dateValid = (this.startDate && this.endDate) || dateValidExempt;
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
