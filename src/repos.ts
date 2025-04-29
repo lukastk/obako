@@ -60,7 +60,7 @@ export function getRepoPath(repoData: RepoData): string {
 
 
 export function getObakoRepoSettings(): ObakoRepoSettings {
-    return _obako_plugin.settings.pluginComponentSettings.Command_CreateRepo;
+    return _obako_plugin.settings.pluginComponentSettings.Command_AddRepo;
 }
 
 export function  getTemplates(): Record<string, string> {
