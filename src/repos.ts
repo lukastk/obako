@@ -89,7 +89,7 @@ export function  getTemplates(): Record<string, string> {
 
     // Extra templates
     for (const line of settings.extraTemplates.split('\n')) {
-        if (!line.trim()) continue;
+        if (!line?.trim()) continue;
         const [key, path] = line.split(/:(.+)/);
         templates[key.trim()] = path.trim();
     }
@@ -101,7 +101,7 @@ export function  getCodeLocations(): Record<string, string> {
     const settings = getObakoRepoSettings();
     const codeLocations: Record<string, string> = {};
     for (const line of settings.codeLocations.split('\n')) {
-        if (!line.trim()) continue;
+        if (!line?.trim()) continue;
         const [key, path] = line.split(/:(.+)/);
         codeLocations[key.trim()] = path.trim();
     }
@@ -111,8 +111,8 @@ export function  getCodeLocations(): Record<string, string> {
 export function getOpenRepoCmds(): Record<string, string> {
     const settings = getObakoRepoSettings();
     const openRepoCmds: Record<string, string> = {};
-    for (const line of settings.openRepoCmds.split('\n')) {
-        if (!line.trim()) continue;
+    for (const line of settings.openRepoCmds.split('\n')) {ƒ
+        if (!line?.trim()) continue;
         const [key, cmd] = line.split(/:(.+)/);
         openRepoCmds[key.trim()] = cmd.trim();
     }
