@@ -111,7 +111,7 @@ export function  getCodeLocations(): Record<string, string> {
 export function getOpenRepoCmds(): Record<string, string> {
     const settings = getObakoRepoSettings();
     const openRepoCmds: Record<string, string> = {};
-    for (const line of settings.openRepoCmds.split('\n')) {ƒ
+    for (const line of settings.openRepoCmds.split('\n')) {
         if (!line?.trim()) continue;
         const [key, cmd] = line.split(/:(.+)/);
         openRepoCmds[key.trim()] = cmd.trim();
