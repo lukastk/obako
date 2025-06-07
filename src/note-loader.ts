@@ -4,6 +4,7 @@
 
 import { Notice, stringifyYaml, TFile, CachedMetadata, TAbstractFile, parseYaml, type DataWriteOptions } from 'obsidian';
 import { getFile, getFrontmatter, getMarkdownFiles, getPathParent } from './utils';
+import path from 'path-browserify';
 
 import { Planner } from './notes/planner';
 import { Capture } from './notes/zettel-types/capture';
@@ -132,7 +133,7 @@ export function reloadNoteCache() {
 
 export function getNoteClass(_file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote {
     const file = getFile(_file);
-    const filePath = file ? file.path : _file;
+    const filePath = file ? file.path : _file; // Can either be a file path or the folder path
 
     if (!frontmatter) frontmatter = getFrontmatter(file);
 
@@ -144,7 +145,7 @@ export function getNoteClass(_file: TFile | string | null, frontmatter: Record<s
         
     if (!noteClass) {
         for (const [noteTypeStr, noteTypeFolder] of Object.entries(_obako_plugin.settings.noteTypeFolders)) {
-            if (filePath.startsWith(noteTypeFolder)) {
+            if (filePath.startsWith(noteTypeFolder + '/') || path.normalize(filePath) === path.normalize(noteTypeFolder)) {
                 noteClass = noteTypeToNoteClass[noteTypeStr];
                 break;
             }
