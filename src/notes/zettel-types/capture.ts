@@ -8,7 +8,7 @@ export class Capture extends Transient {
     static noteIcon = "﹅";
 
     static processNoteData(noteData: NoteCreationData): boolean {
-        const dateTimeStr = (new Date()).toISOString().split('.')[0].replace('T', '_').replaceAll(':','');
+        const dateTimeStr = (new Date()).toISOString().split('.')[0].replace('T', '_').replace(/:/g, '');
         noteData.title = `${dateTimeStr} ${noteData.title}`.trim();
 
         return true;
