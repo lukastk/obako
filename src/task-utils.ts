@@ -252,6 +252,10 @@ export class ObakoTask {
             return null; // If there is an explicit due date, then the task may not inherit its scheduled date from other metadata
         }
 
+        if (!scheduledDate && this.tags.some(tag => tag === '#tray' || tag.startsWith('#tray/'))) {
+            return null; // If the task is in a tray, then it may not inherit its scheduled date from other metadata
+        }
+
         // Get scheduled date from parent
         if (!scheduledDate && this.task.parent?.scheduledDate) {
             const parentTask = new ObakoTask(this.task.parent);
@@ -318,7 +322,7 @@ export function getTasks(includeNonTasks: boolean = false, includeCancelled: boo
     return tasks;
 }
 
-export function searchTasks(query: string, caseSensitive: boolean = false, includeNonTasks: boolean = true, includeCancelled: boolean = true) {
+export function searchTasks(query: string, caseSensitive: boolean = false, includeNonTasks: boolean = false, includeCancelled: boolean = true) {
     const tasks = getTasks(includeNonTasks, includeCancelled);
     query = caseSensitive ? query : query.toLowerCase();
     return tasks.filter(task => {
