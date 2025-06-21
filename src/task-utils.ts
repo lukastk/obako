@@ -123,8 +123,11 @@ export class ObakoTask {
     }
 
 
+    get taskType() {
+        return this.task.status?.configuration?.type;
+    }
     isTaskType(taskType: string) {
-        return this.task.status?.configuration?.type === taskType;
+        return this.taskType === taskType;
     }
     isDone() {
         return this.isTaskType('DONE');
@@ -139,8 +142,11 @@ export class ObakoTask {
         return this.isTaskType('NON_TASK');
     }
 
+    get taskSubType() {
+        return this.task.status?.configuration?.name;
+    }
     isTaskSubType(taskSubType: string) {
-        return this.task.status?.configuration?.name === taskSubType;
+        return this.taskSubType === taskSubType;
     }
 
     getSubtext(startingIndent="", indent="  ") {
