@@ -63,6 +63,12 @@ export const noteTypeToNoteClass: Record<string, any> = noteTypes.reduce((acc, n
 export let noteCache: Record<string, BasicNote> = {};
 const deletedFiles: Set<TFile> = new Set(); // Used to prevent the note cache from being updated when a file is deleted
 
+// Performance optimization variables
+let changeDebounceTimeouts: Record<string, NodeJS.Timeout> = {};
+let callbackThrottleTimeout: NodeJS.Timeout | null = null;
+let pendingUpdates: Array<{event: string, eventData: any}> = [];
+const MAX_CACHE_SIZE = 1000;
+
 export function initialiseNoteCache() {
     reloadNoteCache();
 
@@ -79,9 +85,19 @@ export function initialiseNoteCache() {
     });
 
     app.metadataCache.on("changed", (file: TFile, data: string, cache: CachedMetadata) => {
-        const oldNote = noteCache[file.path];
-        noteCache[file.path] = loadNote(file, true) as BasicNote;
-        triggerNoteCacheUpdate("change", { oldNote: oldNote, note: noteCache[file.path] });
+        // Clear existing timeout for this file
+        if (changeDebounceTimeouts[file.path]) {
+            clearTimeout(changeDebounceTimeouts[file.path]);
+        }
+        
+        // Debounce updates by 300ms
+        changeDebounceTimeouts[file.path] = setTimeout(() => {
+            const oldNote = noteCache[file.path];
+            noteCache[file.path] = loadNote(file, true) as BasicNote;
+            triggerNoteCacheUpdate("change", { oldNote: oldNote, note: noteCache[file.path] });
+            delete changeDebounceTimeouts[file.path];
+            maintainCacheSize();
+        }, 300);
     });
 
     app.vault.on("rename", (file: TAbstractFile, oldPath: string) => {
@@ -114,23 +130,86 @@ export function onNoteCacheUpdate(callback: (event: "create" | "delete" | "chang
 }
 
 function triggerNoteCacheUpdate(event: "create" | "delete" | "change" | "rename", eventData: any) {
-    for (const callback of Object.values(noteCacheUpdateCallbacks)) {
-        callback(event, eventData);
+    pendingUpdates.push({event, eventData});
+    
+    if (!callbackThrottleTimeout) {
+        callbackThrottleTimeout = setTimeout(() => {
+            const updates = [...pendingUpdates];
+            pendingUpdates = [];
+            callbackThrottleTimeout = null;
+            
+            // Process unique updates only
+            const uniqueUpdates = new Map();
+            updates.forEach(update => {
+                const key = `${update.event}-${update.eventData.note?.path || 'unknown'}`;
+                uniqueUpdates.set(key, update);
+            });
+            
+            for (const callback of Object.values(noteCacheUpdateCallbacks)) {
+                try {
+                    uniqueUpdates.forEach(update => callback(update.event, update.eventData));
+                } catch (error) {
+                    console.error('Note cache callback error:', error);
+                }
+            }
+        }, 100);
     }
 }
 
 export function reloadNoteCache() {
     const allFiles = getMarkdownFiles() as TFile[];
+    const oldCache = { ...noteCache };
     noteCache = {};
-    for (const file of allFiles) {
-        loadNote(file.path, true, false);
-    }
-
-    for (const filePath in app.metadataCache.unresolvedLinks) {
-        for (const fileStubPath in app.metadataCache.unresolvedLinks[filePath]) {
-            loadNote(fileStubPath, true, true);
+    
+    // Process in chunks to avoid blocking UI
+    const chunkSize = 50;
+    let currentIndex = 0;
+    
+    function processChunk() {
+        const endIndex = Math.min(currentIndex + chunkSize, allFiles.length);
+        
+        for (let i = currentIndex; i < endIndex; i++) {
+            const file = allFiles[i];
+            loadNote(file.path, true, false);
+        }
+        
+        currentIndex = endIndex;
+        
+        if (currentIndex < allFiles.length) {
+            // Continue processing in next frame
+            setTimeout(processChunk, 0);
+        } else {
+            // Process unresolved links after main files
+            processUnresolvedLinks();
         }
     }
+    
+    function processUnresolvedLinks() {
+        const unresolvedPaths = Object.keys(app.metadataCache.unresolvedLinks);
+        let linkIndex = 0;
+        
+        function processLinkChunk() {
+            const endIndex = Math.min(linkIndex + chunkSize, unresolvedPaths.length);
+            
+            for (let i = linkIndex; i < endIndex; i++) {
+                const filePath = unresolvedPaths[i];
+                for (const fileStubPath in app.metadataCache.unresolvedLinks[filePath]) {
+                    loadNote(fileStubPath, true, true);
+                }
+            }
+            
+            linkIndex = endIndex;
+            if (linkIndex < unresolvedPaths.length) {
+                setTimeout(processLinkChunk, 0);
+            }
+        }
+        
+        if (unresolvedPaths.length > 0) {
+            processLinkChunk();
+        }
+    }
+    
+    processChunk();
 }
 
 export function getNoteClass(_file: TFile | string | null, frontmatter: Record<string, any> | null = null): typeof BasicNote {
@@ -334,4 +413,35 @@ export function fillNoteWithDefaultContent(filePath: string, noteContent: string
     const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
     return noteFullContent;
+}
+
+function maintainCacheSize() {
+    const cacheEntries = Object.entries(noteCache);
+    if (cacheEntries.length > MAX_CACHE_SIZE) {
+        // Remove oldest entries (you could implement LRU instead)
+        const toRemove = cacheEntries.length - MAX_CACHE_SIZE;
+        cacheEntries.slice(0, toRemove).forEach(([path]) => {
+            delete noteCache[path];
+        });
+    }
+}
+
+export function cleanupNoteLoader() {
+    // Clear all timeouts
+    Object.values(changeDebounceTimeouts).forEach(timeout => clearTimeout(timeout));
+    changeDebounceTimeouts = {};
+    
+    if (callbackThrottleTimeout) {
+        clearTimeout(callbackThrottleTimeout);
+        callbackThrottleTimeout = null;
+    }
+    
+    // Clear callbacks
+    Object.keys(noteCacheUpdateCallbacks).forEach(key => {
+        delete noteCacheUpdateCallbacks[key];
+    });
+    
+    // Clear cache
+    noteCache = {};
+    pendingUpdates = [];
 }

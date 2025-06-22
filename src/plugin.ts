@@ -161,6 +161,7 @@ export default class ObakoPlugin extends Plugin {
 	onunload() {
 		for (const module of this.pluginComponents)
 			module.unload();
+		noteLoader.cleanupNoteLoader();
 	}
 
 	async loadSettings() {
