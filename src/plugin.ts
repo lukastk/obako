@@ -52,6 +52,7 @@ import { View_RapidSerialVisualPresentation } from './plugin-components/views/ra
 import TaskList from './ui-components/svelte-lib/TaskList.svelte';
 import CollapsibleNoteTreeDisplay from './ui-components/svelte-lib/CollapsibleNoteTreeDisplay.svelte';
 import NoteTreeDisplay from './ui-components/svelte-lib/NoteTreeDisplay.svelte';
+import LogDashboard from './ui-components/dashboards/log/LogDashboard.svelte';
 
 export default class ObakoPlugin extends Plugin {
 	settings!: ObakoSettings;
@@ -79,6 +80,7 @@ export default class ObakoPlugin extends Plugin {
 				TaskList: TaskList,
 				CollapsibleNoteTreeDisplay: CollapsibleNoteTreeDisplay,
 				NoteTreeDisplay: NoteTreeDisplay,
+				LogDashboard: LogDashboard,
 			},
 			noteClasses: noteLoader.noteTypeToNoteClass,
 		}
