@@ -67,7 +67,6 @@ const deletedFiles: Set<TFile> = new Set(); // Used to prevent the note cache fr
 let changeDebounceTimeouts: Record<string, NodeJS.Timeout> = {};
 let callbackThrottleTimeout: NodeJS.Timeout | null = null;
 let pendingUpdates: Array<{event: string, eventData: any}> = [];
-const MAX_CACHE_SIZE = 1000;
 
 export function initialiseNoteCache() {
     reloadNoteCache();
@@ -96,7 +95,6 @@ export function initialiseNoteCache() {
             noteCache[file.path] = loadNote(file, true) as BasicNote;
             triggerNoteCacheUpdate("change", { oldNote: oldNote, note: noteCache[file.path] });
             delete changeDebounceTimeouts[file.path];
-            maintainCacheSize();
         }, 300);
     });
 
@@ -413,17 +411,6 @@ export function fillNoteWithDefaultContent(filePath: string, noteContent: string
     const noteFullContent = formatFrontmatterString(frontmatter, frontmatterSpec) + "\n\n" + noteContent;
 
     return noteFullContent;
-}
-
-function maintainCacheSize() {
-    const cacheEntries = Object.entries(noteCache);
-    if (cacheEntries.length > MAX_CACHE_SIZE) {
-        // Remove oldest entries (you could implement LRU instead)
-        const toRemove = cacheEntries.length - MAX_CACHE_SIZE;
-        cacheEntries.slice(0, toRemove).forEach(([path]) => {
-            delete noteCache[path];
-        });
-    }
 }
 
 export function cleanupNoteLoader() {
