@@ -16,6 +16,7 @@
 	export let includeFutureDates: boolean = false;
 	export let onlyDailyAndWeeklyPlanners: boolean = true;
 	export let toggleCollapseOnOpen: boolean = true;
+	export let openOnClick: boolean = true;
 
 	export let isInFocus: () => boolean = () => true;
 
@@ -230,6 +231,7 @@
 								on:clicked={() =>
 									handleClick(`log-${log.filepath}`)}
 								toggleCollapseOnOpen={toggleCollapseOnOpen}
+								openOnClick={openOnClick}
 							/>
 						</li>
 					{/each}

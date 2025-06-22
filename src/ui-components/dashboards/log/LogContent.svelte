@@ -10,6 +10,7 @@
 	export let isCollapsed = false;
 	export let selected = false;
 	export let toggleCollapseOnOpen: boolean = true;
+	export let openOnClick: boolean = true;
 
 	let dateStr = format(log.date, "yyyy-MM-dd 'w'II EEE");
 	let contentLoaded = false;
@@ -25,7 +26,9 @@
 			((event.metaKey || event.ctrlKey) && !fromInternalLink) || // Open note if clicked on the main log content with meta or ctrl key pressed down
 			(!(event.metaKey || event.ctrlKey) && fromInternalLink) // Open note if clicked on the internal link
 		) {
-			log.open(event.metaKey || event.ctrlKey);
+			if (openOnClick) {
+				log.open(event.metaKey || event.ctrlKey);
+			}
 			openedNote = true;
 		}
 
