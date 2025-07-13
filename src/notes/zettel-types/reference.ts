@@ -26,4 +26,13 @@ export class Reference extends Source {
         spec.notetype.default = this.noteTypeStr;
         return spec;
     }
+
+    get status(): string {
+        return this.frontmatter["ref-status"];
+    }
+
+    validate(): boolean {
+        if (this.status === Reference.statuses.read && !this.frontmatter["read-date"]) return false;
+        return true;
+    }
 }
