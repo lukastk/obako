@@ -18,7 +18,8 @@ export class Module extends ParentableNote {
         active: "active",
         paused: "paused",
         done: "done",
-        cancelled: "cancelled"
+        cancelled: "cancelled",
+        idea: "idea",
     };
 
     static statusOrder = {
@@ -27,6 +28,7 @@ export class Module extends ParentableNote {
         [Module.statuses.paused]: 2,
         [Module.statuses.done]: 3,
         [Module.statuses.cancelled]: 4,
+        [Module.statuses.idea]: 5,
     }
 
     static statusDecorators = {
@@ -35,6 +37,7 @@ export class Module extends ParentableNote {
         [Module.statuses.paused]: "❄️",
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
+        [Module.statuses.idea]: "💡",
     }
 
     getTitlePrefixDecoratorColor(): string {
