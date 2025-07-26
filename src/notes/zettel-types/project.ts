@@ -43,6 +43,8 @@ export class Project extends Zettel {
         [Project.statuses.cancelled]: "❌",
     }
 
+    static needsActionDecorator = "⚠️";
+
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
             return 'var(--text-error)';
@@ -207,7 +209,8 @@ export class Project extends Zettel {
     setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
-        const statusDecorator = Project.statusDecorators[this.status];
+        let statusDecorator = Project.statusDecorators[this.status];
+        if (this.needsAction) statusDecorator = Project.needsActionDecorator + statusDecorator;
         titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
 }

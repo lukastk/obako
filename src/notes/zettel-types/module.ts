@@ -18,7 +18,8 @@ export class Module extends ParentableNote {
         active: "active",
         paused: "paused",
         done: "done",
-        cancelled: "cancelled"
+        cancelled: "cancelled",
+        idea: "idea",
     };
 
     static statusOrder = {
@@ -27,6 +28,7 @@ export class Module extends ParentableNote {
         [Module.statuses.paused]: 2,
         [Module.statuses.done]: 3,
         [Module.statuses.cancelled]: 4,
+        [Module.statuses.idea]: 5,
     }
 
     static statusDecorators = {
@@ -35,7 +37,10 @@ export class Module extends ParentableNote {
         [Module.statuses.paused]: "❄️",
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
+        [Module.statuses.idea]: "💡",
     }
+
+    static needsActionDecorator = "⚠️";
 
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
@@ -52,6 +57,8 @@ export class Module extends ParentableNote {
                     return 'var(--color-green)';
                 case Module.statuses.cancelled:
                     return 'var(--text-faint)';
+                case Module.statuses.idea:
+                    return 'var(--color-yellow)';
                 default:
                     return '';
             }
@@ -113,7 +120,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || (this.status === Module.statuses.unplanned);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.idea, Module.statuses.paused].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
@@ -134,7 +141,8 @@ export class Module extends ParentableNote {
     setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
-        const statusDecorator = Module.statusDecorators[this.status];
+        let statusDecorator = Module.statusDecorators[this.status];
+        if (this.needsAction) statusDecorator = Module.needsActionDecorator + statusDecorator;
         titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
 }
