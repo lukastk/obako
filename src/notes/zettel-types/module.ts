@@ -55,6 +55,8 @@ export class Module extends ParentableNote {
                     return 'var(--color-green)';
                 case Module.statuses.cancelled:
                     return 'var(--text-faint)';
+                case Module.statuses.idea:
+                    return 'var(--color-yellow)';
                 default:
                     return '';
             }
@@ -116,7 +118,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || (this.status === Module.statuses.unplanned);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.idea].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
