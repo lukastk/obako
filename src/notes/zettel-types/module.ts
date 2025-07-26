@@ -40,6 +40,8 @@ export class Module extends ParentableNote {
         [Module.statuses.idea]: "💡",
     }
 
+    static needsActionDecorator = "⚠️";
+
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
             return 'var(--text-error)';
@@ -139,7 +141,8 @@ export class Module extends ParentableNote {
     setTitlePrefixDecorator(titleDecoratorEl: HTMLElement) {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
-        const statusDecorator = Module.statusDecorators[this.status];
+        let statusDecorator = Module.statusDecorators[this.status];
+        if (this.needsAction) statusDecorator = Module.needsActionDecorator + statusDecorator;
         titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
 }
