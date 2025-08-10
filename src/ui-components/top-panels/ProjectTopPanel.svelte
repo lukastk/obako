@@ -126,6 +126,6 @@
 	/>
 </Collapsible>
 
-<Collapsible title="Foregrounds" isCollapsed={false}>
+<Collapsible title="Foregrounds" isCollapsed={true}>
 	<NoteForegrounds note={note} />
 </Collapsible>
