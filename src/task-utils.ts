@@ -74,7 +74,9 @@ export class ObakoTask {
         for (const dateType of dateTypes) {
             const date = this.getTaskDate(dateType);
             if (!date) return false;
-            if ( (!startDate || date >= startDate) && (!endDate || date <= endDate)) return true;
+            const dateAfterOrOnStartDate = startDate ? compareDates(date, startDate) >= 0 : false;
+            const dateBeforeOrOnEndDate = endDate ? compareDates(date, endDate) <= 0 : false;
+            if ( (!startDate || dateAfterOrOnStartDate) && (!endDate || dateBeforeOrOnEndDate)) return true;
         }
 
         return false;
