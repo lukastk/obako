@@ -33,6 +33,18 @@
 		)}
 />
 
+<CollapsibleNoteTreeDisplay
+	displayTitle="All child projects"
+	noteTree={note.getDescendantProjects()}
+	isCollapsed={true}
+	displayTitleDecorator={true}
+	sortFunc={(a, b) => {
+		if (a.note.status && b.note.status)
+			return a.note.status.localeCompare(b.note.status);
+		else return -1;
+	}}
+/>
+
 <CollapsibleNoteList
 	title="Modules"
 	notes={note.getModules().sort((a, b) => {
@@ -82,18 +94,6 @@
 		.filter((note) => note.needsConsolidation)}
 	isCollapsed={false}
 	groupByNoteType={true}
-/>
-
-<CollapsibleNoteTreeDisplay
-	displayTitle="All child projects"
-	noteTree={note.getDescendantProjects()}
-	isCollapsed={true}
-	displayTitleDecorator={true}
-	sortFunc={(a, b) => {
-		if (a.note.status && b.note.status)
-			return a.note.status.localeCompare(b.note.status);
-		else return -1;
-	}}
 />
 
 <CollapsibleNoteTreeDisplay
