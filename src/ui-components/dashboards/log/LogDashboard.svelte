@@ -17,6 +17,7 @@
 	export let onlyDailyAndWeeklyPlanners: boolean = true;
 	export let toggleCollapseOnOpen: boolean = true;
 	export let openOnClick: boolean = true;
+	export let maxLogGroups: number = 20; // -1 means no limit
 
 	export let isInFocus: () => boolean = () => true;
 
@@ -201,7 +202,7 @@
 </script>
 
 <div class:narrow-width={!fullWidth}>
-	{#each logGroupDates as dateStr, index}
+	{#each (maxLogGroups > 0 ? logGroupDates.slice(0, maxLogGroups) : logGroupDates) as dateStr, index}
 
 		{#if logGroupIsNewWeek[index]}
 			<div class="log-group-separator">
