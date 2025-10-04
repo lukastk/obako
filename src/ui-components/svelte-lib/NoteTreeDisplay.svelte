@@ -11,6 +11,7 @@
 	export let disableOpenOnClick = false;
 	export let sortFunc: null|((a: NoteTree, b: NoteTree) => number) = null;
 	export let filterFunc: (note: NoteTree) => boolean = () => true;
+	export let filterKeepIfAnyChildMatches: boolean = false;
 
 	if (sortByNoteType) {
 		noteTree.children.sort((a, b) => {
@@ -20,6 +21,14 @@
 
 	if (sortFunc) {
 		noteTree.children.sort(sortFunc);
+	}
+
+	function _filterFunc(noteTree: NoteTree) {
+		if (filterKeepIfAnyChildMatches) {
+			return noteTree.children.some(filterFunc) || filterFunc(noteTree);
+		} else {
+			return filterFunc(noteTree);
+		}
 	}
 </script>
 
@@ -53,8 +62,8 @@
 
 	{#if noteTree.children.length > 0}
 		<ul>
-			{#each noteTree.children.filter(filterFunc) as child}
-				<svelte:self noteTree={child} topLevel={false} displayTitleDecorator={displayTitleDecorator} filterFunc={filterFunc} sortFunc={sortFunc} disableOpenOnClick={disableOpenOnClick}/>
+			{#each noteTree.children.filter(_filterFunc) as child}
+				<svelte:self noteTree={child} topLevel={false} displayTitleDecorator={displayTitleDecorator} filterFunc={filterFunc} sortFunc={sortFunc} disableOpenOnClick={disableOpenOnClick} filterKeepIfAnyChildMatches={filterKeepIfAnyChildMatches}/>
 			{/each}
 		</ul>
 	{/if}

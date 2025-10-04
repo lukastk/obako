@@ -11,6 +11,7 @@
 	export let disableOpenOnClick = false;
 	export let sortFunc: null|((a: NoteTree, b: NoteTree) => number) = null;
 	export let filterFunc: (noteTree: NoteTree) => boolean = () => true;
+	export let filterKeepIfAnyChildMatches: boolean = false;
 
 	$: isEmpty = noteTree.children.length == 0;
 </script>
@@ -24,5 +25,6 @@
 		sortFunc={sortFunc}
 		filterFunc={filterFunc}
 		disableOpenOnClick={disableOpenOnClick}
+		filterKeepIfAnyChildMatches={filterKeepIfAnyChildMatches}
 	/>
 </Collapsible>
