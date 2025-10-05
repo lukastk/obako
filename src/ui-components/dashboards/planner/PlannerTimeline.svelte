@@ -7,7 +7,7 @@
 	import { Planner } from "src/notes/planner";
 	import { Project } from "src/notes/zettel-types/project";
 	import { Module } from "src/notes/zettel-types/module";
-	import { getWeekNumber } from "src/utils";
+	import { getWeekNumber, getZeroedDate } from "src/utils";
 	import { addDays } from "date-fns";
 
 	export let initialStart: Date | null = null;
@@ -177,15 +177,15 @@
 		) as Planner[];
 
 		planners.forEach((planner) => {
-			const startDate = new Date(planner.date.getTime() + itemMargin); // Add one hour to the start date to add a margin
+			const startDate = new Date(getZeroedDate(planner.date).getTime() + itemMargin); // Add one hour to the start date to add a margin
 			let endDate: Date;
 			if (planner.endDate) {
 				endDate = new Date(
-					planner.endDate.getTime() + oneDay - itemMargin,
+					getZeroedDate(planner.endDate).getTime() + oneDay - itemMargin,
 				);
 			} else {
 				endDate = new Date(
-					planner.date.getTime() + oneDay - itemMargin,
+					getZeroedDate(planner.date).getTime() + oneDay - itemMargin,
 				); // Remove one hour from the end date to add a margin
 			}
 
@@ -253,6 +253,9 @@
 		projects.forEach((proj) => {
 			if (proj.hideInPlannerDashboard) return;
 
+			const startDate = new Date(getZeroedDate(proj.startDate).getTime() + itemMargin); // Add one hour to the start date to add a margin
+			const endDate = new Date(getZeroedDate(proj.endDate).getTime() + oneDay - itemMargin);
+
 			let groupId = PROJECTS_GROUP_ID;
 			if (proj.plannerDashboardGroup) {
 				if (
@@ -272,8 +275,8 @@
 			const item = {
 				id: proj.filepath,
 				content: proj.name,
-				start: proj.startDate.toISOString(),
-				end: addDays(proj.endDate, 1).toISOString(),
+				start: startDate,
+				end: endDate,
 				group: groupId,
 				className: [
 					"project",
@@ -301,6 +304,9 @@
 		modules.forEach((mod) => {
 			if (mod.hideInPlannerDashboard) return;
 
+			const startDate = new Date(getZeroedDate(mod.startDate).getTime() + itemMargin); // Add one hour to the start date to add a margin
+			const endDate = new Date(getZeroedDate(mod.endDate).getTime() + oneDay - itemMargin);
+
 			let groupId = MODULES_GROUP_ID;
 			if (mod.plannerDashboardGroup) {
 				if (
@@ -325,8 +331,8 @@
 			const item = {
 				id: mod.filepath,
 				content: `<small><i>${mod.parent.name}:</i></small> <br> ${mod.name}`,
-				start: mod.startDate.toISOString(),
-				end: addDays(mod.endDate, 1).toISOString(),
+				start: startDate,
+				end: endDate,
 				group: groupId,
 				className: [
 					"module",
