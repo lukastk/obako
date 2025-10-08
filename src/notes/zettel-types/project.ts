@@ -16,6 +16,7 @@ export class Project extends Zettel {
     static statuses = {
         stream: "stream",
         idea: "idea",
+        ideaBin: "idea-bin",
         unconfirmed: "unconfirmed",
         unplanned: "unplanned",
         active: "active",
@@ -27,6 +28,7 @@ export class Project extends Zettel {
     static statusOrder = {
         [Project.statuses.stream]: 0,
         [Project.statuses.idea]: 1,
+        [Project.statuses.ideaBin]: 2,
         [Project.statuses.unconfirmed]: 2,
         [Project.statuses.unplanned]: 3,
         [Project.statuses.active]: 4,
@@ -35,6 +37,7 @@ export class Project extends Zettel {
     static statusDecorators = {
         [Project.statuses.stream]: "",
         [Project.statuses.idea]: "💡",
+        [Project.statuses.ideaBin]: "🗑️",
         [Project.statuses.unconfirmed]: "❓",
         [Project.statuses.unplanned]: "❗️",
         [Project.statuses.active]: "",
@@ -54,6 +57,8 @@ export class Project extends Zettel {
                     return 'var(--color-purple)';
                 case Project.statuses.idea:
                     return 'var(--color-yellow)';
+                case Project.statuses.ideaBin:
+                    return 'var(--text-faint)';
                 case Project.statuses.unconfirmed:
                     return 'var(--color-orange)';
                 case Project.statuses.unplanned:
