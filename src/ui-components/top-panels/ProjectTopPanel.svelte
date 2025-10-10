@@ -28,9 +28,10 @@
 		else return -1;
 	}}
 	filterFunc={(noteTree) =>
-		[Project.statuses.active, Project.statuses.stream].includes(
+		[Project.statuses.active, Project.statuses.stream, Project.statuses.unplanned].includes(
 			noteTree.note.status,
 		)}
+	filterKeepIfAnyChildMatches={true}
 />
 
 <CollapsibleNoteTreeDisplay
