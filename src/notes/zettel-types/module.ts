@@ -9,7 +9,7 @@ export class Module extends ParentableNote {
     static noteTypeStr = "mod";
     static noteTypeDisplayName = "Module";
     static noteIcon = "●";
-    
+
     startDate: Date | null = null;
     endDate: Date | null = null;
 
@@ -20,6 +20,7 @@ export class Module extends ParentableNote {
         done: "done",
         cancelled: "cancelled",
         idea: "idea",
+        unconfirmed: "unconfirmed",
     };
 
     static statusOrder = {
@@ -29,6 +30,7 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: 3,
         [Module.statuses.cancelled]: 4,
         [Module.statuses.idea]: 5,
+        [Module.statuses.unconfirmed]: 6,
     }
 
     static statusDecorators = {
@@ -38,6 +40,7 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
         [Module.statuses.idea]: "💡",
+        [Module.statuses.unconfirmed]: "❓",
     }
 
     static needsActionDecorator = "⚠️";
@@ -59,6 +62,8 @@ export class Module extends ParentableNote {
                     return 'var(--text-faint)';
                 case Module.statuses.idea:
                     return 'var(--color-yellow)';
+                case Module.statuses.unconfirmed:
+                    return 'var(--color-orange)';
                 default:
                     return '';
             }
@@ -74,10 +79,10 @@ export class Module extends ParentableNote {
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
-            "mod-status": { default: Module.statuses.unplanned, type: "string", description: "The status of the module." }, 
+            "mod-status": { default: Module.statuses.unplanned, type: "string", description: "The status of the module." },
             "mod-start-date": { default: "", type: "string", description: "The start date of the module." },
             "mod-end-date": { default: "", type: "string", description: "The end date of the module." },
-            "planner-dashboard-group":  { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the module in the planner dashboard. If empty, the module will be displayed in the default group." },
+            "planner-dashboard-group": { default: '', type: "string", skipCreationIfAbsent: true, hideInCreationModal: false, description: "The group to display the module in the planner dashboard. If empty, the module will be displayed in the default group." },
             "collapse-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the module should be collapsed in the planner dashboard." },
             "hide-in-planner-dashboard": { default: false, type: "boolean", skipCreationIfAbsent: true, hideInCreationModal: false, description: "Whether the note should be hidden in the planner dashboard." },
         };
@@ -92,7 +97,7 @@ export class Module extends ParentableNote {
     get plannerDashboardGroup(): string {
         return this.frontmatter['planner-dashboard-group'];
     }
-    
+
     get collapseInPlannerDashboard(): boolean {
         return this.frontmatter['collapse-in-planner-dashboard'];
     }
