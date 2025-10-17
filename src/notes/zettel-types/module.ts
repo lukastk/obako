@@ -109,7 +109,7 @@ export class Module extends ParentableNote {
     get needsAction(): boolean {
         const conds = [
             !this.validate(),
-            this.status === Module.statuses.unplanned,
+            this.status === Module.statuses.unplanned && this.status !== Module.statuses.unconfirmed,
             this.status === Module.statuses.active && this.endDate && compareDates(this.endDate, new Date()) < 0,
         ];
         return conds.some(cond => cond);
@@ -125,7 +125,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled].includes(this.status);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
