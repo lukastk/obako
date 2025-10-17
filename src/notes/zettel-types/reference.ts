@@ -19,10 +19,13 @@ export class Reference extends Source {
             ...super.getFrontmatterSpec(),
             "author": { default: "", type: "string", description: "The author of the reference." },
             "url": { default: null, type: "string", description: "The URL of the reference." },
-            "ref-status": { default: Reference.statuses.unread, type: "string", description: "The status of the reference." },
             "ref-type": { default: "article", type: "string", description: "The type of the reference (e.g., article, book, etc.)." },
-            "read-date": { default: null, type: "date", description: "The date the reference was read." },
             "is-reproduction": { default: false, type: "boolean", skipCreationIfAbsent: false, hideInCreationModal: false, description: "Whether the note is a reproduction of the reference." },
+            "read-date": { default: null, type: "date", description: "The date the reference was read." },
+            "on-reading-list": { default: false, type: "boolean", skipCreationIfAbsent: false, hideInCreationModal: false, description: "Whether the note is on the reading list." },
+            "reading-category": { default: "", type: "string", description: "The category of the reading (e.g., )." },
+            "reading-status": { default: Reference.statuses.unread, type: "string", description: "The status of the reference." },
+            "reading-priority": { default: 0, type: "number", skipCreationIfAbsent: false, hideInCreationModal: false, description: "The priority of the note on the reading list." },
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
