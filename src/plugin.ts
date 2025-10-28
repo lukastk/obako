@@ -40,6 +40,8 @@ import {
 import { Command_OpenPlanner } from './plugin-components/commands/open-planner';
 import { Command_CopyTasks } from './plugin-components/commands/copy-tasks';
 import { Command_GetPlannerTemplate } from './plugin-components/commands/get-planner-template';
+/**** Commands Bulk ****/
+import { Commands_Misc } from './plugin-components/commands-bulk/misc-commands';
 /**** UI ****/
 import { UI_InlineTitleDecorator } from './plugin-components/ui/inline-title-decorator';
 import { UI_TopPanel } from './plugin-components/ui/top-panel';
@@ -116,6 +118,7 @@ export default class ObakoPlugin extends Plugin {
 			new Command_OpenPlanner(this),
 			new Command_CopyTasks(this),
 			new Command_GetPlannerTemplate(this),
+			new Commands_Misc(this),
 			new UI_InlineTitleDecorator(this),
 			new UI_TopPanel(this),
 			new View_PlannerDashboard(this),
