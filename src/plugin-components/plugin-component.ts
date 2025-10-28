@@ -46,12 +46,12 @@ export default abstract class PluginComponent {
     getCurrentNote(noteType): BasicNote | null {
         const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
         const editor = leaf?.leaf?.view?.editor;
-        const notePath = leaf.path;
+        const notePath = leaf?.path;
 
-        const note: BasicNote|null = loadNote(notePath);
+        const note: BasicNote|null = notePath ? loadNote(notePath) : null;
         if (!note) return null;
 
-        if (!(note instanceof noteType)) {
+        if (noteType && !(note instanceof noteType)) {
             new Notice('Incorrect note type. Expected ' + noteType.noteTypeDisplayName + ', got ' + note.noteTypeDisplayName);
             return null;
         }
