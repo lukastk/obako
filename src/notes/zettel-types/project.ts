@@ -15,10 +15,12 @@ export class Project extends Zettel {
 
     static statuses = {
         stream: "stream",
+        streamBin: "stream-bin",
         idea: "idea",
         ideaBin: "idea-bin",
         unconfirmed: "unconfirmed",
         unplanned: "unplanned",
+        lead: "lead",
         active: "active",
         paused: "paused",
         cancelled: "cancelled",
@@ -27,20 +29,27 @@ export class Project extends Zettel {
 
     static statusOrder = {
         [Project.statuses.stream]: 0,
-        [Project.statuses.idea]: 1,
-        [Project.statuses.ideaBin]: 2,
-        [Project.statuses.unconfirmed]: 2,
-        [Project.statuses.unplanned]: 3,
-        [Project.statuses.active]: 4,
+        [Project.statuses.streamBin]: 99,
+        [Project.statuses.idea]: 2,
+        [Project.statuses.ideaBin]: 99,
+        [Project.statuses.unconfirmed]: 4,
+        [Project.statuses.unplanned]: 5,
+        [Project.statuses.active]: 6,
+        [Project.statuses.lead]: 7,
+        [Project.statuses.paused]: 8,
+        [Project.statuses.done]: 9,
+        [Project.statuses.cancelled]: 99,
     }
 
     static statusDecorators = {
-        [Project.statuses.stream]: "",
+        [Project.statuses.stream]: "🌀",
+        [Project.statuses.streamBin]: "🌀",
         [Project.statuses.idea]: "💡",
         [Project.statuses.ideaBin]: "🗑️",
         [Project.statuses.unconfirmed]: "❓",
         [Project.statuses.unplanned]: "❗️",
-        [Project.statuses.active]: "",
+        [Project.statuses.lead]: "🔎",
+        [Project.statuses.active]: "🚀",
         [Project.statuses.paused]: "❄️",
         [Project.statuses.done]: "✅",
         [Project.statuses.cancelled]: "❌",
@@ -55,6 +64,8 @@ export class Project extends Zettel {
             switch (this.status) {
                 case Project.statuses.stream:
                     return 'var(--color-purple)';
+                case Project.statuses.streamBin:
+                    return 'var(--text-muted)';
                 case Project.statuses.idea:
                     return 'var(--color-yellow)';
                 case Project.statuses.ideaBin:
@@ -70,7 +81,7 @@ export class Project extends Zettel {
                 case Project.statuses.done:
                     return 'var(--color-green)';
                 case Project.statuses.cancelled:
-                    return 'var(--text-faint)';;
+                    return 'var(--text-faint)';
                 default:
                     return '';
             }
@@ -146,7 +157,7 @@ export class Project extends Zettel {
             this.getModules().some(module => module.needsAction),
         ];
         return conds.some(cond => cond);
-    }ƒ
+    }
 
     get isRelevantToMe(): boolean {
         return !('relevant-to-me' in this.frontmatter) || this.frontmatter['relevant-to-me'];
@@ -215,6 +226,9 @@ export class Project extends Zettel {
         super.setTitlePrefixDecorator(titleDecoratorEl);
         if (!this.validate()) return;
         let statusDecorator = Project.statusDecorators[this.status];
+        if (this.isPassive) {
+            statusDecorator =  statusDecorator + "🛋️";
+        }
         if (this.needsAction) statusDecorator = Project.needsActionDecorator + statusDecorator;
         titleDecoratorEl.innerHTML = titleDecoratorEl.innerHTML + statusDecorator;
     }
