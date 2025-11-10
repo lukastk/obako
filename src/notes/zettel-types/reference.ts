@@ -17,7 +17,7 @@ export class Reference extends Source {
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
-            "author": { default: "", type: "string", description: "The author of the reference." },
+            "authors": { default: [], type: "array", description: "The authors of the reference." },
             "url": { default: null, type: "string", description: "The URL of the reference." },
             "ref-type": { default: "article", type: "string", description: "The type of the reference (e.g., article, book, etc.)." },
             "is-reproduction": { default: false, type: "boolean", skipCreationIfAbsent: false, hideInCreationModal: false, description: "Whether the note is a reproduction of the reference." },
