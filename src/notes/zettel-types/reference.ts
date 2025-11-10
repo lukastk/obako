@@ -17,6 +17,7 @@ export class Reference extends Source {
     static getFrontmatterSpec(): FrontmatterSpec {
         const spec: FrontmatterSpec = {
             ...super.getFrontmatterSpec(),
+            "title": { default: "", type: "string", description: "The title of the reference. If not provided, the title of the note itself will be used." },
             "authors": { default: [], type: "array", description: "The authors of the reference." },
             "url": { default: null, type: "string", description: "The URL of the reference." },
             "ref-type": { default: "article", type: "string", description: "The type of the reference (e.g., article, book, etc.)." },
@@ -29,6 +30,11 @@ export class Reference extends Source {
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
+    }
+
+    get title(): string {
+        if (this.frontmatter["title"]) return this.frontmatter["title"];
+        return this.name;
     }
 
     get status(): string {
