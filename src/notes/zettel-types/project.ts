@@ -55,7 +55,7 @@ export class Project extends Zettel {
         [Project.statuses.cancelled]: "❌",
     }
 
-    static needsActionDecorator = "⚠️";
+    static needsActionDecorator = "<span style='color: var(--text-error)'>⚠️</span>";
 
     getTitlePrefixDecoratorColor(): string {
         if (!this.validate()) {
