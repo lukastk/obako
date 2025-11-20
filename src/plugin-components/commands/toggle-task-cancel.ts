@@ -16,6 +16,7 @@ export class Command_ToggleTaskCancel extends Command_TransformTaskStatus {
                     '-': ' ',
                     ' ': '-',
                     'd': '-',
+                    'x': '-',
                 };
                 const leaf = this.app.workspace.getActiveViewOfType(MarkdownView);
                 const selectionPositions = getSelectionPositions(leaf?.leaf.view.editor);
