@@ -281,7 +281,8 @@ filter by function \
         const md_breakdown = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n---\n![[${b.link}#Plan]]\n${b.content}`).join('\n\n');
         let md;
         if (plannerRangeType === 'day') {
-            md = `# Plan\n\n# Breakdown\n\n${md_breakdown}\n\n# Working journal\n\n`.trim();
+            const daily_recurring_tasks_section = `# Daily recurring tasks\n\n![[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}]]`;
+            md = `# Plan\n\n# Breakdown\n\n${daily_recurring_tasks_section}\n\n${md_breakdown}\n\n# Working journal\n\n`.trim();
         } else {
             md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
         }
