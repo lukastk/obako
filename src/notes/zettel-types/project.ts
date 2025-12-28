@@ -18,6 +18,7 @@ export class Project extends Zettel {
         streamBin: "stream-bin",
         idea: "idea",
         ideaBin: "idea-bin",
+        backburner: "backburner",
         unconfirmed: "unconfirmed",
         unplanned: "unplanned",
         lead: "lead",
@@ -32,6 +33,7 @@ export class Project extends Zettel {
         [Project.statuses.streamBin]: 99,
         [Project.statuses.idea]: 2,
         [Project.statuses.ideaBin]: 99,
+        [Project.statuses.backburner]: 3,
         [Project.statuses.unconfirmed]: 4,
         [Project.statuses.unplanned]: 5,
         [Project.statuses.active]: 6,
@@ -48,6 +50,7 @@ export class Project extends Zettel {
         [Project.statuses.ideaBin]: "🗑️",
         [Project.statuses.unconfirmed]: "❓",
         [Project.statuses.unplanned]: "❗️",
+        [Project.statuses.backburner]: "💤",
         [Project.statuses.lead]: "🔎",
         [Project.statuses.active]: "🚀",
         [Project.statuses.paused]: "❄️",
@@ -70,6 +73,8 @@ export class Project extends Zettel {
                     return 'var(--color-yellow)';
                 case Project.statuses.ideaBin:
                     return 'var(--text-faint)';
+                case Project.statuses.backburner:
+                    return 'var(--text-muted)';
                 case Project.statuses.unconfirmed:
                     return 'var(--color-orange)';
                 case Project.statuses.unplanned:
