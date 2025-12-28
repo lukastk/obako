@@ -25,7 +25,7 @@
 
 	function _filterFunc(noteTree: NoteTree) {
 		if (filterKeepIfAnyChildMatches) {
-			return noteTree.children.some(filterFunc) || filterFunc(noteTree);
+			return noteTree.children.some(_filterFunc) || filterFunc(noteTree);
 		} else {
 			return filterFunc(noteTree);
 		}
