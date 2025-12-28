@@ -281,12 +281,17 @@ filter by function \
         const md_breakdown = breakdowns.map(b => `## [[${b.link}|${b.title}]]\n---\n![[${b.link}#Plan]]\n${b.content}`).join('\n\n');
         let md;
         if (plannerRangeType === 'day') {
-            const daily_recurring_tasks_section = `# Daily recurring tasks\n\n![[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}]]`;
+            // const daily_recurring_tasks_section = `# Daily recurring tasks\n\n![[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}]]`;
+            const daily_recurring_tasks_section = `
+- [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#Morning|Daily morning tasks]]
+- [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#Stocktake|Daily stocktake tasks]]
+- [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#During day|Daily during day tasks]]
+- [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#Evening|Daily evening tasks]]
+`.trim();
             md = `# Plan\n\n# Breakdown\n\n${daily_recurring_tasks_section}\n\n${md_breakdown}\n\n# Working journal\n\n`.trim();
         } else {
             md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
         }
-        
         return md;
     }
 }
