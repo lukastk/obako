@@ -11,7 +11,7 @@ export class Module extends ParentableNote {
     static noteIcon = "●";
 
     startDate: Date | null = null;
-    endDate: Date | null = null;
+    private _endDate: Date | null = null;
 
     static statuses = {
         unplanned: "unplanned",
@@ -20,6 +20,7 @@ export class Module extends ParentableNote {
         done: "done",
         cancelled: "cancelled",
         idea: "idea",
+        backburner: "backburner",
         unconfirmed: "unconfirmed",
     };
 
@@ -30,7 +31,8 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: 3,
         [Module.statuses.cancelled]: 4,
         [Module.statuses.idea]: 5,
-        [Module.statuses.unconfirmed]: 6,
+        [Module.statuses.backburner]: 6,
+        [Module.statuses.unconfirmed]: 7,
     }
 
     static statusDecorators = {
@@ -40,6 +42,7 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
         [Module.statuses.idea]: "💡",
+        [Module.statuses.backburner]: "💤",
         [Module.statuses.unconfirmed]: "❓",
     }
 
@@ -62,8 +65,10 @@ export class Module extends ParentableNote {
                     return 'var(--text-faint)';
                 case Module.statuses.idea:
                     return 'var(--color-yellow)';
-                case Module.statuses.unconfirmed:
+                case Module.statuses.backburner:
                     return 'var(--color-orange)';
+                case Module.statuses.unconfirmed:
+                    return 'var(--color-purple)';
                 default:
                     return '';
             }
@@ -73,7 +78,7 @@ export class Module extends ParentableNote {
     constructor(file: TFile | string) {
         super(file);
         this.startDate = getDateFromDateString(this.frontmatter["mod-start-date"]);
-        this.endDate = getDateFromDateString(this.frontmatter["mod-end-date"]);
+        this._endDate = getDateFromDateString(this.frontmatter["mod-end-date"]);
     }
 
     static getFrontmatterSpec(): FrontmatterSpec {
@@ -88,6 +93,12 @@ export class Module extends ParentableNote {
         };
         spec.notetype.default = this.noteTypeStr;
         return spec;
+    }
+
+    get endDate(): Date | null {
+        if (this._endDate) return this._endDate;
+        if (this.startDate) return this.startDate; // If no end date is set, use the start date as the end date
+        return null;
     }
 
     get status(): string {
@@ -125,7 +136,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled].includes(this.status);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled, Module.statuses.backburner].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
