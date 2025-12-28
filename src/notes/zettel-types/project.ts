@@ -74,9 +74,9 @@ export class Project extends Zettel {
                 case Project.statuses.ideaBin:
                     return 'var(--text-faint)';
                 case Project.statuses.backburner:
-                    return 'var(--text-muted)';
-                case Project.statuses.unconfirmed:
                     return 'var(--color-orange)';
+                case Project.statuses.unconfirmed:
+                    return 'var(--color-purple)';
                 case Project.statuses.unplanned:
                     return 'var(--text-muted)';
                 case Project.statuses.active:
