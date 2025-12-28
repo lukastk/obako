@@ -288,7 +288,7 @@ filter by function \
 - [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#During day|Daily during day tasks]]
 - [+] [[subsystems/daily-tasks/${getDateStringFromDate(plannerDate)}#Evening|Daily evening tasks]]
 `.trim();
-            md = `# Plan\n\n# Working journal${daily_recurring_tasks_section}\n\n`.trim();
+            md = `# Plan\n\n# Working journal\n${daily_recurring_tasks_section}\n\n`.trim();
         } else {
             md = `# Plan\n\n# Breakdown\n\n${md_breakdown}`.trim();
         }
