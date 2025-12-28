@@ -195,8 +195,8 @@ export class BasicNote {
     }
 
     /*** Actions ***/
-    open(newTab: boolean = false) {
-        app.workspace.openLinkText(this.filepath, "", newTab);
+    async open(newTab: boolean = false) {
+        return await app.workspace.openLinkText(this.filepath, "", newTab);
     }
 
     async modifyFrontmatter(key: string, value: any) {
