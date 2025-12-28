@@ -12,6 +12,9 @@
 	export let sortFunc: null|((a: NoteTree, b: NoteTree) => number) = null;
 	export let filterFunc: (note: NoteTree) => boolean = () => true;
 	export let filterKeepIfAnyChildMatches: boolean = false;
+	export let muteIfFilteredOut: boolean = true;
+
+	export let passedFilter = filterFunc(noteTree);
 
 	if (sortByNoteType) {
 		noteTree.children.sort((a, b) => {
@@ -48,6 +51,7 @@
 			note={noteTree.note}
 			displayTitleDecorator={displayTitleDecorator}
 			disableOpenOnClick={disableOpenOnClick}
+			extraStyle={!passedFilter && muteIfFilteredOut ? 'opacity: 0.5;' : ''}
 		/>
 	{:else}
 		<li>
@@ -56,6 +60,7 @@
 				note={noteTree.note}
 				displayTitleDecorator={displayTitleDecorator}
 				disableOpenOnClick={disableOpenOnClick}
+				extraStyle={!passedFilter && muteIfFilteredOut ? 'opacity: 0.5;' : ''}
 			/>
 		</li>
 	{/if}
