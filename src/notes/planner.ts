@@ -192,7 +192,10 @@ export class Planner extends ObakoNote {
             for (let i = 0; i < 7; i++) {
                 const date = addDays(plannerDate, i);
                 const dateStr = getDateStringFromDate(date);
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                const dayNameAbbr = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const monthAbbr = date.toLocaleDateString('en-US', { month: 'short' });
+                const dayNum = date.getDate();
+                const title = `${dayNameAbbr} (${monthAbbr} ${dayNum})`;
                 
                 const scheduledTasksMd = `
 \`\`\`tasks
@@ -236,7 +239,7 @@ filter by function \
 
                 breakdowns.push({
                     link: `${plannerFolder}/${dateStr}`,
-                    title: `${dayName}`,
+                    title: title,
                     content: ''//`### 📋 Tasks\n${scheduledTasksMd}\n\n#### Due\n${dueTaskMd}`,
                 });
             }
@@ -246,9 +249,11 @@ filter by function \
                 const weekPlannerLink = `${plannerFolder}/${currentDate.getFullYear()} w${getWeekNumberStr(currentDate)}`;
                 const weeksInMonth = breakdowns.map(b => b.link);
                 if (!weeksInMonth.includes(weekPlannerLink)) {
+                    const weekStart = `${currentDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' })}`;
+                    const weekEnd = `${addDays(currentDate, 6).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' })}`;
                     breakdowns.push({
                         link: weekPlannerLink,
-                        title: `Week ${getWeekNumberStr(currentDate)}`,
+                        title: `Week ${getWeekNumberStr(currentDate)} (${weekStart}-${weekEnd})`,
                         content: '',
                     });
                 }
