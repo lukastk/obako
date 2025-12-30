@@ -296,8 +296,27 @@ export class ObakoTask {
                         scheduledDate = date;
                 }
             } else if (noteClass.noteTypeStr === Module.noteTypeStr && this.note.status === Module.statuses.active) {
-                const parentNote = loadNote(this.filePath);
-                if (parentNote.startDate) scheduledDate = parentNote.startDate;
+                const parentNote = loadNote(this.filePath) as Module | null;
+                // If the task is in a module, the basic rule is:
+                // - If the module has a start date, use the later of the module start date or today (but less than the module end date if it has one)
+                if (parentNote?.startDate) {
+                    const todayDate = new Date();
+                    let minStart = parentNote.startDate;
+
+                    // Use the later of the module start date or today
+                    if (compareDates(minStart, todayDate) < 0) {
+                        minStart = todayDate;
+                    }
+
+                    if (parentNote.endDate) {
+                        // Use whichever is earlier: the (start/today) date or the module end date
+                        scheduledDate = compareDates(minStart, parentNote.endDate) < 0
+                            ? minStart
+                            : parentNote.endDate;
+                    } else {
+                        scheduledDate = minStart;
+                    }
+                }
             }
         }
 
