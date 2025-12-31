@@ -19,6 +19,7 @@ export class Project extends Zettel {
         idea: "idea",
         ideaBin: "idea-bin",
         backburner: "backburner",
+        spare: "spare", // A 'spare-time' project
         unconfirmed: "unconfirmed",
         unplanned: "unplanned",
         lead: "lead",
@@ -31,9 +32,10 @@ export class Project extends Zettel {
     static statusOrder = {
         [Project.statuses.stream]: 0,
         [Project.statuses.streamBin]: 99,
-        [Project.statuses.idea]: 2,
+        [Project.statuses.idea]: 1,
         [Project.statuses.ideaBin]: 99,
         [Project.statuses.backburner]: 3,
+        [Project.statuses.spare]: 3,
         [Project.statuses.unconfirmed]: 4,
         [Project.statuses.unplanned]: 5,
         [Project.statuses.active]: 6,
@@ -45,12 +47,13 @@ export class Project extends Zettel {
 
     static statusDecorators = {
         [Project.statuses.stream]: "🌀",
-        [Project.statuses.streamBin]: "🌀",
+        [Project.statuses.streamBin]: "🌀🗑️",
         [Project.statuses.idea]: "💡",
-        [Project.statuses.ideaBin]: "🗑️",
+        [Project.statuses.ideaBin]: "💡🗑️",
         [Project.statuses.unconfirmed]: "❓",
         [Project.statuses.unplanned]: "❗️",
         [Project.statuses.backburner]: "💤",
+        [Project.statuses.spare]: "🍕",
         [Project.statuses.lead]: "🔎",
         [Project.statuses.active]: "🚀",
         [Project.statuses.paused]: "❄️",
