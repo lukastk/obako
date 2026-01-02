@@ -191,7 +191,8 @@ export class Project extends Zettel {
             completionDateValid = this.frontmatter["proj-completion-date"];
         let statusValid = Object.values(Project.statuses).includes(this.status);
         let parentValid = (this.status === Project.statuses.stream) || (this.parent instanceof Project);
-        return super.validate() && dateValid && completionDateValid && statusValid && parentValid;
+        let isPassiveInvalid = this.isPassive && (this.status !== Project.statuses.active);
+        return super.validate() && dateValid && completionDateValid && statusValid && parentValid && !isPassiveInvalid;
     }
 
     getDescendantProjects(): NoteTree {
