@@ -21,6 +21,7 @@ export class Module extends ParentableNote {
         cancelled: "cancelled",
         idea: "idea",
         backburner: "backburner",
+        spare: "spare",
         unconfirmed: "unconfirmed",
     };
 
@@ -32,7 +33,8 @@ export class Module extends ParentableNote {
         [Module.statuses.cancelled]: 4,
         [Module.statuses.idea]: 5,
         [Module.statuses.backburner]: 6,
-        [Module.statuses.unconfirmed]: 7,
+        [Module.statuses.spare]: 7,
+        [Module.statuses.unconfirmed]: 8,
     }
 
     static statusDecorators = {
@@ -43,6 +45,7 @@ export class Module extends ParentableNote {
         [Module.statuses.cancelled]: "❌",
         [Module.statuses.idea]: "💡",
         [Module.statuses.backburner]: "💤",
+        [Module.statuses.spare]: "🍕",
         [Module.statuses.unconfirmed]: "❓",
     }
 
@@ -136,7 +139,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled, Module.statuses.backburner].includes(this.status);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled, Module.statuses.backburner, Module.statuses.spare].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
