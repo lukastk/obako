@@ -123,6 +123,9 @@ export class Project extends Zettel {
             for (const module of this.getModules()) {
                 if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
             }
+            for (const proj of this.getChildProjects()) {
+                if (earliestStartDate === null || (proj.startDate !== null && proj.startDate < earliestStartDate)) earliestStartDate = proj.startDate;
+            }
             startDate = earliestStartDate;
         }
         return startDate;
@@ -136,6 +139,9 @@ export class Project extends Zettel {
             for (const module of this.getModules()) {
                 if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
             }
+            for (const proj of this.getChildProjects()) {
+                if (latestEndDate === null || (proj.endDate !== null && proj.endDate > latestEndDate)) latestEndDate = proj.endDate;
+            }
             endDate = latestEndDate;
         }
         return endDate;
@@ -147,6 +153,10 @@ export class Project extends Zettel {
 
     get modules(): Module[] {
         return this.getModules();
+    }
+
+    get childProjects(): Project[] {
+        return this.getChildProjects();
     }
 
     get plannerDashboardGroup(): string {
@@ -201,6 +211,10 @@ export class Project extends Zettel {
 
     getModules(): Module[] {
         return this.getChildNotes().filter(note => note instanceof Module);
+    }
+
+    getChildProjects(): Project[] {
+        return this.getChildNotes().filter(note => note instanceof Project);
     }
 
     getModuleDateBreakdown() {
