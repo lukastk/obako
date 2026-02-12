@@ -20,6 +20,7 @@ export class Module extends ParentableNote {
         done: "done",
         cancelled: "cancelled",
         idea: "idea",
+        ideaBin: "idea-bin",
         backburner: "backburner",
         spare: "spare",
         unconfirmed: "unconfirmed",
@@ -32,6 +33,7 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: 3,
         [Module.statuses.cancelled]: 4,
         [Module.statuses.idea]: 5,
+        [Module.statuses.ideaBin]: 99,
         [Module.statuses.backburner]: 6,
         [Module.statuses.spare]: 7,
         [Module.statuses.unconfirmed]: 8,
@@ -44,6 +46,7 @@ export class Module extends ParentableNote {
         [Module.statuses.done]: "✅",
         [Module.statuses.cancelled]: "❌",
         [Module.statuses.idea]: "💡",
+        [Module.statuses.ideaBin]: "💡🗑️",
         [Module.statuses.backburner]: "💤",
         [Module.statuses.spare]: "🍕",
         [Module.statuses.unconfirmed]: "❓",
@@ -68,6 +71,8 @@ export class Module extends ParentableNote {
                     return 'var(--text-faint)';
                 case Module.statuses.idea:
                     return 'var(--color-yellow)';
+                case Module.statuses.ideaBin:
+                    return 'var(--text-faint)';
                 case Module.statuses.backburner:
                     return 'var(--color-orange)';
                 case Module.statuses.unconfirmed:
@@ -139,7 +144,7 @@ export class Module extends ParentableNote {
     }
 
     validate(): boolean {
-        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.paused, Module.statuses.cancelled, Module.statuses.backburner, Module.statuses.spare].includes(this.status);
+        let dateValid = (this.startDate && this.endDate) || [Module.statuses.unplanned, Module.statuses.unconfirmed, Module.statuses.idea, Module.statuses.ideaBin, Module.statuses.paused, Module.statuses.cancelled, Module.statuses.backburner, Module.statuses.spare].includes(this.status);
         let statusValid = Object.values(Module.statuses).includes(this.status);
         let parentValid = (this.parent instanceof Project);
         return super.validate() && dateValid && statusValid && parentValid;
