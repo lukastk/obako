@@ -25,7 +25,7 @@ import { Source } from './notes/zettel-types/source';
 import { Entity } from './notes/zettel-types/entity';
 import { Concept } from './notes/zettel-types/concept';
 import { Transient } from './notes/zettel-types/transient';
-import { Repo } from './notes/zettel-types/repo';
+import { Box } from './notes/zettel-types/box';
 import { around } from 'monkey-around';
 
 export const noteTypes = [
@@ -48,7 +48,7 @@ export const noteTypes = [
     Entity,
     Concept,
     Transient,
-    Repo,
+    Box,
 ];
 
 export const concreteNoteTypes = noteTypes.filter(noteType => !noteType.isAbstract);
