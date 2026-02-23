@@ -115,18 +115,25 @@ export class Project extends Zettel {
         return spec;
     }
 
+    private static _resolvingDates = new Set<string>();
+
     get startDate(): Date | null {
         if (this.status === Project.statuses.stream) return null;
         let startDate = getDateFromDateString(this.frontmatter["proj-start-date"]);
-        if (startDate === null) {
-            let earliestStartDate: Date | null = null;
-            for (const module of this.getModules()) {
-                if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
+        if (startDate === null && !Project._resolvingDates.has(this.filepath)) {
+            Project._resolvingDates.add(this.filepath);
+            try {
+                let earliestStartDate: Date | null = null;
+                for (const module of this.getModules()) {
+                    if (earliestStartDate === null || (module.startDate !== null && module.startDate < earliestStartDate)) earliestStartDate = module.startDate;
+                }
+                for (const proj of this.getChildProjects()) {
+                    if (earliestStartDate === null || (proj.startDate !== null && proj.startDate < earliestStartDate)) earliestStartDate = proj.startDate;
+                }
+                startDate = earliestStartDate;
+            } finally {
+                Project._resolvingDates.delete(this.filepath);
             }
-            for (const proj of this.getChildProjects()) {
-                if (earliestStartDate === null || (proj.startDate !== null && proj.startDate < earliestStartDate)) earliestStartDate = proj.startDate;
-            }
-            startDate = earliestStartDate;
         }
         return startDate;
     }
@@ -134,15 +141,20 @@ export class Project extends Zettel {
     get endDate(): Date | null {
         if (this.status === Project.statuses.stream) return null;
         let endDate = getDateFromDateString(this.frontmatter["proj-end-date"]);
-        if (endDate === null) {
-            let latestEndDate: Date | null = null;
-            for (const module of this.getModules()) {
-                if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
+        if (endDate === null && !Project._resolvingDates.has(this.filepath)) {
+            Project._resolvingDates.add(this.filepath);
+            try {
+                let latestEndDate: Date | null = null;
+                for (const module of this.getModules()) {
+                    if (latestEndDate === null || (module.endDate !== null && module.endDate > latestEndDate)) latestEndDate = module.endDate;
+                }
+                for (const proj of this.getChildProjects()) {
+                    if (latestEndDate === null || (proj.endDate !== null && proj.endDate > latestEndDate)) latestEndDate = proj.endDate;
+                }
+                endDate = latestEndDate;
+            } finally {
+                Project._resolvingDates.delete(this.filepath);
             }
-            for (const proj of this.getChildProjects()) {
-                if (latestEndDate === null || (proj.endDate !== null && proj.endDate > latestEndDate)) latestEndDate = proj.endDate;
-            }
-            endDate = latestEndDate;
         }
         return endDate;
     }
