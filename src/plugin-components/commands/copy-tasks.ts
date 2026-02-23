@@ -5,7 +5,7 @@ import { Project } from 'src/notes/zettel-types/project';
 import { Module } from 'src/notes/zettel-types/module';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
-import { getDateFromText, getDateStringFromDate } from 'src/utils';
+import { getDateFromText, getDateStringFromDate, getSelectionPositions } from 'src/utils';
 
 export class Command_CopyTasks extends CommandPluginComponent {
     componentName = 'Cmd: Copy tasks';
@@ -17,40 +17,50 @@ export class Command_CopyTasks extends CommandPluginComponent {
             id: this.commandId,
             name: this.getCommandName(),
             callback: async () => {
-                new CopyTaskModal(this.app, async (options) => {
+                // Capture selection before modal opens
+                const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+                const editor = activeView?.leaf?.view?.editor ?? null;
+                const selectionPos = editor ? getSelectionPositions(editor) : null;
+                const hasSelection = selectionPos && (selectionPos.start.line !== selectionPos.end.line || selectionPos.start.ch !== selectionPos.end.ch);
+                const selectionFilePath = hasSelection ? this.app.workspace.getActiveFile()?.path : null;
+
+                new CopyTaskModal(this.app, hasSelection, async (options) => {
                     const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, groupByNoteType, collapsePlanners, orderByDuration } = options;
+                    const isSelectionMode = notesToInclude === 'selection';
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
-                    if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
+                    if (isSelectionMode || ((earliest || earliestDate === '') && (latest || latestDate === ''))) {
                         let tasks = getTasks();
                         tasks = tasks.filter(task => !task.isDone());
 
-                        tasks = tasks.filter(task => {
-                            return (task.isInDateRange('scheduled', earliest, latest) && copyScheduledTasks)
-                                || (task.isInDateRange('due', earliest, latest) && copyDueTasks);
-                        });
+                        if (!isSelectionMode) {
+                            tasks = tasks.filter(task => {
+                                return (task.isInDateRange('scheduled', earliest, latest) && copyScheduledTasks)
+                                    || (task.isInDateRange('due', earliest, latest) && copyDueTasks);
+                            });
 
-                        let minPriority: number;
-                        let maxPriority: number;
-                        if (priorityRangeStr) {
-                            try {
-                                if (priorityRangeStr.includes('-')) {
-                                    const priorityRange = priorityRangeStr.split('-').map(Number)
-                                    minPriority = Math.min(...priorityRange);
-                                    maxPriority = Math.max(...priorityRange);
-                                } else {
-                                    minPriority = Number(priorityRangeStr);
-                                    maxPriority = minPriority;
+                            let minPriority: number;
+                            let maxPriority: number;
+                            if (priorityRangeStr) {
+                                try {
+                                    if (priorityRangeStr.includes('-')) {
+                                        const priorityRange = priorityRangeStr.split('-').map(Number)
+                                        minPriority = Math.min(...priorityRange);
+                                        maxPriority = Math.max(...priorityRange);
+                                    } else {
+                                        minPriority = Number(priorityRangeStr);
+                                        maxPriority = minPriority;
+                                    }
+                                } catch (e) {
+                                    new Notice('Invalid priority range');
                                 }
-                            } catch (e) {
-                                new Notice('Invalid priority range');
+                            } else {
+                                minPriority = 1;
+                                maxPriority = 6;
                             }
-                        } else {
-                            minPriority = 1;
-                            maxPriority = 6;
-                        }
 
-                        tasks = tasks.filter(task => task.priorityNumber >= minPriority && task.priorityNumber <= maxPriority);
+                            tasks = tasks.filter(task => task.priorityNumber >= minPriority && task.priorityNumber <= maxPriority);
+                        }
 
                         switch (notesToInclude) {
                             case 'all-but-current':
@@ -60,6 +70,13 @@ export class Command_CopyTasks extends CommandPluginComponent {
                                 break;
                             case 'current':
                                 tasks = tasks.filter(task => task.filePath === this.plugin.app.workspace.getActiveFile()?.path);
+                                break;
+                            case 'selection':
+                                tasks = tasks.filter(task =>
+                                    task.filePath === selectionFilePath
+                                    && task.taskLine >= selectionPos.start.line
+                                    && task.taskLine <= selectionPos.end.line
+                                );
                                 break;
                         }
 
@@ -205,7 +222,7 @@ interface CopyTaskOptions {
 }
 
 class CopyTaskModal extends Modal {
-    constructor(app: App, onSubmit: (options: CopyTaskOptions) => void) {
+    constructor(app: App, hasSelection: boolean, onSubmit: (options: CopyTaskOptions) => void) {
         super(app);
 
         this.setTitle('Set planner date range');
@@ -259,11 +276,13 @@ class CopyTaskModal extends Modal {
                         copyDueTasks = value;
                     }));
 
-        let notesToInclude = 'all-but-current';
+        let notesToInclude = hasSelection ? 'selection' : 'all-but-current';
         new Setting(this.contentEl)
             .setName('Notes to include')
             .setDesc('Notes from which to copy tasks.')
             .addDropdown((dropdown) => {
+                if (hasSelection)
+                    dropdown.addOption('selection', 'Current selection');
                 dropdown.addOption('all-but-current', 'All but current note');
                 dropdown.addOption('all', 'All');
                 dropdown.addOption('current', 'Current note');
@@ -275,7 +294,7 @@ class CopyTaskModal extends Modal {
             }
             );
 
-        let groupByFile = true;
+        let groupByFile = !hasSelection;
         new Setting(this.contentEl)
             .setName('Group by file')
             .setDesc('Whether to group tasks by file.')
