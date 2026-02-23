@@ -119,7 +119,9 @@ export class Command_CopyTasks extends CommandPluginComponent {
                             }
 
                             // Add active projects and modules that have no tasks
-                            const activeProjects = (getAllNotesOfType(Project) as Project[]).filter(p => p.isActiveNow);
+                            const activeProjects = (getAllNotesOfType(Project) as Project[]).filter(p => {
+                                try { return p.isActiveNow; } catch { return false; }
+                            });
                             for (const proj of activeProjects) {
                                 if (!(proj.filepath in groupedTasks)) {
                                     groupedTasks[proj.filepath] = [];
@@ -128,7 +130,9 @@ export class Command_CopyTasks extends CommandPluginComponent {
                                     typeGroups[typeName].push(proj.filepath);
                                 }
                             }
-                            const activeModules = (getAllNotesOfType(Module) as Module[]).filter(m => m.isActiveNow);
+                            const activeModules = (getAllNotesOfType(Module) as Module[]).filter(m => {
+                                try { return m.isActiveNow; } catch { return false; }
+                            });
                             for (const mod of activeModules) {
                                 if (!(mod.filepath in groupedTasks)) {
                                     groupedTasks[mod.filepath] = [];
