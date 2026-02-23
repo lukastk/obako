@@ -197,7 +197,7 @@ class CopyTaskModal extends Modal {
             }
             );
 
-        let groupByFile = false;
+        let groupByFile = true;
         new Setting(this.contentEl)
             .setName('Group by file')
             .setDesc('Whether to group tasks by file.')
