@@ -16,7 +16,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, orderByDuration } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, collapsePlanners, orderByDuration } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -63,11 +63,19 @@ export class Command_CopyTasks extends CommandPluginComponent {
 
                         const indentedTaskList = getIndentedHierarchicalTaskList(tasks, orderByDuration);
 
+                        const COLLAPSED_PLANNERS_KEY = '__collapsed_planners__';
                         const groupedTasks: { [key: string]: any[] } = {};
                         if (groupByFile) {
                             for (const task of indentedTaskList) {
-                                groupedTasks[task.task.filePath] = groupedTasks[task.task.filePath] || [];
-                                groupedTasks[task.task.filePath].push(task);
+                                let groupKey = task.task.filePath;
+                                if (collapsePlanners) {
+                                    const note = loadNote(task.task.filePath);
+                                    if (note instanceof Planner && !note.plannerTitle) {
+                                        groupKey = COLLAPSED_PLANNERS_KEY;
+                                    }
+                                }
+                                groupedTasks[groupKey] = groupedTasks[groupKey] || [];
+                                groupedTasks[groupKey].push(task);
                             }
                         } else {
                             groupedTasks[""] = indentedTaskList;
@@ -76,8 +84,12 @@ export class Command_CopyTasks extends CommandPluginComponent {
                         let mdElems: string[] = [];
                         for (const filePath in groupedTasks) {
                             if (filePath) {
-                                const file = loadNote(filePath);
-                                mdElems.push(`#### ${file.getInternalLink()}`);
+                                if (filePath === COLLAPSED_PLANNERS_KEY) {
+                                    mdElems.push(`#### Planners`);
+                                } else {
+                                    const file = loadNote(filePath);
+                                    mdElems.push(`#### ${file.getInternalLink()}`);
+                                }
                             }
                             for (const task of groupedTasks[filePath]) {
                                 const taskMarkdown = `- [+] ${task.task.description}`;
@@ -110,6 +122,7 @@ interface CopyTaskOptions {
     notesToInclude: string;
     priorityRangeStr: string;
     groupByFile: boolean;
+    collapsePlanners: boolean;
     orderByDuration: boolean;
 }
 
@@ -195,6 +208,17 @@ class CopyTaskModal extends Modal {
                         groupByFile = value;
                     }));
 
+        let collapsePlanners = true;
+        new Setting(this.contentEl)
+            .setName('Collapse untitled planners')
+            .setDesc('Collapse tasks from planners without titles into a single group.')
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(collapsePlanners)
+                    .onChange((value) => {
+                        collapsePlanners = value;
+                    }));
+
         let orderByDuration = true;
         new Setting(this.contentEl)
             .setName('Order by duration')
@@ -227,6 +251,7 @@ class CopyTaskModal extends Modal {
                 notesToInclude: notesToInclude,
                 priorityRangeStr: priorityRangeStr,
                 groupByFile: groupByFile,
+                collapsePlanners: collapsePlanners,
                 orderByDuration: orderByDuration,
             });
         }
