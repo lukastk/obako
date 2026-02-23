@@ -1,6 +1,8 @@
 import { App, Editor, MarkdownView, Modal, Notice, Setting } from 'obsidian';
-import { loadNote } from 'src/note-loader';
+import { getAllNotesOfType, loadNote } from 'src/note-loader';
 import { Planner } from 'src/notes/planner';
+import { Project } from 'src/notes/zettel-types/project';
+import { Module } from 'src/notes/zettel-types/module';
 import { CommandPluginComponent } from 'src/plugin-components/command-plugin-component';
 import { getIndentedHierarchicalTaskList, getTasks } from 'src/task-utils';
 import { getDateFromText, getDateStringFromDate } from 'src/utils';
@@ -16,7 +18,7 @@ export class Command_CopyTasks extends CommandPluginComponent {
             name: this.getCommandName(),
             callback: async () => {
                 new CopyTaskModal(this.app, async (options) => {
-                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, collapsePlanners, orderByDuration } = options;
+                    const { earliestDate, latestDate, copyScheduledTasks, copyDueTasks, notesToInclude, priorityRangeStr, groupByFile, groupByNoteType, collapsePlanners, orderByDuration } = options;
                     const earliest = getDateFromText(earliestDate);
                     const latest = getDateFromText(latestDate);
                     if ((earliest || earliestDate === '') && (latest || latestDate === '')) {
@@ -81,23 +83,94 @@ export class Command_CopyTasks extends CommandPluginComponent {
                             groupedTasks[""] = indentedTaskList;
                         }
 
-                        let mdElems: string[] = [];
-                        for (const filePath in groupedTasks) {
-                            if (filePath) {
-                                if (filePath === COLLAPSED_PLANNERS_KEY) {
-                                    mdElems.push(`#### Planners`);
-                                } else {
-                                    const file = loadNote(filePath);
-                                    mdElems.push(`#### ${file.getInternalLink()}`);
-                                }
+                        // Helper to render tasks for a single file group
+                        const renderFileGroup = async (filePath: string, tasks: any[], mdElems: string[]) => {
+                            if (filePath && filePath !== COLLAPSED_PLANNERS_KEY) {
+                                const file = loadNote(filePath);
+                                mdElems.push(`#### ${file.getInternalLink()}`);
                             }
-                            for (const task of groupedTasks[filePath]) {
+                            for (const task of tasks) {
                                 const taskMarkdown = `- [+] ${task.task.description}`;
                                 const taskBlockLink = await task.task.getBlockLink();
                                 const indents = '\t'.repeat(task.indents);
                                 mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);
                                 const subtext = task.task.getSubtext(indents + "\t");
                                 if (subtext.trim()) mdElems.push(subtext);
+                            }
+                        };
+
+                        let mdElems: string[] = [];
+
+                        if (groupByFile && groupByNoteType) {
+                            // Group file groups by note type
+                            const typeGroups: { [typeDisplayName: string]: string[] } = {};
+                            for (const groupKey in groupedTasks) {
+                                let typeDisplayName: string;
+                                if (groupKey === COLLAPSED_PLANNERS_KEY) {
+                                    typeDisplayName = Planner.noteTypeDisplayName;
+                                } else if (groupKey === '') {
+                                    typeDisplayName = '';
+                                } else {
+                                    const note = loadNote(groupKey);
+                                    typeDisplayName = (note.constructor as typeof import('src/notes/basic-note').BasicNote).noteTypeDisplayName;
+                                }
+                                typeGroups[typeDisplayName] = typeGroups[typeDisplayName] || [];
+                                typeGroups[typeDisplayName].push(groupKey);
+                            }
+
+                            // Add active projects and modules that have no tasks
+                            const activeProjects = (getAllNotesOfType(Project) as Project[]).filter(p => p.isActiveNow);
+                            for (const proj of activeProjects) {
+                                if (!(proj.filepath in groupedTasks)) {
+                                    groupedTasks[proj.filepath] = [];
+                                    const typeName = Project.noteTypeDisplayName;
+                                    typeGroups[typeName] = typeGroups[typeName] || [];
+                                    typeGroups[typeName].push(proj.filepath);
+                                }
+                            }
+                            const activeModules = (getAllNotesOfType(Module) as Module[]).filter(m => m.isActiveNow);
+                            for (const mod of activeModules) {
+                                if (!(mod.filepath in groupedTasks)) {
+                                    groupedTasks[mod.filepath] = [];
+                                    const typeName = Module.noteTypeDisplayName;
+                                    typeGroups[typeName] = typeGroups[typeName] || [];
+                                    typeGroups[typeName].push(mod.filepath);
+                                }
+                            }
+
+                            // Sort type groups: Project first, Module second, rest alphabetically
+                            const sortedTypeNames = Object.keys(typeGroups).sort((a, b) => {
+                                if (a === Project.noteTypeDisplayName) return -1;
+                                if (b === Project.noteTypeDisplayName) return 1;
+                                if (a === Module.noteTypeDisplayName) return -1;
+                                if (b === Module.noteTypeDisplayName) return 1;
+                                return a.localeCompare(b);
+                            });
+
+                            for (const typeName of sortedTypeNames) {
+                                if (typeName) mdElems.push(`### ${typeName}s`);
+                                for (const groupKey of typeGroups[typeName]) {
+                                    await renderFileGroup(groupKey, groupedTasks[groupKey], mdElems);
+                                }
+                            }
+                        } else {
+                            for (const filePath in groupedTasks) {
+                                if (filePath) {
+                                    if (filePath === COLLAPSED_PLANNERS_KEY) {
+                                        mdElems.push(`#### Planners`);
+                                    } else {
+                                        const file = loadNote(filePath);
+                                        mdElems.push(`#### ${file.getInternalLink()}`);
+                                    }
+                                }
+                                for (const task of groupedTasks[filePath]) {
+                                    const taskMarkdown = `- [+] ${task.task.description}`;
+                                    const taskBlockLink = await task.task.getBlockLink();
+                                    const indents = '\t'.repeat(task.indents);
+                                    mdElems.push(`${indents}${taskMarkdown} [[${taskBlockLink}|🔗]]`);
+                                    const subtext = task.task.getSubtext(indents + "\t");
+                                    if (subtext.trim()) mdElems.push(subtext);
+                                }
                             }
                         }
                         const md = mdElems.join('\n');
@@ -122,6 +195,7 @@ interface CopyTaskOptions {
     notesToInclude: string;
     priorityRangeStr: string;
     groupByFile: boolean;
+    groupByNoteType: boolean;
     collapsePlanners: boolean;
     orderByDuration: boolean;
 }
@@ -208,6 +282,17 @@ class CopyTaskModal extends Modal {
                         groupByFile = value;
                     }));
 
+        let groupByNoteType = true;
+        new Setting(this.contentEl)
+            .setName('Group by note type')
+            .setDesc('Group files by note type (Projects, Modules, etc). Requires group by file.')
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(groupByNoteType)
+                    .onChange((value) => {
+                        groupByNoteType = value;
+                    }));
+
         let collapsePlanners = true;
         new Setting(this.contentEl)
             .setName('Collapse untitled planners')
@@ -251,6 +336,7 @@ class CopyTaskModal extends Modal {
                 notesToInclude: notesToInclude,
                 priorityRangeStr: priorityRangeStr,
                 groupByFile: groupByFile,
+                groupByNoteType: groupByNoteType,
                 collapsePlanners: collapsePlanners,
                 orderByDuration: orderByDuration,
             });
