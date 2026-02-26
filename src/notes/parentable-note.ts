@@ -22,7 +22,7 @@ Todo:
 import { TFile } from 'obsidian';
 import { ObakoNote } from './obako-note';
 import type { FrontmatterSpec } from './note-frontmatter';
-import { parseObsidianLink } from 'src/utils';
+import { getFile, parseObsidianLink } from 'src/utils';
 
 export abstract class ParentableNote extends ObakoNote {
     static isAbstract = true;
@@ -45,7 +45,8 @@ export abstract class ParentableNote extends ObakoNote {
 
     get parent(): ParentableNote | null {
         if (!this.frontmatter.parent) return null;
-        return obako.noteLoader.loadNote(parseObsidianLink(this.frontmatter.parent)) as ParentableNote;
+        const file = getFile(parseObsidianLink(this.frontmatter.parent), this.filepath);
+        return file ? obako.noteLoader.loadNote(file) as ParentableNote : null;
     }
 
     getChildNotes(): ParentableNote[] {

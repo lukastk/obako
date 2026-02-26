@@ -2,7 +2,7 @@ import { Editor, MarkdownPreviewView, MarkdownView, TFile } from 'obsidian';
 import * as chrono from 'chrono-node';
 import * as weeknumber from 'weeknumber';
 
-export function getFile(file: TFile | string | null): TFile | null {
+export function getFile(file: TFile | string | null, sourcePath?: string): TFile | null {
     if (typeof file === 'string') {
         if (file.includes('/') && !file.endsWith('.md')) {
             file = file + '.md';
@@ -10,7 +10,7 @@ export function getFile(file: TFile | string | null): TFile | null {
         let _file = app.vault.getAbstractFileByPath(file);
         if (!_file) {
             try {
-                _file = app.metadataCache.getFirstLinkpathDest(file);
+                _file = app.metadataCache.getFirstLinkpathDest(file, sourcePath ?? '');
             } catch (e) {
                 return null;
             }
